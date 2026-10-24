@@ -6,9 +6,7 @@ module swage_s1_top #(
     parameter integer PIXEL_BITS = 8,
     parameter integer CHANNELS = 1,
     parameter integer PHASE_FRAC = 8,
-    parameter integer INTERPOLATION = 0,
-    localparam integer DATA_WIDTH = (PIXEL_BITS == 10 && CHANNELS == 1) ? 16 :
-                                   ((PIXEL_BITS == 8 && CHANNELS == 3) ? 24 : 8)
+    parameter integer INTERPOLATION = 0
 ) (
     input wire clk, rst_n,
     input wire [DATA_WIDTH-1:0] s_axis_tdata,
@@ -18,6 +16,8 @@ module swage_s1_top #(
     output wire m_axis_tvalid, m_axis_tuser, m_axis_tlast,
     input wire m_axis_tready
 );
+    localparam integer DATA_WIDTH = (PIXEL_BITS == 10 && CHANNELS == 1) ? 16 :
+                                   ((PIXEL_BITS == 8 && CHANNELS == 3) ? 24 : 8);
     localparam integer SW = (SRC_WIDTH >= 1 && SRC_WIDTH <= 4096) ? SRC_WIDTH : 1;
     localparam integer SH = (SRC_HEIGHT >= 1 && SRC_HEIGHT <= 4096) ? SRC_HEIGHT : 1;
     localparam integer DW = (DST_WIDTH >= 1 && DST_WIDTH <= 4096) ? DST_WIDTH : 1;

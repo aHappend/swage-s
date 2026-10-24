@@ -15,6 +15,11 @@ active-low asynchronous `rst_n`. The direct children of `swage_s1_top` are:
 `DATA_WIDTH` is 8, 16 or 24; channel widths are 8 or 10. Internal coordinates,
 source row counts and raster counters are 13 bits, including the terminal 4096
 source-row count. No coordinate output is a function of returned SRAM data.
+The top and host bridge derive `DATA_WIDTH` as a module-body `localparam`,
+not an overridable parameter. This avoids Quartus 17.1's unsupported
+parameter-port-list `localparam` syntax while preserving packed port widths.
+Unsupported format tuples retain a safe 8-bit width so the top's explicit
+parameter diagnostic remains reachable.
 
 ## Cycle and degenerate-boundary table
 

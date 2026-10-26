@@ -11,10 +11,8 @@ module swage_s1_line_buffer #(
     input wire read_bank0, read_bank1,
     output wire [DATA_WIDTH-1:0] p00, p01, p10, p11
 );
-    (* ramstyle = "M20K", ram_style = "block" *)
-    reg [DATA_WIDTH-1:0] bank0 [0:SRC_WIDTH-1];
-    (* ramstyle = "M20K", ram_style = "block" *)
-    reg [DATA_WIDTH-1:0] bank1 [0:SRC_WIDTH-1];
+    (* ramstyle = "M20K", ram_style = "block" , nomem2reg *) reg [DATA_WIDTH-1:0] bank0 [0:SRC_WIDTH-1];
+    (* ramstyle = "M20K", ram_style = "block" , nomem2reg *) reg [DATA_WIDTH-1:0] bank1 [0:SRC_WIDTH-1];
     reg [DATA_WIDTH-1:0] bank0_a, bank0_b, bank1_a, bank1_b;
     reg selected_bank0, selected_bank1;
     wire [12:0] port_a_address = write_enable ? write_address : x0;

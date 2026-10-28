@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SELECTORS = ("rtl/*.sv", "design/*.md", "fpga/*", "tests/*.py")
 ADMITTED_PARTITION_OUTPUTS = {
     ("behavior-shard", 154, "icarus"): "behavior-shard",
+    ("behavior-shard", 0, "icarus"): "recovery-v2-behavior-shard-icarus-0",
     ("quartus-sta-shard", 178, None): "quartus-sta-shard",
     ("quartus-sta-shard", 166, None): "recovery-v2-quartus-sta-shard-166",
 }

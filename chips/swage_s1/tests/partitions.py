@@ -216,7 +216,9 @@ def scheduling_plan():
 
     Check records and dependency edges are separate so a consumer need not
     reinterpret inventory annotations as executable-contract fields. Only the
-    three admitted partitions declare output selectors; others remain empty.
+    four admitted partitions declare output selectors; others remain empty.
+    The CLI rejects those undeclared output contracts before allocating evidence
+    or launching tools; this inventory is not execution authorization.
     The shared runtime must independently admit and schedule this advisory DAG.
     """
     definitions = check_definitions()
@@ -258,6 +260,7 @@ def scheduling_plan():
         "output_admission_note": (
             "Anchor 154 and timing 178 retain their admitted broad selectors. "
             "Timing 166 uses evidence/checks/recovery-v2-quartus-sta-shard-166-*/. "
+            "Icarus 0 uses evidence/checks/recovery-v2-behavior-shard-icarus-0-*/. "
             "All other partition outputs remain empty pending append-only admission; "
             "this export does not authorize their execution or modify runtime records."
         ),
@@ -869,9 +872,12 @@ def method_checks(e):
     declared_outputs = {
         spec["id"]: spec["outputs"] for spec in plan["partition_checks"] if spec["outputs"]
     }
-    e.assertion("export preserves only the three admitted output selectors",
+    e.assertion("export preserves only the four admitted output selectors",
                 declared_outputs, {
                     "behavior-shard-icarus-154": ["evidence/checks/behavior-shard-*/"],
+                    "behavior-shard-icarus-0": [
+                        "evidence/checks/recovery-v2-behavior-shard-icarus-0-*/",
+                    ],
                     "quartus-sta-shard-178": ["evidence/checks/quartus-sta-shard-*/"],
                     "quartus-sta-shard-166": [
                         "evidence/checks/recovery-v2-quartus-sta-shard-166-*/",
@@ -1088,7 +1094,7 @@ def method_checks(e):
 
 def output_method_checks(e):
     """Exercise allocation/discovery and CLI wiring without running a partition."""
-    from contextlib import redirect_stdout
+    from contextlib import redirect_stderr, redirect_stdout
     import io
     from unittest.mock import patch
     import evidence
@@ -1098,6 +1104,7 @@ def output_method_checks(e):
     directory.mkdir(exist_ok=False)
     choices = (
         ("behavior-shard", 154, "icarus", "behavior-shard"),
+        ("behavior-shard", 0, "icarus", "recovery-v2-behavior-shard-icarus-0"),
         ("quartus-sta-shard", 178, None, "quartus-sta-shard"),
         ("quartus-sta-shard", 166, None, "recovery-v2-quartus-sta-shard-166"),
     )
@@ -1120,6 +1127,31 @@ def output_method_checks(e):
             e.assertion(f"{check}-{shard} CLI fixture exit", verify.main(), 0)
             factory.assert_called_once_with(check, preparation=False, output_prefix=prefix)
             run.assert_called_once_with(factory.return_value, check, shard, simulator)
+    undeclared = [spec for spec in check_definitions() if not spec["outputs"]]
+    e.assertion("undeclared partitions retain no allocation fallback",
+                all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
+                    is None for spec in undeclared), True)
+    e.assertion("undeclared partition denominator", len(undeclared), 598)
+    representatives = {}
+    for spec in undeclared:
+        representatives.setdefault((spec["check"], spec["simulator"]), spec)
+    for spec in representatives.values():
+        diagnostic = io.StringIO()
+        with patch.object(verify.sys, "argv", spec["argv"][1:]), \
+                patch.object(verify, "Evidence") as factory, \
+                patch(f"{__name__}.run_partition") as run, \
+                redirect_stderr(diagnostic), redirect_stdout(io.StringIO()):
+            try:
+                verify.main()
+            except SystemExit as error:
+                require(error.code == 2, "Undeclared partition must be a CLI contract error")
+            else:
+                raise AssertionError("Undeclared partition output fell back to a shared directory")
+            factory.assert_not_called()
+            run.assert_not_called()
+        e.assertion(f"{spec['id']} rejected before evidence allocation or tool execution",
+                    "Partition has no declared exclusive output selector" in diagnostic.getvalue(),
+                    True)
     e.assertion("receipt discovery includes all admitted outputs exactly once",
                 [e.relative(path) for path in partition_receipts(directory)],
                 sorted(e.relative(path) for path in discovered))
@@ -1129,41 +1161,54 @@ def output_method_checks(e):
     e.assertion("receipt discovery retains historical outputs without duplicates",
                 [e.relative(path) for path in partition_receipts(directory)],
                 sorted(e.relative(path) for path in [*discovered, historical]))
+    for check, shard, simulator, prefix in choices:
+        if not prefix.startswith("recovery-v2-"):
+            continue
+        recovery_allocation_checks(e, directory, check, shard, simulator, prefix)
+
+
+def recovery_allocation_checks(e, directory, check, shard, simulator, prefix):
+    """Keep both versioned output contracts exclusive and independently checked."""
+    from contextlib import redirect_stdout
+    import io
+    from unittest.mock import patch
+    import evidence
+
     with patch.object(evidence, "ROOT", directory), \
             patch.object(evidence, "sources", return_value=[]), \
             patch.object(evidence, "hashes", return_value={}), \
             redirect_stdout(io.StringIO()):
         first = evidence.Evidence(
-            "quartus-sta-shard", preparation=True,
-            output_prefix="recovery-v2-quartus-sta-shard-166",
+            check, preparation=True, output_prefix=prefix,
         )
         second = evidence.Evidence(
-            "quartus-sta-shard", preparation=True,
-            output_prefix="recovery-v2-quartus-sta-shard-166",
+            check, preparation=True, output_prefix=prefix,
         )
         for fixture in (first, second):
             fixture.record["synthetic_only"] = True
             fixture.finish()
-            require(fixture.path.name.startswith("recovery-v2-quartus-sta-shard-166-")
-                    and fixture.record["check"] == "quartus-sta-shard"
+            require(fixture.path.name.startswith(f"{prefix}-")
+                    and fixture.record["check"] == check
                     and fixture.record["acceptance_evidence"] is False,
                     "Allocation changed receipt check identity or fixture evidence status")
-        e.assertion("recovery output allocations use distinct exclusive directories",
+        e.assertion(f"{prefix} allocations use distinct exclusive directories",
                     first.path != second.path, True)
         with patch.object(evidence.uuid, "uuid4",
                           return_value=evidence.uuid.UUID(first.path.name[-32:])):
             try:
                 evidence.Evidence(
-                    "quartus-sta-shard", preparation=True,
-                    output_prefix="recovery-v2-quartus-sta-shard-166",
+                    check, preparation=True, output_prefix=prefix,
                 )
             except FileExistsError:
                 collision_rejected = True
             else:
                 collision_rejected = False
-        e.assertion("recovery allocation refuses occupied output directories",
+        e.assertion(f"{prefix} allocation refuses occupied output directories",
                     collision_rejected, True)
-    spec = spec_for("quartus-sta-shard", 166, None)
+    spec = spec_for(check, shard, simulator)
+    historical = directory / f"{check}-{'c' * 32}" / "receipt.json"
+    historical.parent.mkdir(exist_ok=False)
+    historical.write_text('{"synthetic_only": true, "acceptance_evidence": false}\n')
     try:
         validate_receipt(e, historical, {"partition": spec, "check": spec["check"]}, spec)
     except AssertionError as error:
@@ -1171,7 +1216,7 @@ def output_method_checks(e):
                 f"Unexpected output contract fixture diagnostic: {error}")
     else:
         raise AssertionError("Recovery receipt outside its admitted selector was accepted")
-    e.assertion("recovery receipt outside admitted output rejected", True, True)
+    e.assertion(f"{prefix} receipt outside admitted output rejected", True, True)
 
 
 def dependency_method_checks(e):

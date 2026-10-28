@@ -52,10 +52,17 @@ def main():
             parser.error("--simulator is required only for simulation partition checks")
     elif args.shard is not None or args.simulator is not None:
         parser.error("--shard/--simulator are only valid for partition checks")
+    output_prefix = partition_output_prefix(args.check, args.shard, args.simulator)
+    if sharded and output_prefix is None:
+        parser.error(
+            "Partition has no declared exclusive output selector; "
+            "append-only admission and matching verification wiring are required "
+            "before execution"
+        )
     require(Path.cwd().resolve() == ROOT, "Run from the delivered project root")
     evidence = Evidence(
         args.check or f"verifier-{args.probe}", preparation=bool(args.probe),
-        output_prefix=partition_output_prefix(args.check, args.shard, args.simulator),
+        output_prefix=output_prefix,
     )
     if args.repair_of:
         original = Path(args.repair_of)

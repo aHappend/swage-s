@@ -333,6 +333,7 @@ def predecessor_links(e, spec, found):
         path, record = load_success(found, ident)
         predecessor = next(d for d in check_definitions() if d["id"] == ident)
         validate_receipt(e, path, record, predecessor)
+        validate_partition_result(e, path, record, predecessor)
         require(datetime.datetime.fromisoformat(record["end"])
                 <= datetime.datetime.fromisoformat(e.record["start"]),
                 "Partition predecessor did not complete before this invocation")
@@ -615,6 +616,35 @@ def validate_hardware(e, path, record, spec):
     return result
 
 
+def validate_partition_result(e, path, record, spec):
+    """Reparse observed results, including prerequisites outside a gate's inventory."""
+    require(spec["check"] in SHARD_CHECKS, "Unknown partition result type")
+    result = record.get("partition_result")
+    if spec["check"] == "pipeline-shard":
+        require(isinstance(result, list) and result,
+                "Missing observed pipeline results; a receipt header is not evidence")
+    else:
+        require(isinstance(result, dict) and result,
+                "Missing observed partition result; a receipt header is not evidence")
+        if "configuration" in spec:
+            require(result.get("configuration") == spec["configuration"],
+                    "Observed scaler configuration missing or different")
+    if spec["check"] == "behavior-shard":
+        return validate_behavior(path, record, spec)
+    if spec["check"] == "parameter-shard":
+        return validate_parameters(path, record, spec)
+    if spec["check"] == "pipeline-shard":
+        return validate_pipeline(path, record, spec)
+    if spec["check"] == "quartus-sta-shard":
+        from physical import validate_sta
+        c = configuration(spec)
+        result = validate_sta(e, c, path.parent / c.label)
+        require(result == record["partition_result"], "STA ledger differs from raw reports")
+        return result
+    require(spec["check"] == "board-hil-shard", "Unknown partition result type")
+    return validate_hardware(e, path, record, spec)
+
+
 def aggregate(e, gate):
     """All expected partitions are mandatory; failed/interrupted ones never count."""
     wanted = {
@@ -642,7 +672,7 @@ def aggregate(e, gate):
             "schedule prerequisites before this aggregator; this check does not execute them.")
     ledger, links, parameters, pipelines = [], [], [], []
     all_specs = {spec["id"]: spec for spec in definitions}
-    validated = set()
+    validated = {}
 
     def validate_dependency(ident):
         require(ident in found, f"Missing predecessor success {ident}")
@@ -664,26 +694,17 @@ def aggregate(e, gate):
             })
         require(record.get("predecessors") == expected_links,
                 "Explicit predecessor receipt binding differs")
-        validated.add(ident)
+        validated[ident] = validate_partition_result(e, path, record, spec)
 
     for spec in specs:
         path, record = load_success(found, spec["id"])
         validate_dependency(spec["id"])
-        if spec["check"] == "behavior-shard":
-            result = validate_behavior(path, record, spec)
-            ledger.append(result)
-        elif spec["check"] == "parameter-shard":
-            parameters.append(validate_parameters(path, record, spec))
+        if spec["check"] == "parameter-shard":
+            parameters.append(validated[spec["id"]])
         elif spec["check"] == "pipeline-shard":
-            pipelines.append(validate_pipeline(path, record, spec))
-        elif spec["check"] == "quartus-sta-shard":
-            from physical import validate_sta
-            c = configuration(spec)
-            result = validate_sta(e, c, path.parent / c.label)
-            require(result == record["partition_result"], "STA ledger differs from raw reports")
-            ledger.append(result)
+            pipelines.append(validated[spec["id"]])
         else:
-            ledger.append(validate_hardware(e, path, record, spec))
+            ledger.append(validated[spec["id"]])
         links.append({"id": spec["id"], "receipt": e.relative(path), "sha256": file_hash(path)})
     if gate == "behavior":
         from simulation import coverage_totals
@@ -815,6 +836,21 @@ def method_checks(e):
         except AssertionError:
             rejected += 1
     e.assertion("duplicate/unknown success fixtures rejected", rejected, 2)
+    rejected = 0
+    diagnostic_only = {
+        "status": "passed", "requested_runs": 3,
+        "runs": [{"stdout": "Read register 57 (0x00000039): 178 (0x000000b2)"}] * 3,
+    }
+    for spec in (definitions[0], next(s for s in definitions
+                 if s["check"] == "quartus-sta-shard"), next(s for s in definitions
+                 if s["check"] == "board-hil-shard")):
+        for result in (None, {}, diagnostic_only):
+            try:
+                validate_partition_result(e, fixture_path,
+                                          {"partition_result": result}, spec)
+            except AssertionError:
+                rejected += 1
+    e.assertion("header-only and register-only scaler prerequisites rejected", rejected, 9)
     # Synthetic text tests parsing/accounting only. No simulator result is
     # created, no fixture is eligible for aggregation, and no RTL claim is made.
     scenario = {"pattern": "zero", "stall": 0, "seed": 17, "abort": 0}
@@ -838,6 +874,8 @@ def method_checks(e):
         raw.replace("COMPLETE 1", "COMPLETE 2"),
         raw + "COMPLETE 1\n",
         raw.replace("RESULT 9 3 3 3 3", "RESULT 9 3 2 3 3"),
+        "Read register 57 (0x00000039): 178 (0x000000b2)\n",
+        "COMPLETE 1\nTOTAL_CLOCKS 32\n",
     ]
     rejected = 0
     for fixture in fixtures:
@@ -847,5 +885,16 @@ def method_checks(e):
             rejected += 1
     e.assertion("malformed clock/identity/row/count/completion fixtures rejected",
                 rejected, len(fixtures))
+    candidates = successes(e)
+    e.record["observed_partition_inventory"] = {
+        "advisory_only": True,
+        "header_candidates_not_validated_results": {
+            ident: e.relative(path) for ident, (path, _) in candidates.items()
+        },
+        "missing_header_count": len(definitions) - len(candidates),
+        "anchor_header_present": definitions[0]["id"] in candidates,
+        "anchor_command": definitions[0]["argv"],
+        "execution_owner": "shared runtime",
+    }
     e.record["method_validation_only"] = True
     e.save()

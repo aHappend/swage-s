@@ -165,6 +165,36 @@ def aggregate_dependencies():
     }
 
 
+def execution_order(definitions):
+    """Linear advisory order for consumers without dependency-graph support."""
+    by_id = {spec["id"]: spec for spec in definitions}
+    priority = (
+        "behavior-shard-icarus-154", "quartus-sta-shard-178",
+        "quartus-sta-shard-166", "board-hil-shard-10",
+    )
+    require(len(by_id) == len(definitions), "Duplicate partition scheduling identity")
+    require(set(priority) <= set(by_id), "Missing recovery priority partition")
+    ordered = [by_id[ident] for ident in priority]
+    ordered.extend(spec for spec in definitions if spec["id"] not in priority)
+    steps, emitted = [], set()
+    for spec in ordered:
+        require(set(spec["depends_on"]) <= emitted,
+                f"Execution order precedes required dependency: {spec['id']}")
+        steps.append({"id": spec["id"], "argv": spec["argv"]})
+        emitted.add(spec["id"])
+    dependencies = aggregate_dependencies()
+    for gate in (
+        "behavior", "defect-sensitivity", "synthesis", "rtl-timing-lint",
+        "quartus-sta", "board-hil", "portable-reproduction",
+    ):
+        require(set(dependencies.get(gate, [])) <= emitted,
+                f"Execution order omits required partitions for {gate}")
+        steps.append({"id": gate, "argv": [
+            "python3", "tests/verify.py", "--check", gate,
+        ]})
+    return steps
+
+
 def scheduling_plan():
     """Export with --scheduling-plan; no evidence or runtime admission is changed.
 
@@ -189,6 +219,13 @@ def scheduling_plan():
             spec["id"]: spec["depends_on"] for spec in definitions
         },
         "existing_aggregate_dependencies": aggregate_dependencies(),
+        "sequential_execution_order": execution_order(definitions),
+        "sequential_execution_note": (
+            "Advisory order only, not permission to execute or an assertion of admission. "
+            "A consumer without DAG support must independently admit missing checks and "
+            "resolve existing output-selector conflicts before scheduling this sequence. "
+            "Stop on any failed prerequisite; never advance to dependent aggregators."
+        ),
         "original_commands_remain_mandatory": [
             ["python3", "tests/verify.py", "--check", name] for name in (
                 "behavior", "defect-sensitivity", "synthesis", "rtl-timing-lint",
@@ -801,6 +838,36 @@ def method_checks(e):
                 plan["existing_aggregate_dependencies"], deps)
     e.assertion("export does not propose overlapping output selectors",
                 all(spec["outputs"] == [] for spec in plan["partition_checks"]), True)
+    steps = plan["sequential_execution_order"]
+    e.assertion("linear schedule includes all partitions and seven original gates",
+                len(steps), 609)
+    e.assertion("linear schedule has no duplicate steps",
+                len({step["id"] for step in steps}), len(steps))
+    e.assertion("linear schedule prioritizes admitted recovery observations",
+                [step["id"] for step in steps[:4]], [
+                    "behavior-shard-icarus-154", "quartus-sta-shard-178",
+                    "quartus-sta-shard-166", "board-hil-shard-10",
+                ])
+    e.assertion("linear schedule preserves exact partition commands",
+                {step["id"]: step["argv"] for step in steps[:-7]},
+                {spec["id"]: spec["argv"] for spec in definitions})
+    e.assertion("linear schedule retains every unchanged original command",
+                [step["argv"] for step in steps[-7:]],
+                plan["original_commands_remain_mandatory"])
+    for altered, diagnostic in (
+        ([spec for spec in definitions if spec["id"] != "behavior-shard-icarus-154"],
+         "Missing recovery priority partition"),
+        ([*definitions, definitions[0]], "Duplicate partition scheduling identity"),
+        ([{**spec, "depends_on": ["quartus-sta-shard-166"]}
+          if spec["id"] == "quartus-sta-shard-178" else spec
+          for spec in definitions], "Execution order precedes required dependency"),
+    ):
+        try:
+            execution_order(altered)
+        except AssertionError as error:
+            require(diagnostic in str(error), f"Unexpected schedule diagnostic: {error}")
+        else:
+            raise AssertionError(f"Unsafe linear scheduling fixture accepted: {diagnostic}")
     out, _, _ = e.run(
         ["python3", "tests/verify.py", "--scheduling-plan"],
         name="read-only-scheduling-export",

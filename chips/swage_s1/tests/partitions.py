@@ -365,14 +365,43 @@ def validate_receipt(e, path, record, spec):
     require(0 <= duration < 2700, f"Completed partition exceeded check tier: {path}")
 
 
+def validate_dependencies(e, found, identities):
+    """Validate the entire retained prerequisite chain before consuming it."""
+    specs = {spec["id"]: spec for spec in check_definitions()}
+    validated = {}
+
+    def visit(ident):
+        require(ident in found, f"Missing predecessor success {ident}")
+        if ident in validated:
+            return
+        path, record = load_success(found, ident)
+        spec = specs[ident]
+        validate_receipt(e, path, record, spec)
+        expected_links = []
+        for predecessor in spec["depends_on"]:
+            visit(predecessor)
+            predecessor_path, predecessor_record = found[predecessor]
+            require(datetime.datetime.fromisoformat(predecessor_record["end"])
+                    <= datetime.datetime.fromisoformat(record["start"]),
+                    "Dependency order was not honored")
+            expected_links.append({
+                "id": predecessor, "receipt": e.relative(predecessor_path),
+                "sha256": file_hash(predecessor_path),
+            })
+        require(record.get("predecessors") == expected_links,
+                "Explicit predecessor receipt binding differs")
+        validated[ident] = validate_partition_result(e, path, record, spec)
+
+    for ident in identities:
+        visit(ident)
+    return validated
+
+
 def predecessor_links(e, spec, found):
+    validate_dependencies(e, found, spec["depends_on"])
     links = []
     for ident in spec["depends_on"]:
-        require(ident in found, f"Missing admitted predecessor {ident}; execute dependencies first")
         path, record = load_success(found, ident)
-        predecessor = next(d for d in check_definitions() if d["id"] == ident)
-        validate_receipt(e, path, record, predecessor)
-        validate_partition_result(e, path, record, predecessor)
         require(datetime.datetime.fromisoformat(record["end"])
                 <= datetime.datetime.fromisoformat(e.record["start"]),
                 "Partition predecessor did not complete before this invocation")
@@ -710,34 +739,10 @@ def aggregate(e, gate):
             f"See {e.relative(recovery_path)}. The shared runtime must verify admission and "
             "schedule prerequisites before this aggregator; this check does not execute them.")
     ledger, links, parameters, pipelines = [], [], [], []
-    all_specs = {spec["id"]: spec for spec in definitions}
-    validated = {}
-
-    def validate_dependency(ident):
-        require(ident in found, f"Missing predecessor success {ident}")
-        if ident in validated:
-            return
-        path, record = load_success(found, ident)
-        spec = all_specs[ident]
-        validate_receipt(e, path, record, spec)
-        expected_links = []
-        for predecessor in spec["depends_on"]:
-            validate_dependency(predecessor)
-            predecessor_path, predecessor_record = found[predecessor]
-            require(datetime.datetime.fromisoformat(predecessor_record["end"])
-                    <= datetime.datetime.fromisoformat(record["start"]),
-                    "Dependency order was not honored")
-            expected_links.append({
-                "id": predecessor, "receipt": e.relative(predecessor_path),
-                "sha256": file_hash(predecessor_path),
-            })
-        require(record.get("predecessors") == expected_links,
-                "Explicit predecessor receipt binding differs")
-        validated[ident] = validate_partition_result(e, path, record, spec)
+    validated = validate_dependencies(e, found, [spec["id"] for spec in specs])
 
     for spec in specs:
         path, record = load_success(found, spec["id"])
-        validate_dependency(spec["id"])
         if spec["check"] == "parameter-shard":
             parameters.append(validated[spec["id"]])
         elif spec["check"] == "pipeline-shard":
@@ -778,6 +783,7 @@ def method_checks(e):
     for source in sorted((ROOT / "tests").glob("*.py")):
         compile(source.read_text(), source.relative_to(ROOT).as_posix(), "exec")
     definitions = check_definitions()
+    dependency_method_checks(e)
     deps = aggregate_dependencies()
     e.assertion("exact supplemental inventory", len(definitions), 602)
     plan = scheduling_plan()
@@ -966,3 +972,98 @@ def method_checks(e):
     }
     e.record["method_validation_only"] = True
     e.save()
+
+
+def dependency_method_checks(e):
+    """Synthetic dependency graphs test orchestration, not tool or RTL outcomes."""
+    from unittest.mock import patch
+
+    require(e.record["acceptance_evidence"] is False,
+            "Dependency fixtures must remain preparation-only")
+    definitions = check_definitions()
+    specs = {spec["id"]: spec for spec in definitions}
+    anchor = specs["behavior-shard-icarus-154"]
+    first = specs["quartus-sta-shard-178"]
+    second = specs["quartus-sta-shard-166"]
+    directory = e.path / "synthetic-dependencies"
+    directory.mkdir(exist_ok=False)
+    paths = {}
+    fixture_index = 0
+
+    def fixtures(*, corrupt_link=False, reversed_order=False, invalid=None):
+        nonlocal paths, fixture_index
+        current = directory / str(fixture_index)
+        current.mkdir(exist_ok=False)
+        fixture_index += 1
+        paths = {spec["id"]: current / f"{spec['id']}.json" for spec in (anchor, first)}
+        found = {}
+        for index, spec in enumerate((anchor, first)):
+            record = {
+                "synthetic_only": True, "acceptance_evidence": False,
+                "partition": spec, "status": "passed",
+                "start": f"2026-01-01T00:00:0{index * 2}+00:00",
+                "end": f"2026-01-01T00:00:0{index * 2 + 1}+00:00",
+                "predecessors": [
+                    {"id": ident, "receipt": e.relative(paths[ident]),
+                     "sha256": "incorrect" if corrupt_link else file_hash(paths[ident])}
+                    for ident in spec["depends_on"]
+                ],
+            }
+            if reversed_order and spec == first:
+                record["start"] = "2026-01-01T00:00:00+00:00"
+            if invalid and spec == anchor:
+                record[invalid] = True
+            paths[spec["id"]].write_text(json.dumps(record, sort_keys=True) + "\n")
+            found[spec["id"]] = (
+                paths[spec["id"]], {key: record.get(key) for key in HEADER_KEYS},
+            )
+        return found
+
+    validated = []
+
+    def receipt_validator(evidence, path, record, spec):
+        require(not record.get("invalid_receipt"), "synthetic invalid receipt")
+
+    def result_validator(evidence, path, record, spec):
+        require(not record.get("invalid_result"), "synthetic invalid observation")
+        validated.append(spec["id"])
+        return {"synthetic_only": True}
+
+    # Only leaf validators are substituted. The real receipt loader, hashes,
+    # dependency traversal and ordering/link checks run on preparation fixtures.
+    module = __name__
+    with patch(f"{module}.validate_receipt", side_effect=receipt_validator), \
+            patch(f"{module}.validate_partition_result", side_effect=result_validator):
+        cases = (
+            ("missing transitive predecessor", {}, True,
+             "Missing predecessor success behavior-shard-icarus-154"),
+            ("corrupt transitive receipt link", {"corrupt_link": True}, False,
+             "Explicit predecessor receipt binding differs"),
+            ("reversed transitive completion order", {"reversed_order": True}, False,
+             "Dependency order was not honored"),
+            ("invalid transitive receipt", {"invalid": "invalid_receipt"}, False,
+             "synthetic invalid receipt"),
+            ("invalid transitive observation", {"invalid": "invalid_result"}, False,
+             "synthetic invalid observation"),
+        )
+        for name, options, missing_anchor, diagnostic in cases:
+            found = fixtures(**options)
+            if missing_anchor:
+                del found[anchor["id"]]
+            try:
+                predecessor_links(e, second, found)
+            except AssertionError as error:
+                require(diagnostic in str(error),
+                        f"Unexpected dependency fixture failure for {name}: {error}")
+                rejected = True
+            else:
+                rejected = False
+            e.assertion(f"partition startup rejects {name}", rejected, True)
+        found = fixtures()
+        validated.clear()
+        links = predecessor_links(e, second, found)
+        e.assertion("partition startup validates full chain before new execution",
+                    validated, [anchor["id"], first["id"]])
+        e.assertion("partition startup retains exact immediate predecessor binding",
+                    links, [{"id": first["id"], "receipt": e.relative(paths[first["id"]]),
+                             "sha256": file_hash(paths[first["id"]])}])

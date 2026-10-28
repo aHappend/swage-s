@@ -23,6 +23,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     choice = parser.add_mutually_exclusive_group(required=True)
     choice.add_argument("--check", choices=CHECKS)
+    choice.add_argument(
+        "--scheduling-plan", action="store_true",
+        help="Print advisory command/dependency JSON only; execute no checks or tools",
+    )
     choice.add_argument("--probe", choices=(
         "transactors", "prerequisites", "build-interfaces", "quartus-project",
         "board-inputs", "board-discovery", "reset-compute", "quartus-postfit",
@@ -33,6 +37,12 @@ def main():
     parser.add_argument("--simulator", choices=("icarus", "verilator"))
     parser.add_argument("--shard", type=int)
     args = parser.parse_args()
+    if args.scheduling_plan:
+        if args.shard is not None or args.simulator is not None or args.repair_of is not None:
+            parser.error("--scheduling-plan does not accept execution/probe options")
+        from partitions import scheduling_plan
+        print(json.dumps(scheduling_plan(), indent=2))
+        return 0
     sharded = args.check is not None and args.check.endswith("-shard")
     if sharded:
         if args.shard is None:

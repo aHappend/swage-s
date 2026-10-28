@@ -165,6 +165,45 @@ def aggregate_dependencies():
     }
 
 
+def scheduling_plan():
+    """Export with --scheduling-plan; no evidence or runtime admission is changed.
+
+    Check records and dependency edges are separate so a consumer need not
+    reinterpret inventory annotations as executable-contract fields. Empty
+    output selectors avoid claiming another partition's exclusive artifacts.
+    The shared runtime must independently admit and schedule this advisory DAG.
+    """
+    definitions = check_definitions()
+    fields = ("id", "argv", "inputs", "outputs", "requires",
+              "timeout_s", "max_output_bytes")
+    return {
+        "advisory_only": True,
+        "execution_owner": "shared runtime",
+        "admission_status": "not inspected; independent admission required",
+        "completion_status": "not inspected; no passing results asserted",
+        "scheduling_contract": contract(),
+        "partition_checks": [
+            {key: spec[key] for key in fields} for spec in definitions
+        ],
+        "partition_dependencies": {
+            spec["id"]: spec["depends_on"] for spec in definitions
+        },
+        "existing_aggregate_dependencies": aggregate_dependencies(),
+        "original_commands_remain_mandatory": [
+            ["python3", "tests/verify.py", "--check", name] for name in (
+                "behavior", "defect-sensitivity", "synthesis", "rtl-timing-lint",
+                "quartus-sta", "board-hil", "portable-reproduction",
+            )
+        ],
+        "first_command": definitions[0]["argv"],
+        "output_admission_note": (
+            "Proposed partition outputs are empty selectors, not shared globs. "
+            "Previously admitted broad selectors require independently reviewed "
+            "reconciliation; this export does not modify existing admissions."
+        ),
+    }
+
+
 def prerequisite_plan(gate, completed):
     """Describe dependency order, without admitting or executing any command."""
     definitions = check_definitions()
@@ -741,6 +780,35 @@ def method_checks(e):
     definitions = check_definitions()
     deps = aggregate_dependencies()
     e.assertion("exact supplemental inventory", len(definitions), 602)
+    plan = scheduling_plan()
+    fields = {"id", "argv", "inputs", "outputs", "requires",
+              "timeout_s", "max_output_bytes"}
+    e.assertion("export contains only executable check fields",
+                all(set(spec) == fields for spec in plan["partition_checks"]), True)
+    e.assertion("export preserves every exact executable command",
+                [spec["argv"] for spec in plan["partition_checks"]],
+                [spec["argv"] for spec in definitions])
+    e.assertion("export preserves every dependency edge",
+                plan["partition_dependencies"],
+                {spec["id"]: spec["depends_on"] for spec in definitions})
+    e.assertion("export retains original aggregate prerequisites",
+                plan["existing_aggregate_dependencies"], deps)
+    e.assertion("export does not propose overlapping output selectors",
+                all(spec["outputs"] == [] for spec in plan["partition_checks"]), True)
+    out, _, _ = e.run(
+        ["python3", "tests/verify.py", "--scheduling-plan"],
+        name="read-only-scheduling-export",
+    )
+    e.assertion("fresh-process CLI emits exact advisory scheduling JSON",
+                json.loads(out), plan)
+    for options in (["--shard", "154"], ["--simulator", "icarus"],
+                    ["--repair-of", "not-an-evidence-input"]):
+        _, err, _ = e.run(
+            ["python3", "tests/verify.py", "--scheduling-plan", *options],
+            expected=(2,), name="reject-scheduling-execution-options",
+        )
+        require("--scheduling-plan does not accept execution/probe options" in err,
+                "Scheduling export did not reject execution options explicitly")
     e.assertion("behavior aggregate dependencies", len(deps["behavior"]), 362)
     e.assertion("timing aggregate dependencies", len(deps["quartus-sta"]), 192)
     e.assertion("hardware aggregate dependencies", len(deps["board-hil"]), 48)

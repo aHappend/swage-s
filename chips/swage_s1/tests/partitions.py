@@ -1097,7 +1097,6 @@ def output_method_checks(e):
     from contextlib import redirect_stderr, redirect_stdout
     import io
     from unittest.mock import patch
-    import evidence
     import verify
 
     directory = e.path / "synthetic-output-contracts"

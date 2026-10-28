@@ -4,6 +4,9 @@ check_definitions() supplies the exact append-only command/dependency inventory
 for Coordinator admission. Original gates consume completed, current receipts;
 they never select the newest receipt, accept partial coverage, or rerun shards.
 First behavior: Icarus 154. First timing: 178, then 166. First hardware: 10.
+Call-0128 admits a fresh recovery chain if the shared runtime cannot restore
+the original predecessor exactly. It must attempt restoration before scheduling
+this chain. Historical receipts are retained, never relinked or selected.
 Icarus retains each original scenario in a separate process, including its
 original ID, reset prelude and three-frame transaction. Functional watchdogs
 and integer/float comparisons are unchanged. Duration/cycle tier violations
@@ -18,12 +21,13 @@ from pathlib import Path
 import re
 import struct
 
-from evidence import ROOT, file_hash, hashes, require
+from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
 from simulation import parameter_cases, scenario_records
 
 
-IDENTITY = "swage-s1-scheduling-recovery-call-0017-v1"
+PREVIOUS_IDENTITY = "swage-s1-scheduling-recovery-call-0017-v1"
+IDENTITY = "swage-s1-scheduling-recovery-call-0128-v2"
 SHARD_CHECKS = (
     "behavior-shard", "parameter-shard", "pipeline-shard",
     "quartus-sta-shard", "board-hil-shard",
@@ -68,6 +72,16 @@ def contract():
     behavior, timing, hardware, pipeline = inventories()
     payload = {
         "identity": IDENTITY,
+        "recovery": {
+            "previous_identity": PREVIOUS_IDENTITY,
+            "restoration_owner": "shared runtime",
+            "activation": "only after exact original-evidence restoration is unavailable",
+            "historical_receipts": "retained unchanged; excluded from this chain",
+            "fresh_dependency_chain": [
+                "behavior-shard-icarus-154", "quartus-sta-shard-178",
+                "quartus-sta-shard-166",
+            ],
+        },
         "behavior": [
             {"configuration": c.parameters(), "scenarios": [
                 {"id": index, **record, "frames": 3}
@@ -106,10 +120,12 @@ def check_definitions():
             tools = [name for name, _ in PHYSICAL_TOOLS]
             if check == "board-hil-shard":
                 tools.append("quartus_pgm")
+        prefix = partition_output_prefix(check, index, simulator)
         spec = {
             "id": ident, "check": check, "shard": index, "simulator": simulator,
             "argv": argv, "inputs": ["rtl/*.sv", "design/*.md", "fpga/*", "tests/*.py"],
-            "outputs": [], "requires": ["python3", *tools],
+            "outputs": [] if prefix is None else [f"evidence/checks/{prefix}-*/"],
+            "requires": ["python3", *tools],
             "timeout_s": 2700, "max_output_bytes": 1048576,
             "depends_on": [] if predecessor is None else [predecessor],
         }
@@ -199,8 +215,8 @@ def scheduling_plan():
     """Export with --scheduling-plan; no evidence or runtime admission is changed.
 
     Check records and dependency edges are separate so a consumer need not
-    reinterpret inventory annotations as executable-contract fields. Empty
-    output selectors avoid claiming another partition's exclusive artifacts.
+    reinterpret inventory annotations as executable-contract fields. Only the
+    three admitted partitions declare output selectors; others remain empty.
     The shared runtime must independently admit and schedule this advisory DAG.
     """
     definitions = check_definitions()
@@ -212,6 +228,12 @@ def scheduling_plan():
         "admission_status": "not inspected; independent admission required",
         "completion_status": "not inspected; no passing results asserted",
         "scheduling_contract": contract(),
+        "recovery_activation": (
+            "The shared runtime must first attempt exact restoration of the original "
+            "behavior predecessor and its artifacts. Only if unavailable, schedule "
+            "this call-0128 v2 chain from a fresh anchor. This export neither "
+            "attempts restoration nor adjudicates runtime integrity failures."
+        ),
         "partition_checks": [
             {key: spec[key] for key in fields} for spec in definitions
         ],
@@ -234,9 +256,10 @@ def scheduling_plan():
         ],
         "first_command": definitions[0]["argv"],
         "output_admission_note": (
-            "Proposed partition outputs are empty selectors, not shared globs. "
-            "Previously admitted broad selectors require independently reviewed "
-            "reconciliation; this export does not modify existing admissions."
+            "Anchor 154 and timing 178 retain their admitted broad selectors. "
+            "Timing 166 uses evidence/checks/recovery-v2-quartus-sta-shard-166-*/. "
+            "All other partition outputs remain empty pending append-only admission; "
+            "this export does not authorize their execution or modify runtime records."
         ),
     }
 
@@ -315,6 +338,8 @@ def select_successes(records, current_sources, current_contract, known):
     found, excluded = {}, []
     for path, record in records:
         if record.get("scheduling_contract") != current_contract:
+            excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
+                             "reason": "different scheduling contract; historical evidence retained"})
             continue
         if record.get("source_sha256") != current_sources:
             excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
@@ -336,7 +361,7 @@ def successes(e):
     """Only complete, source-current successes are eligible; never newest-wins."""
     known = {spec["id"] for spec in check_definitions()}
     def headers():
-        for path in sorted((ROOT / "evidence" / "checks").glob("*-shard-*/receipt.json")):
+        for path in partition_receipts(ROOT / "evidence" / "checks"):
             record = json.loads(path.read_text())
             yield path, {key: record.get(key) for key in HEADER_KEYS}
 
@@ -358,6 +383,11 @@ def load_success(found, ident):
 def validate_receipt(e, path, record, spec):
     require(record.get("partition") == spec and record.get("check") == spec["check"],
             f"Partition identity/inventory mismatch: {path}")
+    prefix = partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
+    if prefix is not None:
+        require(path.parent.parent == ROOT / "evidence" / "checks"
+                and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
+                f"Partition receipt outside admitted exclusive output: {path}")
     require(record.get("scheduling_contract") == contract()
             and record.get("source_sha256") == hashes()
             and record.get("sources_unchanged") is True
@@ -836,8 +866,18 @@ def method_checks(e):
                 {spec["id"]: spec["depends_on"] for spec in definitions})
     e.assertion("export retains original aggregate prerequisites",
                 plan["existing_aggregate_dependencies"], deps)
-    e.assertion("export does not propose overlapping output selectors",
-                all(spec["outputs"] == [] for spec in plan["partition_checks"]), True)
+    declared_outputs = {
+        spec["id"]: spec["outputs"] for spec in plan["partition_checks"] if spec["outputs"]
+    }
+    e.assertion("export preserves only the three admitted output selectors",
+                declared_outputs, {
+                    "behavior-shard-icarus-154": ["evidence/checks/behavior-shard-*/"],
+                    "quartus-sta-shard-178": ["evidence/checks/quartus-sta-shard-*/"],
+                    "quartus-sta-shard-166": [
+                        "evidence/checks/recovery-v2-quartus-sta-shard-166-*/",
+                    ],
+                })
+    output_method_checks(e)
     steps = plan["sequential_execution_order"]
     e.assertion("linear schedule includes all partitions and seven original gates",
                 len(steps), 609)
@@ -959,14 +999,19 @@ def method_checks(e):
         "status": "passed", "partition": {"id": ident},
     }
     known = {ident}
-    old_contract = {**success, "scheduling_contract": {"identity": "historical"}}
+    old_contract = {**success, "scheduling_contract": {"identity": PREVIOUS_IDENTITY}}
     stale = {**success, "source_sha256": {"fixture": "stale"}}
     failed = {**success, "status": "failed"}
     interrupted = {**success, "status": "running"}
     records = [(fixture_path, item) for item in (old_contract, stale, failed, interrupted)]
     found, excluded = select_successes(records, {"fixture": "current"}, contract(), known)
     e.assertion("failed/interrupted/stale/legacy fixtures not eligible", len(found), 0)
-    e.assertion("explicit exclusions for current-contract fixtures", len(excluded), 3)
+    e.assertion("explicit exclusions include historical-contract fixtures", len(excluded), 4)
+    e.assertion("historical success is explicitly excluded, not relinked",
+                excluded[0]["reason"],
+                "different scheduling contract; historical evidence retained")
+    e.assertion("recovery uses independently admitted new identity", IDENTITY,
+                "swage-s1-scheduling-recovery-call-0128-v2")
     rejected = 0
     for records in (
         [(fixture_path, success), (fixture_path, success)],
@@ -1039,6 +1084,94 @@ def method_checks(e):
     }
     e.record["method_validation_only"] = True
     e.save()
+
+
+def output_method_checks(e):
+    """Exercise allocation/discovery and CLI wiring without running a partition."""
+    from contextlib import redirect_stdout
+    import io
+    from unittest.mock import patch
+    import evidence
+    import verify
+
+    directory = e.path / "synthetic-output-contracts"
+    directory.mkdir(exist_ok=False)
+    choices = (
+        ("behavior-shard", 154, "icarus", "behavior-shard"),
+        ("quartus-sta-shard", 178, None, "quartus-sta-shard"),
+        ("quartus-sta-shard", 166, None, "recovery-v2-quartus-sta-shard-166"),
+    )
+    discovered = []
+    for check, shard, simulator, prefix in choices:
+        spec = spec_for(check, shard, simulator)
+        name = f"{prefix}-{'a' * 32}"
+        path = directory / name / "receipt.json"
+        path.parent.mkdir(exist_ok=False)
+        path.write_text(json.dumps({"synthetic_only": True, "acceptance_evidence": False})+"\n")
+        discovered.append(path)
+        e.assertion(f"{check}-{shard} directory matches admitted selector",
+                    path.parent.match(Path(spec["outputs"][0]).name), True)
+        argv = spec["argv"][1:]
+        with patch.object(verify.sys, "argv", argv), \
+                patch.object(verify, "Evidence") as factory, \
+                patch(f"{__name__}.run_partition") as run, \
+                redirect_stdout(io.StringIO()):
+            factory.return_value.relative.return_value = path.relative_to(ROOT).as_posix()
+            e.assertion(f"{check}-{shard} CLI fixture exit", verify.main(), 0)
+            factory.assert_called_once_with(check, preparation=False, output_prefix=prefix)
+            run.assert_called_once_with(factory.return_value, check, shard, simulator)
+    e.assertion("receipt discovery includes all admitted outputs exactly once",
+                [e.relative(path) for path in partition_receipts(directory)],
+                sorted(e.relative(path) for path in discovered))
+    historical = directory / f"quartus-sta-shard-{'b' * 32}" / "receipt.json"
+    historical.parent.mkdir(exist_ok=False)
+    historical.write_text('{"synthetic_only": true, "acceptance_evidence": false}\n')
+    e.assertion("receipt discovery retains historical outputs without duplicates",
+                [e.relative(path) for path in partition_receipts(directory)],
+                sorted(e.relative(path) for path in [*discovered, historical]))
+    with patch.object(evidence, "ROOT", directory), \
+            patch.object(evidence, "sources", return_value=[]), \
+            patch.object(evidence, "hashes", return_value={}), \
+            redirect_stdout(io.StringIO()):
+        first = evidence.Evidence(
+            "quartus-sta-shard", preparation=True,
+            output_prefix="recovery-v2-quartus-sta-shard-166",
+        )
+        second = evidence.Evidence(
+            "quartus-sta-shard", preparation=True,
+            output_prefix="recovery-v2-quartus-sta-shard-166",
+        )
+        for fixture in (first, second):
+            fixture.record["synthetic_only"] = True
+            fixture.finish()
+            require(fixture.path.name.startswith("recovery-v2-quartus-sta-shard-166-")
+                    and fixture.record["check"] == "quartus-sta-shard"
+                    and fixture.record["acceptance_evidence"] is False,
+                    "Allocation changed receipt check identity or fixture evidence status")
+        e.assertion("recovery output allocations use distinct exclusive directories",
+                    first.path != second.path, True)
+        with patch.object(evidence.uuid, "uuid4",
+                          return_value=evidence.uuid.UUID(first.path.name[-32:])):
+            try:
+                evidence.Evidence(
+                    "quartus-sta-shard", preparation=True,
+                    output_prefix="recovery-v2-quartus-sta-shard-166",
+                )
+            except FileExistsError:
+                collision_rejected = True
+            else:
+                collision_rejected = False
+        e.assertion("recovery allocation refuses occupied output directories",
+                    collision_rejected, True)
+    spec = spec_for("quartus-sta-shard", 166, None)
+    try:
+        validate_receipt(e, historical, {"partition": spec, "check": spec["check"]}, spec)
+    except AssertionError as error:
+        require("outside admitted exclusive output" in str(error),
+                f"Unexpected output contract fixture diagnostic: {error}")
+    else:
+        raise AssertionError("Recovery receipt outside its admitted selector was accepted")
+    e.assertion("recovery receipt outside admitted output rejected", True, True)
 
 
 def dependency_method_checks(e):

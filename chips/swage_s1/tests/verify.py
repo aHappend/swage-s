@@ -8,7 +8,7 @@ import traceback
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from evidence import Evidence, ROOT, execution_environment, require
+from evidence import Evidence, ROOT, execution_environment, partition_output_prefix, require
 
 
 CHECKS = (
@@ -53,7 +53,10 @@ def main():
     elif args.shard is not None or args.simulator is not None:
         parser.error("--shard/--simulator are only valid for partition checks")
     require(Path.cwd().resolve() == ROOT, "Run from the delivered project root")
-    evidence = Evidence(args.check or f"verifier-{args.probe}", preparation=bool(args.probe))
+    evidence = Evidence(
+        args.check or f"verifier-{args.probe}", preparation=bool(args.probe),
+        output_prefix=partition_output_prefix(args.check, args.shard, args.simulator),
+    )
     if args.repair_of:
         original = Path(args.repair_of)
         require(not original.is_absolute() and ".." not in original.parts and original.is_file(),

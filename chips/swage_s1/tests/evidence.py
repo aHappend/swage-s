@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import resource
 import shutil
 import subprocess
@@ -15,6 +16,23 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[1]
 SELECTORS = ("rtl/*.sv", "design/*.md", "fpga/*", "tests/*.py")
+ADMITTED_PARTITION_OUTPUTS = {
+    ("behavior-shard", 154, "icarus"): "behavior-shard",
+    ("quartus-sta-shard", 178, None): "quartus-sta-shard",
+    ("quartus-sta-shard", 166, None): "recovery-v2-quartus-sta-shard-166",
+}
+
+
+def partition_output_prefix(check, shard, simulator=None):
+    return ADMITTED_PARTITION_OUTPUTS.get((check, shard, simulator))
+
+
+def partition_receipts(directory):
+    # Keep historical receipts visible for explicit exclusion, not reuse.
+    patterns = {"*-shard-*/receipt.json"}
+    patterns.update(f"{prefix}-*/receipt.json"
+                    for prefix in ADMITTED_PARTITION_OUTPUTS.values())
+    return sorted({path for pattern in patterns for path in directory.glob(pattern)})
 
 
 def sources(root=ROOT):
@@ -63,9 +81,12 @@ def execution_environment():
 
 
 class Evidence:
-    def __init__(self, check, preparation=False):
+    def __init__(self, check, preparation=False, *, output_prefix=None):
+        prefix = check if output_prefix is None else output_prefix
+        require(re.fullmatch(r"[a-z0-9][a-z0-9-]*", prefix) is not None,
+                "Evidence output prefix must be a plain check name")
         parent = ROOT / "evidence" / ("preparation" if preparation else "checks")
-        self.path = parent / f"{check}-{uuid.uuid4().hex}"
+        self.path = parent / f"{prefix}-{uuid.uuid4().hex}"
         self.path.mkdir(parents=True, exist_ok=False)
         self.record = {
             "schema": 1, "check": check, "acceptance_evidence": not preparation,

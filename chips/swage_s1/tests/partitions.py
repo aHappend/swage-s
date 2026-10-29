@@ -264,8 +264,9 @@ def scheduling_plan():
         "output_admission_note": (
             "Anchor 154 and timing 178 retain their admitted broad selectors. "
             "Timing 166 uses evidence/checks/recovery-v2-quartus-sta-shard-166-*/. "
-            "Icarus behavior 0..167 except 154, Icarus parameter 0..6 and pipeline 0..5, "
-            "and Verilator behavior 0..140 use their exact recovery-v2 selectors. "
+            "Icarus behavior 0..167 except 154 and Verilator behavior 0..167, "
+            "plus parameter 0..6 and pipeline 0..5 on both simulators, "
+            "use their exact recovery-v2 selectors. "
             "All remaining partition outputs remain empty pending append-only admission; "
             "this export does not authorize their execution or modify runtime records."
         ),
@@ -399,10 +400,10 @@ def validate_receipt(e, path, record, spec):
     require(record.get("partition") == spec and record.get("check") == spec["check"],
             f"Partition identity/inventory mismatch: {path}")
     prefix = partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
-    if prefix is not None:
-        require(path.parent.parent == ROOT / "evidence" / "checks"
-                and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
-                f"Partition receipt outside admitted exclusive output: {path}")
+    require(prefix is not None, f"Partition receipt has no admitted output selector: {path}")
+    require(path.parent.parent == ROOT / "evidence" / "checks"
+            and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
+            f"Partition receipt outside admitted exclusive output: {path}")
     require(record.get("scheduling_contract") == contract()
             and record.get("source_sha256") == hashes()
             and record.get("sources_unchanged") is True
@@ -805,6 +806,11 @@ def execute_prerequisites(e, gate, found, *, workers=4):
     definitions = check_definitions()
     by_id = {spec["id"]: spec for spec in definitions}
     recovery = prerequisite_plan(gate, found)
+    recovery_path = e.path / "prerequisite-plan.json"
+    recovery_path.write_text(json.dumps(recovery, indent=2) + "\n")
+    e.record["prerequisite_plan"] = {
+        "path": e.relative(recovery_path), "sha256": file_hash(recovery_path),
+    }
     needed = set(recovery["mandatory_partitions"]) | set(recovery["required_predecessors"])
     missing = needed - set(found)
     unadmitted = sorted(ident for ident in missing if not by_id[ident]["outputs"])
@@ -928,6 +934,7 @@ def method_checks(e):
     dependency_method_checks(e)
     orchestration_method_checks(e)
     discovery_method_checks(e)
+    atomic_receipt_method_checks(e)
     deps = aggregate_dependencies()
     e.assertion("exact supplemental inventory", len(definitions), 602)
     plan = scheduling_plan()
@@ -955,7 +962,8 @@ def method_checks(e):
     }
     for check, simulator, count in (
         ("behavior-shard", "icarus", 168), ("parameter-shard", "icarus", 7),
-        ("pipeline-shard", "icarus", 6), ("behavior-shard", "verilator", 141),
+        ("pipeline-shard", "icarus", 6), ("behavior-shard", "verilator", 168),
+        ("parameter-shard", "verilator", 7), ("pipeline-shard", "verilator", 6),
     ):
         for index in range(count):
             ident = f"{check}-{simulator}-{index}"
@@ -963,7 +971,10 @@ def method_checks(e):
                 expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
     e.assertion("export preserves exactly the supplied admitted selectors",
                 declared_outputs, expected_outputs)
-    e.assertion("admitted selector denominator", len(declared_outputs), 324)
+    e.assertion("admitted selector denominator", len(declared_outputs), 364)
+    e.assertion("every behavior prerequisite has an admitted output",
+                all(spec["outputs"] for spec in definitions
+                    if spec["id"] in deps["behavior"]), True)
     output_method_checks(e)
     steps = plan["sequential_execution_order"]
     e.assertion("linear schedule includes all partitions and seven original gates",
@@ -1191,6 +1202,11 @@ def output_method_checks(e):
         ("parameter-shard", 6, "icarus", "recovery-v2-parameter-shard-icarus-6"),
         ("pipeline-shard", 5, "icarus", "recovery-v2-pipeline-shard-icarus-5"),
         ("behavior-shard", 140, "verilator", "recovery-v2-behavior-shard-verilator-140"),
+        *(("behavior-shard", index, "verilator",
+           f"recovery-v2-behavior-shard-verilator-{index}") for index in range(141, 168)),
+        *((check, index, "verilator", f"recovery-v2-{check}-verilator-{index}")
+          for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
+          for index in range(count)),
     )
     discovered = []
     for check, shard, simulator, prefix in choices:
@@ -1215,7 +1231,12 @@ def output_method_checks(e):
     e.assertion("undeclared partitions retain no allocation fallback",
                 all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
                     is None for spec in undeclared), True)
-    e.assertion("undeclared partition denominator", len(undeclared), 278)
+    e.assertion("undeclared partition denominator", len(undeclared), 238)
+    e.assertion("only unadmitted physical partitions lack output selectors",
+                sorted(spec["id"] for spec in undeclared),
+                sorted({f"quartus-sta-shard-{index}" for index in range(192)
+                        if index not in (178, 166)}
+                       | {f"board-hil-shard-{index}" for index in range(48)}))
     representatives = {}
     for spec in undeclared:
         representatives.setdefault((spec["check"], spec["simulator"]), spec)
@@ -1527,3 +1548,23 @@ def discovery_method_checks(e):
             raise AssertionError("Incremental discovery hid a duplicate")
     e.record.pop("excluded_partition_receipts", None)
     e.save()
+
+
+def atomic_receipt_method_checks(e):
+    """Concurrent discovery must never observe a partially published receipt."""
+    def publish():
+        for index in range(64):
+            e.record["atomic_publication_fixture"] = index
+            e.save()
+
+    def discover():
+        for _ in range(128):
+            record = json.loads((e.path / "receipt.json").read_text())
+            require(record["source_sha256"] == e.record["source_sha256"],
+                    "Concurrent receipt reader observed an incomplete source inventory")
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(publish), pool.submit(discover)]
+        for future in futures:
+            future.result()
+    e.assertion("concurrent atomic receipt reads remain complete", 128, 128)

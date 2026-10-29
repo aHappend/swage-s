@@ -4,6 +4,8 @@ Run: python3 tests/verify.py --probe aggregate-repair
 Run again with --repair-of <previous project-relative receipt> to measure reuse
 from a completed, independently retained compiler receipt. Every selected tuple
 executes its complete frozen scenario list on both simulators.
+
+The smaller follow-up is: python3 tests/verify.py --probe simulator-reuse
 """
 
 import copy
@@ -139,4 +141,42 @@ def aggregate_repair(e):
     e.record["transient_bytes_removed"] = sum(
         item["bytes"] for item in e.record.get("removed_compilation_intermediates", []))
     e.record["reused_executable_sha256"] = file_hash(command[0])
+    e.save()
+
+
+def simulator_reuse(e):
+    """Validate retained-build consumption separately from the cold-build probe."""
+    from simulator_builds import validate_reuse
+
+    require(e.record["acceptance_evidence"] is False, "Reuse diagnostic requires preparation")
+    for name in ("verilator", "make", "g++"):
+        e.tool(name)
+    c = Config()
+    before = len(e.record["commands"])
+    started = time.monotonic()
+    result = execute_partition(e, "verilator", c, e.path / "retained-verilator")
+    commands = e.record["commands"][before:]
+    e.assertion("retained build executes only the new simulator sweep", len(commands), 1)
+    reuse = e.record["reused_compilations"][-1]
+    require(reuse["origin"]["receipt"] != e.relative(e.path / "receipt.json"),
+            "Reuse diagnostic requires a separately completed compiler receipt")
+    tb = e.path / "retained-verilator" / "tb.sv"
+    validate_reuse(e.path / "receipt.json", e.record, c.parameters(), tb)
+    e.assertion("retained build rechecks every frozen scenario",
+                len(result["cases"]), len(list(scenario_records(c))))
+    e.record["retained_reuse_measurement"] = {
+        "wall_s": time.monotonic() - started,
+        "simulation_s": commands[0]["duration_s"], "scenarios": len(result["cases"]),
+        "origin_receipt": reuse["origin"]["receipt"],
+        "origin_receipt_sha256": reuse["origin_receipt_sha256"],
+        "new_compiler_commands": 0,
+    }
+    (e.path / "reuse-observed.json").write_text(json.dumps(result, indent=2) + "\n")
+    # Also validate the previously completed same-receipt reuse, not just its build.
+    origin = ROOT / reuse["origin"]["receipt"]
+    original = json.loads(origin.read_text())
+    for item in original.get("reused_compilations", []):
+        target = ROOT / item["target"]
+        validate_reuse(origin, original, item["origin"]["key"]["parameters"],
+                       target.parent / "tb.sv")
     e.save()

@@ -34,7 +34,12 @@ ADMITTED_PARTITION_OUTPUTS.update({
 })
 ADMITTED_PARTITION_OUTPUTS.update({
     ("behavior-shard", index, "verilator"): f"recovery-v2-behavior-shard-verilator-{index}"
-    for index in range(141)
+    for index in range(168)
+})
+ADMITTED_PARTITION_OUTPUTS.update({
+    (check, index, "verilator"): f"recovery-v2-{check}-verilator-{index}"
+    for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
+    for index in range(count)
 })
 
 
@@ -124,9 +129,11 @@ class Evidence:
     def save(self):
         # Only this still-open receipt is updated. Completed receipts are immutable.
         with self._lock:
-            (self.path / "receipt.json").write_text(
+            temporary = self.path / "receipt.json.tmp"
+            temporary.write_text(
                 json.dumps(self.record, indent=2, sort_keys=True) + "\n", encoding="ascii"
             )
+            temporary.replace(self.path / "receipt.json")
 
     def assertion(self, name, actual, expected):
         self.record["assertions"].append(

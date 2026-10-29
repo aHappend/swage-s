@@ -121,7 +121,9 @@ def retain_build(e, key, tb, binary, command_index):
     retained = getattr(e, "_retained_simulator_builds", [])
     retained.append(build)
     e._retained_simulator_builds = retained
-    (e.path / "compiled-builds.json").write_text(json.dumps(retained, indent=2) + "\n")
+    temporary = e.path / "compiled-builds.json.tmp"
+    temporary.write_text(json.dumps(retained, indent=2) + "\n")
+    temporary.replace(e.path / "compiled-builds.json")
     return build
 
 

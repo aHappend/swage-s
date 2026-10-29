@@ -11,6 +11,7 @@ import shutil
 import subprocess
 import sys
 import time
+import threading
 import uuid
 
 
@@ -22,14 +23,23 @@ ADMITTED_PARTITION_OUTPUTS = {
     ("quartus-sta-shard", 178, None): "quartus-sta-shard",
     ("quartus-sta-shard", 166, None): "recovery-v2-quartus-sta-shard-166",
 }
+ADMITTED_PARTITION_OUTPUTS.update({
+    ("behavior-shard", index, "icarus"): f"recovery-v2-behavior-shard-icarus-{index}"
+    for index in range(168) if index != 154
+})
+ADMITTED_PARTITION_OUTPUTS.update({
+    (check, index, "icarus"): f"recovery-v2-{check}-icarus-{index}"
+    for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
+    for index in range(count)
+})
+ADMITTED_PARTITION_OUTPUTS.update({
+    ("behavior-shard", index, "verilator"): f"recovery-v2-behavior-shard-verilator-{index}"
+    for index in range(141)
+})
 
 
 def partition_output_prefix(check, shard, simulator=None):
-    if (check, shard, simulator) in ADMITTED_PARTITION_OUTPUTS:
-        return ADMITTED_PARTITION_OUTPUTS[(check, shard, simulator)]
-    if check and shard is not None:
-        return f"{check}-{simulator}-{shard}" if simulator else f"{check}-{shard}"
-    return None
+    return ADMITTED_PARTITION_OUTPUTS.get((check, shard, simulator))
 
 
 def partition_receipts(directory):
@@ -87,6 +97,8 @@ def execution_environment():
 
 class Evidence:
     def __init__(self, check, preparation=False, *, output_prefix=None):
+        self._lock = threading.RLock()
+        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
         prefix = check if output_prefix is None else output_prefix
         require(re.fullmatch(r"[a-z0-9][a-z0-9-]*", prefix) is not None,
                 "Evidence output prefix must be a plain check name")
@@ -111,9 +123,10 @@ class Evidence:
 
     def save(self):
         # Only this still-open receipt is updated. Completed receipts are immutable.
-        (self.path / "receipt.json").write_text(
-            json.dumps(self.record, indent=2, sort_keys=True) + "\n", encoding="ascii"
-        )
+        with self._lock:
+            (self.path / "receipt.json").write_text(
+                json.dumps(self.record, indent=2, sort_keys=True) + "\n", encoding="ascii"
+            )
 
     def assertion(self, name, actual, expected):
         self.record["assertions"].append(
@@ -131,21 +144,21 @@ class Evidence:
             if located:
                 argv[0] = str(Path(located).resolve())
         require(timeout >= 3600, "Child timeout must be at least 3600 seconds")
-        index = len(self.record["commands"])
-        stem = f"{index:05d}-{name or Path(argv[0]).name}"
-        stdout = self.path / f"{stem}.stdout"
-        stderr = self.path / f"{stem}.stderr"
-        command = {
-            "argv": argv, "cwd": self.relative(cwd), "start": stamp(),
-            "requested_argv": requested_argv,
-            "timeout_s": timeout, "stdout": self.relative(stdout),
-            "stderr": self.relative(stderr), "exit_status": None,
-            "expected_exit_status": list(expected),
-            "timed_out": False,
-            "core_dump_limit_bytes": 0,
-        }
-        self.record["commands"].append(command)
-        self.save()
+        with self._lock:
+            index = len(self.record["commands"])
+            stem = f"{index:05d}-{name or Path(argv[0]).name}"
+            stdout = self.path / f"{stem}.stdout"
+            stderr = self.path / f"{stem}.stderr"
+            command = {
+                "argv": argv, "cwd": self.relative(cwd), "start": stamp(),
+                "requested_argv": requested_argv,
+                "timeout_s": timeout, "stdout": self.relative(stdout),
+                "stderr": self.relative(stderr), "exit_status": None,
+                "expected_exit_status": list(expected),
+                "timed_out": False, "core_dump_limit_bytes": 0,
+            }
+            self.record["commands"].append(command)
+            self.save()
         started = time.monotonic()
         try:
             with stdout.open("xb") as out, stderr.open("xb") as err:
@@ -153,19 +166,22 @@ class Evidence:
                     argv, cwd=cwd, stdout=out, stderr=err,
                     timeout=timeout, check=False,
                     env=env,
-                    preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_CORE, (0, 0)),
                 )
-            command["exit_status"] = result.returncode
+            with self._lock:
+                command["exit_status"] = result.returncode
         except subprocess.TimeoutExpired:
-            command["timed_out"] = True
+            with self._lock:
+                command["timed_out"] = True
             raise
         except OSError as error:
-            command["launch_error"] = str(error)
+            with self._lock:
+                command["launch_error"] = str(error)
             raise
         finally:
-            command["end"] = stamp()
-            command["duration_s"] = time.monotonic() - started
-            self.save()
+            with self._lock:
+                command["end"] = stamp()
+                command["duration_s"] = time.monotonic() - started
+                self.save()
         require(result.returncode in expected,
                 f"Command exit {result.returncode}: {argv}; "
                 f"see {command['stdout']} and {command['stderr']}")

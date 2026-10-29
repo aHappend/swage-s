@@ -31,6 +31,7 @@ module tb;
   integer bubble_cycles, simultaneous, row_reuse, skipped_rows;
   integer hold_left, hold_started, aborted, prelude, abort_hits;
   integer quiet, last_input_at, last_output_at, observed_row;
+  integer row_start, row_length, row_source;
   integer total_clocks=0, scenario_start_clocks;
   reg held_output;
   reg [DATA_WIDTH+1:0] held_payload;
@@ -90,6 +91,7 @@ module tb;
       bubble_cycles=0; simultaneous=0; longest_stall=0; streak=0;
       hold_left=0; hold_started=0; held_output=0; aborted=0;
       last_input_at=-1; last_output_at=-1;
+      row_start=0; row_length=0; row_source=0;
       random_state=32'(seed); sv=0;
       while (((ic<nsource)||(oc<nresult)) && !aborted) begin
         @(negedge clk);
@@ -139,8 +141,14 @@ module tb;
         if (sv&&sr&&mv&&mr) simultaneous=simultaneous+1;
         if (sv&&sr) begin ic=ic+1; last_input_at=cycles; end
         if (mv&&mr) begin
-          if (!is_prelude && oc%DST_WIDTH==0)
-            $display("ROW %0d %0d %0d",case_id,oc/DST_WIDTH,ic);
+          if (!is_prelude && oc%DST_WIDTH==0) begin
+            if (row_length>0 && row_source!=ic) begin
+              $display("ROW_RUN %0d %0d %0d %0d",case_id,row_start,row_length,row_source);
+              row_length=0;
+            end
+            if (row_length==0) begin row_start=oc/DST_WIDTH; row_source=ic; end
+            row_length=row_length+1;
+          end
           oc=oc+1; sofs=sofs+integer'(mu); eols=eols+integer'(ml);
           last_output_at=cycles;
         end
@@ -167,6 +175,8 @@ module tb;
         if (!aborted) $fatal(1,"PROTOCOL reset event not reached %0d",abort_mode);
         $display("ABORT %0d %0d %0d %0d",case_id,abort_mode,ic,oc);
       end else begin
+        if (row_length>0)
+          $display("ROW_RUN %0d %0d %0d %0d",case_id,row_start,row_length,row_source);
         if (ic!=nsource || oc!=nresult || sofs!=nframes || eols!=nframes*DST_HEIGHT)
           $fatal(1,"PROTOCOL counts case=%0d",case_id);
         if (stall_mode==2 && longest_stall<32)
@@ -346,10 +356,19 @@ def compile_sim(e, simulator, c, directory, tb_text=STREAM_TB, rtl=None, paramet
                *[f"-Ptb.{key}={value}" for key, value in params.items()],
                "-o", binary, *rtl, tb])
         return ["vvp", binary]
+    from simulator_builds import build_key, cleanup_intermediates, retain_build, reuse_build
+    production_rtl = rtl == sorted((ROOT / "rtl").glob("*.sv"))
+    key = build_key(e, rtl, tb, params) if production_rtl else None
+    reused = reuse_build(e, key, directory) if production_rtl else None
+    if reused is not None:
+        return reused
     obj = directory / "obj"
     e.run(["verilator", "--binary", "--timing", "--assert", "-Wno-fatal",
            "--top-module", "tb", "--Mdir", obj, "-o", "simulation",
            *[f"-G{key}={value}" for key, value in params.items()], *rtl, tb])
+    if production_rtl:
+        retain_build(e, key, tb, obj / "simulation", len(e.record["commands"]) - 1)
+    cleanup_intermediates(e, obj)
     return [obj / "simulation"]
 
 
@@ -428,7 +447,12 @@ def parse_stream_output(c, simulator, records, models, out):
     parsed = []
     observed_rows = {}
     for ident, row, count in re.findall(r"^ROW (\d+) (\d+) (\d+)$", out, re.MULTILINE):
-        observed_rows.setdefault(int(ident), []).append((int(row), int(count)))
+        observed_rows.setdefault(int(ident), []).append((int(row), 1, int(count)))
+    for ident, row, length, count in re.findall(
+            r"^ROW_RUN (\d+) (\d+) (\d+) (\d+)$", out, re.MULTILINE):
+        observed_rows.setdefault(int(ident), []).append((int(row), int(length), int(count)))
+    require(set(observed_rows) == {model["id"] for model in models},
+            "Missing or unknown scenario in output-row observations")
     clocks = [(int(ident), int(count)) for ident, count in re.findall(
         r"^SCENARIO_CLOCKS (\d+) (\d+)$", out, re.MULTILINE)]
     require([ident for ident, _ in clocks] == [model["id"] for model in models],
@@ -449,11 +473,15 @@ def parse_stream_output(c, simulator, records, models, out):
                 require(re.search(rf"^ASYNC_PULSE {ident}$", out, re.MULTILINE) is not None,
                         "Sub-clock asynchronous reset pulse not observed")
         rows = observed_rows.get(ident, [])
-        require(len(rows) == 3*c.dh, "Missing publicly observed output-row boundaries")
+        require(sum(length for _, length, _ in rows) == 3*c.dh
+                and all(length > 0 for _, length, _ in rows),
+                "Missing publicly observed output-row boundaries")
         reuse = skips = 0
         previous = None
         scale = 1 << c.frac
-        for row_number, (row, source_count) in enumerate(rows):
+        boundaries = ((start + offset, count) for start, length, count in rows
+                      for offset in range(length))
+        for row_number, (row, source_count) in enumerate(boundaries):
             require(row == row_number, "Output-row observation duplicated or reordered")
             frame, y = divmod(row, c.dh)
             phase = y * (c.sh*scale//c.dh)
@@ -477,7 +505,7 @@ def parse_stream_output(c, simulator, records, models, out):
                        "input_bubbles": bubbles, "simultaneous": overlap, "cycles": cycles,
                        "row_reuse": reuse, "skipped_source_rows": skips,
                        "complete_cycles": complete_cycles,
-                       "observed_row_boundaries": [list(row) for row in rows]})
+                       "observed_row_runs": [list(row) for row in rows]})
     return {"configuration": c.parameters(), "simulator": simulator,
             "cases": parsed, "complete_cycles": int(total[0])}
 

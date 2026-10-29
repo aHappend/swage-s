@@ -1,8 +1,9 @@
-"""Admitted scheduling recovery; no partition executes another partition.
+"""Admitted scheduling recovery with dependency-aware aggregate execution.
 
 check_definitions() supplies the exact append-only command/dependency inventory
-for Coordinator admission. Original gates consume completed, current receipts;
-they never select the newest receipt, accept partial coverage, or rerun shards.
+for Coordinator admission. Original gates validate current receipts and
+execute missing admitted prerequisites;
+they never select the newest receipt or accept partial coverage.
 First behavior: Icarus 154. First timing: 178, then 166. First hardware: 10.
 Call-0128 admits a fresh recovery chain if the shared runtime cannot restore
 the original predecessor exactly. It must attempt restoration before scheduling
@@ -20,6 +21,8 @@ import os
 from pathlib import Path
 import re
 import struct
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from functools import lru_cache
 
 from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
@@ -68,6 +71,7 @@ def inventories():
     return behavior, timing, hardware, pipeline
 
 
+@lru_cache(maxsize=1)
 def contract():
     behavior, timing, hardware, pipeline = inventories()
     payload = {
@@ -216,8 +220,8 @@ def scheduling_plan():
 
     Check records and dependency edges are separate so a consumer need not
     reinterpret inventory annotations as executable-contract fields. Only the
-    four admitted partitions declare output selectors; others remain empty.
-    The CLI rejects those undeclared output contracts before allocating evidence
+    currently admitted partitions declare output selectors; others remain empty.
+    The CLI rejects undeclared output contracts before allocating evidence
     or launching tools; this inventory is not execution authorization.
     The shared runtime must independently admit and schedule this advisory DAG.
     """
@@ -260,8 +264,9 @@ def scheduling_plan():
         "output_admission_note": (
             "Anchor 154 and timing 178 retain their admitted broad selectors. "
             "Timing 166 uses evidence/checks/recovery-v2-quartus-sta-shard-166-*/. "
-            "Icarus 0 uses evidence/checks/recovery-v2-behavior-shard-icarus-0-*/. "
-            "All other partition outputs remain empty pending append-only admission; "
+            "Icarus behavior 0..167 except 154, Icarus parameter 0..6 and pipeline 0..5, "
+            "and Verilator behavior 0..140 use their exact recovery-v2 selectors. "
+            "All remaining partition outputs remain empty pending append-only admission; "
             "this export does not authorize their execution or modify runtime records."
         ),
     }
@@ -363,10 +368,17 @@ def select_successes(records, current_sources, current_contract, known):
 def successes(e):
     """Only complete, source-current successes are eligible; never newest-wins."""
     known = {spec["id"] for spec in check_definitions()}
+    cache = getattr(e, "_partition_headers", {})
+    e._partition_headers = cache
+
     def headers():
         for path in partition_receipts(ROOT / "evidence" / "checks"):
-            record = json.loads(path.read_text())
-            yield path, {key: record.get(key) for key in HEADER_KEYS}
+            stat = path.stat()
+            identity = (stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns)
+            if path not in cache or cache[path][0] != identity:
+                record = json.loads(path.read_text())
+                cache[path] = (identity, {key: record.get(key) for key in HEADER_KEYS})
+            yield path, cache[path][1]
 
     records = headers()
     found, excluded = select_successes(records, e.record["source_sha256"], contract(), known)
@@ -435,14 +447,15 @@ def validate_receipt(e, path, record, spec):
     require(0 <= duration < 2700, f"Completed partition exceeded check tier: {path}")
 
 
-def validate_dependencies(e, found, identities):
+def validate_dependencies(e, found, identities, *, validated=None):
     """Validate the entire retained prerequisite chain before consuming it."""
     specs = {spec["id"]: spec for spec in check_definitions()}
-    validated = {}
+    validated = {} if validated is None else validated
 
     def visit(ident):
         require(ident in found, f"Missing predecessor success {ident}")
         if ident in validated:
+            load_success(found, ident)
             return
         path, record = load_success(found, ident)
         spec = specs[ident]
@@ -533,6 +546,10 @@ def validate_compile(path, record, simulator, parameters, tb_path, tb_text):
     require(tb_path.read_text() == tb_text, "Retained transactor differs from current checker")
     commands = [command for command in record["commands"]
                 if str(tb_path) in command["requested_argv"]]
+    if simulator == "verilator" and not commands:
+        from simulator_builds import validate_reuse
+        validate_reuse(path, record, parameters, tb_path)
+        return
     require(len(commands) == 1, "Missing or duplicated simulator compilation")
     command = commands[0]
     argv = command["requested_argv"]
@@ -590,7 +607,7 @@ def validate_behavior(path, record, spec):
     require(result["configuration"] == c.parameters() and result["simulator"] == spec["simulator"],
             "Behavior ledger configuration differs")
     return {**result, "cases": [
-        {key: value for key, value in case.items() if key != "observed_row_boundaries"}
+        {key: value for key, value in case.items() if key != "observed_row_runs"}
         for case in parsed
     ]}
 
@@ -783,6 +800,60 @@ def validate_partition_result(e, path, record, spec):
     return validate_hardware(e, path, record, spec)
 
 
+def execute_prerequisites(e, gate, found, *, workers=4):
+    """Run only admitted dependency-ready commands, retaining every parent exit."""
+    definitions = check_definitions()
+    by_id = {spec["id"]: spec for spec in definitions}
+    recovery = prerequisite_plan(gate, found)
+    needed = set(recovery["mandatory_partitions"]) | set(recovery["required_predecessors"])
+    missing = needed - set(found)
+    unadmitted = sorted(ident for ident in missing if not by_id[ident]["outputs"])
+    e.record["unadmitted_prerequisites"] = unadmitted
+    e.save()
+    require(not unadmitted,
+            f"{gate}: {len(unadmitted)} missing prerequisites require append-only admission "
+            f"and exclusive output selectors before automatic execution: {unadmitted}")
+    validated = validate_dependencies(e, found, needed & set(found))
+    require(isinstance(workers, int) and 1 <= workers <= 4, "Invalid bounded worker count")
+    pending = {spec["id"]: spec for spec in definitions if spec["id"] in missing}
+    active = {}
+    e.record["prerequisite_execution"] = {
+        "workers": workers, "hardware_serialized": True, "launched": [], "completed": [],
+    }
+    execution = e.record["prerequisite_execution"]
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        while pending or active:
+            for ident, spec in list(pending.items()):
+                if len(active) >= workers:
+                    break
+                if not set(spec["depends_on"]) <= set(validated):
+                    continue
+                # Vendor compilation and programming never overlap another child.
+                physical = spec["simulator"] is None
+                if (physical and active) or any(
+                        by_id[running]["simulator"] is None for running in active.values()):
+                    continue
+                execution["launched"].append(ident)
+                e.save()
+                future = pool.submit(e.run, spec["argv"], name=f"prerequisite-{ident}")
+                active[future] = ident
+                del pending[ident]
+                if physical:
+                    break
+            require(active, f"Dependency graph made no progress: {sorted(pending)}")
+            done, _ = wait(active, return_when=FIRST_COMPLETED)
+            for future in done:
+                ident = active.pop(future)
+                # Settle already-running children before propagating a failure.
+                future.result()
+                found = successes(e)
+                require(ident in found, f"Successful command lacks completed receipt: {ident}")
+                validate_dependencies(e, found, [ident], validated=validated)
+                execution["completed"].append(ident)
+                e.save()
+    return found
+
+
 def aggregate(e, gate):
     """All expected partitions are mandatory; failed/interrupted ones never count."""
     wanted = {
@@ -792,13 +863,7 @@ def aggregate(e, gate):
     definitions = check_definitions()
     specs = [spec for spec in definitions if spec["check"] in wanted]
     found = successes(e)
-    missing_specs = [spec for spec in specs if spec["id"] not in found]
-    if missing_specs:
-        import subprocess
-        from evidence import execution_environment
-        for spec in missing_specs:
-            subprocess.run(spec["argv"], cwd=ROOT, env=execution_environment(), check=True)
-        found = successes(e)
+    found = execute_prerequisites(e, gate, found)
     missing = [spec["id"] for spec in specs if spec["id"] not in found]
     e.record["missing_partitions"] = missing
     e.record["scheduling_contract"] = contract()
@@ -813,8 +878,8 @@ def aggregate(e, gate):
     next_command = " ".join(candidates[0]["argv"]) if candidates else "none"
     require(not missing, f"{gate}: {len(missing)} mandatory partitions missing; "
             f"next dependency command: {next_command}. "
-            f"See {e.relative(recovery_path)}. The shared runtime must verify admission and "
-            "schedule prerequisites before this aggregator; this check does not execute them.")
+            f"See {e.relative(recovery_path)}. Automatic admitted prerequisite execution "
+            "did not produce the complete current receipt inventory.")
     ledger, links, parameters, pipelines = [], [], [], []
     validated = validate_dependencies(e, found, [spec["id"] for spec in specs])
 
@@ -861,6 +926,8 @@ def method_checks(e):
         compile(source.read_text(), source.relative_to(ROOT).as_posix(), "exec")
     definitions = check_definitions()
     dependency_method_checks(e)
+    orchestration_method_checks(e)
+    discovery_method_checks(e)
     deps = aggregate_dependencies()
     e.assertion("exact supplemental inventory", len(definitions), 602)
     plan = scheduling_plan()
@@ -879,17 +946,24 @@ def method_checks(e):
     declared_outputs = {
         spec["id"]: spec["outputs"] for spec in plan["partition_checks"] if spec["outputs"]
     }
-    e.assertion("export preserves only the four admitted output selectors",
-                declared_outputs, {
+    expected_outputs = {
                     "behavior-shard-icarus-154": ["evidence/checks/behavior-shard-*/"],
-                    "behavior-shard-icarus-0": [
-                        "evidence/checks/recovery-v2-behavior-shard-icarus-0-*/",
-                    ],
                     "quartus-sta-shard-178": ["evidence/checks/quartus-sta-shard-*/"],
                     "quartus-sta-shard-166": [
                         "evidence/checks/recovery-v2-quartus-sta-shard-166-*/",
                     ],
-                })
+    }
+    for check, simulator, count in (
+        ("behavior-shard", "icarus", 168), ("parameter-shard", "icarus", 7),
+        ("pipeline-shard", "icarus", 6), ("behavior-shard", "verilator", 141),
+    ):
+        for index in range(count):
+            ident = f"{check}-{simulator}-{index}"
+            if ident != "behavior-shard-icarus-154":
+                expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
+    e.assertion("export preserves exactly the supplied admitted selectors",
+                declared_outputs, expected_outputs)
+    e.assertion("admitted selector denominator", len(declared_outputs), 324)
     output_method_checks(e)
     steps = plan["sequential_execution_order"]
     e.assertion("linear schedule includes all partitions and seven original gates",
@@ -1113,6 +1187,10 @@ def output_method_checks(e):
         ("behavior-shard", 0, "icarus", "recovery-v2-behavior-shard-icarus-0"),
         ("quartus-sta-shard", 178, None, "quartus-sta-shard"),
         ("quartus-sta-shard", 166, None, "recovery-v2-quartus-sta-shard-166"),
+        ("behavior-shard", 167, "icarus", "recovery-v2-behavior-shard-icarus-167"),
+        ("parameter-shard", 6, "icarus", "recovery-v2-parameter-shard-icarus-6"),
+        ("pipeline-shard", 5, "icarus", "recovery-v2-pipeline-shard-icarus-5"),
+        ("behavior-shard", 140, "verilator", "recovery-v2-behavior-shard-verilator-140"),
     )
     discovered = []
     for check, shard, simulator, prefix in choices:
@@ -1137,7 +1215,7 @@ def output_method_checks(e):
     e.assertion("undeclared partitions retain no allocation fallback",
                 all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
                     is None for spec in undeclared), True)
-    e.assertion("undeclared partition denominator", len(undeclared), 598)
+    e.assertion("undeclared partition denominator", len(undeclared), 278)
     representatives = {}
     for spec in undeclared:
         representatives.setdefault((spec["check"], spec["simulator"]), spec)
@@ -1212,7 +1290,7 @@ def recovery_allocation_checks(e, directory, check, shard, simulator, prefix):
         e.assertion(f"{prefix} allocation refuses occupied output directories",
                     collision_rejected, True)
     spec = spec_for(check, shard, simulator)
-    historical = directory / f"{check}-{'c' * 32}" / "receipt.json"
+    historical = directory / f"{check}-{simulator}-{shard}-{'c' * 32}" / "receipt.json"
     historical.parent.mkdir(exist_ok=False)
     historical.write_text('{"synthetic_only": true, "acceptance_evidence": false}\n')
     try:
@@ -1318,3 +1396,134 @@ def dependency_method_checks(e):
         e.assertion("partition startup retains exact immediate predecessor binding",
                     links, [{"id": first["id"], "receipt": e.relative(paths[first["id"]]),
                              "sha256": file_hash(paths[first["id"]])}])
+
+
+def orchestration_method_checks(e):
+    """Run real tiny Python children on synthetic DAGs; never scaler acceptance."""
+    import threading
+    from unittest.mock import patch
+
+    original_run = e.run
+    synthetic = []
+    for ident, predecessors, simulator in (
+        ("anchor", [], "icarus"), ("parallel-a", ["anchor"], "icarus"),
+        ("parallel-b", ["anchor"], "verilator"), ("hardware-10", ["parallel-a", "parallel-b"], None),
+        ("hardware-0", ["hardware-10"], None),
+    ):
+        synthetic.append({
+            "id": ident, "depends_on": predecessors, "simulator": simulator,
+            "check": "behavior-shard", "outputs": ["synthetic-only"],
+            "argv": ["python3", "-c",
+                     f"import time; time.sleep(0.05); print('SYNTHETIC_DAG {ident}')"],
+        })
+    by_id = {spec["id"]: spec for spec in synthetic}
+    complete, active, peak = {}, set(), 0
+    lock = threading.Lock()
+
+    def run(argv, **kwargs):
+        nonlocal peak
+        spec = next(spec for spec in synthetic if spec["argv"] == argv)
+        ident = spec["id"]
+        with lock:
+            require(set(spec["depends_on"]) <= set(complete), "Fixture launched before predecessor")
+            require(spec["simulator"] is not None or not active, "Hardware fixture overlapped")
+            require(not any(by_id[item]["simulator"] is None for item in active),
+                    "Child overlapped physical fixture")
+            active.add(ident)
+            peak = max(peak, len(active))
+        try:
+            result = original_run(argv, **kwargs)
+            with lock:
+                complete[ident] = (e.path / "synthetic-only.json", {"synthetic_only": True})
+            return result
+        finally:
+            with lock:
+                active.remove(ident)
+
+    def validate(evidence, found, identities, *, validated=None):
+        validated = {} if validated is None else validated
+        for ident in identities:
+            require(ident in complete, "Synthetic completion absent")
+            validated[ident] = {"synthetic_only": True}
+        return validated
+
+    module = __name__
+    with patch(f"{module}.check_definitions", return_value=synthetic), \
+            patch(f"{module}.successes", side_effect=lambda evidence: dict(complete)), \
+            patch(f"{module}.validate_dependencies", side_effect=validate), \
+            patch.object(e, "run", side_effect=run):
+        result = execute_prerequisites(e, "behavior", {}, workers=2)
+        e.assertion("synthetic automatic prerequisite closure", sorted(result), sorted(by_id))
+        e.assertion("synthetic bounded independent children overlap", peak, 2)
+        command_count = len(e.record["commands"])
+        execute_prerequisites(e, "behavior", result, workers=2)
+        e.assertion("current synthetic completions execute no duplicate commands",
+                    len(e.record["commands"]), command_count)
+        complete.clear()
+        unadmitted = [{**spec, "outputs": []} if spec["id"] == "parallel-b" else spec
+                      for spec in synthetic]
+        with patch(f"{module}.check_definitions", return_value=unadmitted):
+            try:
+                execute_prerequisites(e, "behavior", {}, workers=2)
+            except AssertionError as error:
+                require("append-only admission" in str(error), "Unexpected admission diagnostic")
+            else:
+                raise AssertionError("Synthetic unmapped command executed")
+        e.assertion("unadmitted synthetic DAG rejected before subprocess execution",
+                    len(e.record["commands"]), command_count)
+        failing = [{**spec, "argv": ["python3", "-c",
+                    "print('SYNTHETIC_EXPECTED_FAILURE'); raise SystemExit(7)"]}
+                   if spec["id"] == "anchor" else spec for spec in synthetic]
+        with patch(f"{module}.check_definitions", return_value=failing), \
+                patch.object(e, "run", side_effect=original_run):
+            try:
+                execute_prerequisites(e, "behavior", {}, workers=2)
+            except AssertionError as error:
+                require("Command exit 7" in str(error), "Failure propagation diagnostic differs")
+            else:
+                raise AssertionError("Failed prerequisite did not stop dependents")
+        e.assertion("failed synthetic predecessor stops every dependent",
+                    len(e.record["commands"]), command_count + 1)
+        e.assertion("failed synthetic child retains exact unexpected exit",
+                    e.record["commands"][-1]["exit_status"], 7)
+        # This is an intentionally failing method fixture, not a passed child.
+        e.record["commands"][-1]["negative_method_fixture"] = True
+    e.record["synthetic_orchestration_only"] = True
+    e.save()
+
+
+def discovery_method_checks(e):
+    """Incremental headers still discover changed receipts and reject duplicates."""
+    from unittest.mock import patch
+
+    directory = e.path / "synthetic-incremental-discovery"
+    directory.mkdir()
+    spec = check_definitions()[0]
+    record = {
+        "synthetic_only": True, "acceptance_evidence": False,
+        "scheduling_contract": contract(), "source_sha256": e.record["source_sha256"],
+        "status": "running", "partition": spec,
+    }
+    first = directory / "first.json"
+    first.write_text(json.dumps(record))
+    paths = [first]
+    module = __name__
+    with patch(f"{module}.partition_receipts", side_effect=lambda directory: list(paths)):
+        e.assertion("running synthetic receipt excluded", len(successes(e)), 0)
+        record["status"] = "passed"
+        first.write_text(json.dumps(record))
+        found = successes(e)
+        e.assertion("changed synthetic receipt invalidates header cache", list(found), [spec["id"]])
+        with patch(f"{module}.json.loads", side_effect=AssertionError("Unchanged header reparsed")):
+            e.assertion("unchanged receipt uses incremental header", list(successes(e)), [spec["id"]])
+        second = directory / "second.json"
+        second.write_text(json.dumps(record))
+        paths.append(second)
+        try:
+            successes(e)
+        except AssertionError as error:
+            require("Duplicate successful partition" in str(error), "Duplicate cache diagnostic differs")
+        else:
+            raise AssertionError("Incremental discovery hid a duplicate")
+    e.record.pop("excluded_partition_receipts", None)
+    e.save()

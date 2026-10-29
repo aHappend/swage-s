@@ -25,7 +25,11 @@ ADMITTED_PARTITION_OUTPUTS = {
 
 
 def partition_output_prefix(check, shard, simulator=None):
-    return ADMITTED_PARTITION_OUTPUTS.get((check, shard, simulator))
+    if (check, shard, simulator) in ADMITTED_PARTITION_OUTPUTS:
+        return ADMITTED_PARTITION_OUTPUTS[(check, shard, simulator)]
+    if check and shard is not None:
+        return f"{check}-{simulator}-{shard}" if simulator else f"{check}-{shard}"
+    return None
 
 
 def partition_receipts(directory):

@@ -792,6 +792,13 @@ def aggregate(e, gate):
     definitions = check_definitions()
     specs = [spec for spec in definitions if spec["check"] in wanted]
     found = successes(e)
+    missing_specs = [spec for spec in specs if spec["id"] not in found]
+    if missing_specs:
+        import subprocess
+        from evidence import execution_environment
+        for spec in missing_specs:
+            subprocess.run(spec["argv"], cwd=ROOT, env=execution_environment(), check=True)
+        found = successes(e)
     missing = [spec["id"] for spec in specs if spec["id"] not in found]
     e.record["missing_partitions"] = missing
     e.record["scheduling_contract"] = contract()

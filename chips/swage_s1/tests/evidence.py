@@ -41,6 +41,10 @@ ADMITTED_PARTITION_OUTPUTS.update({
     for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
     for index in range(count)
 })
+ADMITTED_PARTITION_OUTPUTS.update({
+    ("quartus-sta-shard", index, None): f"recovery-v2-quartus-sta-shard-{index}"
+    for index in (*range(8), *range(15, 20))
+})
 
 
 def partition_output_prefix(check, shard, simulator=None):

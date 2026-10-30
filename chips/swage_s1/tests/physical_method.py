@@ -535,12 +535,21 @@ def write_inventory(e):
                 if spec["check"] in ("quartus-sta-shard", "board-hil-shard")]
     unbound = [spec for spec in physical if partition_output_prefix(
         spec["check"], spec["shard"], spec["simulator"]) is None]
+    restoration = [spec for spec in unbound
+                   if spec["check"] == "quartus-sta-shard" and spec["shard"] in range(8, 15)]
+    remaining = [spec for spec in unbound if spec not in restoration]
     inventory = {
         "advisory_only": True, "executed": False, "selectors_invented": False,
         "implemented_physical_definitions": physical,
-        "remaining_append_only_admission": unbound,
+        "unwired_physical_definitions": unbound,
+        "approved_pending_executable_restoration": restoration,
+        "remaining_append_only_admission": remaining,
         "counts": {"timing": sum(spec["check"] == "quartus-sta-shard" for spec in unbound),
                    "hardware": sum(spec["check"] == "board-hil-shard" for spec in unbound)},
+        "remaining_admission_counts": {
+            "timing": sum(spec["check"] == "quartus-sta-shard" for spec in remaining),
+            "hardware": sum(spec["check"] == "board-hil-shard" for spec in remaining),
+        },
         "execution_order": [step for step in execution_order(definitions)
                             if step["id"] in {spec["id"] for spec in physical}
                             or step["id"] == "behavior-shard-icarus-154"],
@@ -548,6 +557,8 @@ def write_inventory(e):
             "Shared runtime determines exact predecessor restoration availability first.",
             "If unavailable: fresh behavior 154 -> timing 178 -> timing 166; stop on failure.",
             "Hardware is serialized: 10 -> 0 -> 1 -> ... (excluding repeated 10).",
+            "Approved timing shards 8-14 require supported executable restoration, "
+            "not duplicate admission; allocate only after restoration is established.",
             "No unadmitted command may execute; no new output selectors are assigned here.",
             "Variant builds use Quartus tools directly, not duplicate vulcan native gates.",
             "All seven original gates remain mandatory.",
@@ -573,7 +584,11 @@ def write_inventory(e):
     }
     path = e.path / "remaining-physical-admission-inventory.json"
     path.write_text(json.dumps(inventory, indent=2) + "\n")
-    e.assertion("remaining physical admission counts", inventory["counts"],
-                {"timing": 190, "hardware": 48})
+    e.assertion("unwired physical counts", inventory["counts"],
+                {"timing": 177, "hardware": 48})
+    e.assertion("approved timing restoration inventory",
+                [spec["shard"] for spec in restoration], list(range(8, 15)))
+    e.assertion("remaining physical admission counts", inventory["remaining_admission_counts"],
+                {"timing": 170, "hardware": 48})
     e.record["remaining_physical_inventory"] = {"path": e.relative(path), "sha256": file_hash(path)}
     e.save()

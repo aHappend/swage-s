@@ -16,6 +16,10 @@ Invalid-parameter cases validate the exact INVALID_TB compiler command or the
 source/configuration/tool-bound retained build, then independently validate the
 current diagnostic execution and its executable. Build reuse never substitutes
 for a fresh diagnostic or a current-source numerical comparison.
+Timing shards 0-7 and 15-19 have exclusive allocation wiring matching the
+current executable contract. Approved shards 8-14 remain unwired until the
+shared runtime restores their missing executable records; approval alone
+does not authorize an output allocation or physical collection.
 """
 
 import datetime
@@ -1041,9 +1045,12 @@ def method_checks(e):
             ident = f"{check}-{simulator}-{index}"
             if ident != "behavior-shard-icarus-154":
                 expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
+    for index in (*range(8), *range(15, 20)):
+        ident = f"quartus-sta-shard-{index}"
+        expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
     e.assertion("export preserves exactly the supplied admitted selectors",
                 declared_outputs, expected_outputs)
-    e.assertion("admitted selector denominator", len(declared_outputs), 364)
+    e.assertion("admitted selector denominator", len(declared_outputs), 377)
     e.assertion("every behavior prerequisite has an admitted output",
                 all(spec["outputs"] for spec in definitions
                     if spec["id"] in deps["behavior"]), True)
@@ -1279,6 +1286,8 @@ def output_method_checks(e):
         *((check, index, "verilator", f"recovery-v2-{check}-verilator-{index}")
           for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
           for index in range(count)),
+        *(("quartus-sta-shard", index, None, f"recovery-v2-quartus-sta-shard-{index}")
+          for index in (*range(8), *range(15, 20))),
     )
     discovered = []
     for check, shard, simulator, prefix in choices:
@@ -1303,16 +1312,24 @@ def output_method_checks(e):
     e.assertion("undeclared partitions retain no allocation fallback",
                 all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
                     is None for spec in undeclared), True)
-    e.assertion("undeclared partition denominator", len(undeclared), 238)
+    e.assertion("undeclared partition denominator", len(undeclared), 225)
     e.assertion("only unadmitted physical partitions lack output selectors",
                 sorted(spec["id"] for spec in undeclared),
                 sorted({f"quartus-sta-shard-{index}" for index in range(192)
-                        if index not in (178, 166)}
+                        if index not in (178, 166, *range(8), *range(15, 20))}
                        | {f"board-hil-shard-{index}" for index in range(48)}))
     representatives = {}
     for spec in undeclared:
         representatives.setdefault((spec["check"], spec["simulator"]), spec)
-    for spec in representatives.values():
+    pending_restoration = [
+        spec for spec in undeclared
+        if spec["check"] == "quartus-sta-shard" and spec["shard"] in range(8, 15)
+    ]
+    e.assertion("approved timing records awaiting executable restoration",
+                [spec["shard"] for spec in pending_restoration], list(range(8, 15)))
+    rejected_specs = {spec["id"]: spec
+                      for spec in [*representatives.values(), *pending_restoration]}
+    for spec in rejected_specs.values():
         diagnostic = io.StringIO()
         with patch.object(verify.sys, "argv", spec["argv"][1:]), \
                 patch.object(verify, "Evidence") as factory, \

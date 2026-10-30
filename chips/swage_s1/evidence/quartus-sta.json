@@ -1,0 +1,346 @@
+{
+  "gate": "quartus-sta",
+  "timestamp_utc": "2026-10-30T10:30:50.400280+00:00",
+  "project_dir": "/data/sufeng/swage-s1-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work",
+  "revision": "top",
+  "clock_filter": "clk_main",
+  "min_setup_slack_ns": 0.0,
+  "min_hold_slack_ns": 0.0,
+  "status": "passed",
+  "map_summary": {
+    "exists": true,
+    "path": "/data/sufeng/swage-s1-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work/top.map.rpt",
+    "error_count": 0,
+    "errors": [],
+    "lpm_divide_error_count": 0,
+    "lpm_divide_errors": [],
+    "warning_10268_count": 0,
+    "warning_10268": [],
+    "uninferred_ram_count": 0,
+    "uninferred_rams": []
+  },
+  "sta_summary": {
+    "exit_code": 0,
+    "netlist_mode": "post_map",
+    "clocks": [
+      {
+        "name": "clk_main",
+        "period_ns": 10.0
+      }
+    ],
+    "wns_setup_ns": 6.256,
+    "wns_hold_ns": -0.187,
+    "unconstrained_setup_paths": 0,
+    "unconstrained_functional_endpoints": 0,
+    "unapproved_timing_exceptions": 0,
+    "failing_setup_count": 0,
+    "failing_hold_count": 20,
+    "setup_paths": [
+      {
+        "slack_ns": 6.256,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a2~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[2]"
+      },
+      {
+        "slack_ns": 6.259,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a2~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[2]"
+      },
+      {
+        "slack_ns": 6.259,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a2~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[2]"
+      },
+      {
+        "slack_ns": 6.267,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a3~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[3]"
+      },
+      {
+        "slack_ns": 6.27,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a3~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[3]"
+      },
+      {
+        "slack_ns": 6.27,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a3~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[3]"
+      },
+      {
+        "slack_ns": 6.281,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a6~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[6]"
+      },
+      {
+        "slack_ns": 6.284,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a6~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[6]"
+      },
+      {
+        "slack_ns": 6.284,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a6~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[6]"
+      },
+      {
+        "slack_ns": 6.302,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a7~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[7]"
+      },
+      {
+        "slack_ns": 6.305,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a7~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[7]"
+      },
+      {
+        "slack_ns": 6.305,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a7~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[7]"
+      },
+      {
+        "slack_ns": 6.31,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a4~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[4]"
+      },
+      {
+        "slack_ns": 6.313,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a4~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[4]"
+      },
+      {
+        "slack_ns": 6.313,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a4~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[4]"
+      },
+      {
+        "slack_ns": 6.319,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a1~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[1]"
+      },
+      {
+        "slack_ns": 6.322,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a1~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[1]"
+      },
+      {
+        "slack_ns": 6.322,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a1~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[1]"
+      },
+      {
+        "slack_ns": 6.341,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank1_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a0~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[0]"
+      },
+      {
+        "slack_ns": 6.344,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_line_buffer:u_line_buffer",
+        "to_node": "altsyncram:bank0_rtl_1|altsyncram_lfr1:auto_generated|ram_block1a0~reg0|swage_s1_interp:u_interp|channels[0].h0_s3[0]"
+      }
+    ],
+    "hold_paths": [
+      {
+        "slack_ns": -0.187,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy0_s2[8]|swage_s1_interp:u_interp|wy0_s3[8]"
+      },
+      {
+        "slack_ns": -0.176,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy1_s2[7]|swage_s1_interp:u_interp|wy0_s3[7]"
+      },
+      {
+        "slack_ns": -0.176,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy0_s2[7]|swage_s1_interp:u_interp|wy0_s3[7]"
+      },
+      {
+        "slack_ns": -0.158,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_phase:u_phase",
+        "to_node": "phase_x[7]|swage_s1_interp:u_interp|wx1_s1[7]~_Duplicate_1"
+      },
+      {
+        "slack_ns": -0.158,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_phase:u_phase",
+        "to_node": "phase_x[7]|swage_s1_interp:u_interp|wx1_s1[7]~_Duplicate_1"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "channels[0].result_s5[5]|swage_s1_interp:u_interp|output_data[5]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "channels[0].result_s5[6]|swage_s1_interp:u_interp|output_data[6]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "channels[0].result_s5[7]|swage_s1_interp:u_interp|output_data[7]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_scheduler:u_scheduler",
+        "to_node": "read_bank0|swage_s1_line_buffer:u_line_buffer|selected_bank0"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_scheduler:u_scheduler",
+        "to_node": "read_bank1|swage_s1_line_buffer:u_line_buffer|selected_bank1"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_phase:u_phase",
+        "to_node": "phase_y[7]|swage_s1_interp:u_interp|wy0_s1[7]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_phase:u_phase",
+        "to_node": "phase_y[7]|swage_s1_interp:u_interp|wy1_s1[7]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy0_s1[8]|swage_s1_interp:u_interp|wy0_s2[8]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy0_s1[7]|swage_s1_interp:u_interp|wy0_s2[7]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "wy1_s1[7]|swage_s1_interp:u_interp|wy1_s2[7]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "channels[0].result_s5[4]|swage_s1_interp:u_interp|output_data[4]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "eol_pipe[0]|swage_s1_interp:u_interp|eol_pipe[1]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "sof_pipe[0]|swage_s1_interp:u_interp|sof_pipe[1]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "eol_pipe[1]|swage_s1_interp:u_interp|eol_pipe[2]"
+      },
+      {
+        "slack_ns": -0.15,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_interp:u_interp",
+        "to_node": "sof_pipe[1]|swage_s1_interp:u_interp|sof_pipe[2]"
+      }
+    ],
+    "stderr_tail": []
+  },
+  "detail": "Timing closed: Setup WNS = 6.256 ns",
+  "fit_mode": "plan_plus_post_map_sta",
+  "top_module": "swage_s1_top",
+  "clock_port": "clk",
+  "clock_period_ns": 10.0,
+  "target_frequency_mhz": 100.0,
+  "fmax_mhz": 267.09,
+  "critical_path_delay_ns": 3.744,
+  "fitter_resource_summary": {
+    "alms_used": 219,
+    "alms_total": 427200,
+    "alms_pct": "< 1 %",
+    "total_registers": 160,
+    "block_memory_bits": 256,
+    "m20k_ram_blocks": 0,
+    "m20k_ram_blocks_total": 2713,
+    "dsp_blocks": 6,
+    "virtual_pins": 26
+  },
+  "parameters": {},
+  "source_sha256": "5cbb7be4fcb867c1eff36a530de576acd3a50305a6e69523a31db8520624d934",
+  "applicable": true
+}

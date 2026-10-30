@@ -12,6 +12,10 @@ Icarus retains each original scenario in a separate process, including its
 original ID, reset prelude and three-frame transaction. Functional watchdogs
 and integer/float comparisons are unchanged. Duration/cycle tier violations
 fail after retaining the observation, not by shortening a child timeout.
+Invalid-parameter cases validate the exact INVALID_TB compiler command or the
+source/configuration/tool-bound retained build, then independently validate the
+current diagnostic execution and its executable. Build reuse never substitutes
+for a fresh diagnostic or a current-source numerical comparison.
 """
 
 import datetime
@@ -623,21 +627,75 @@ def validate_parameters(path, record, spec):
             and result["invalid_diagnostics"] == sum(not c["legal"] for c in expected),
             "Parameter comparison counts differ")
     for case in result["cases"]:
+        indices = case["command_indices"]
+        require(indices and len(set(indices)) == len(indices)
+                and all(type(index) is int and 0 <= index < len(record["commands"])
+                        for index in indices),
+                "Invalid parameter command indices")
         commands = [record["commands"][index] for index in case["command_indices"]]
-        require(len(commands) == (1 if case["legal"] else 2), "Missing parameter tool execution")
+        if not case["legal"]:
+            validate_invalid_parameter(path, record, spec["simulator"], case)
+            continue
+        require(len(commands) == 1, "Missing parameter tool execution")
         compile_command = commands[0]["requested_argv"]
-        prefix = ("-Pswage_s1_top." if case["legal"] else "-Ptb.") if (
-            spec["simulator"] == "icarus") else "-G"
+        prefix = "-Pswage_s1_top." if spec["simulator"] == "icarus" else "-G"
         require(all(f"{prefix}{key}={value}" in compile_command
                     for key, value in case["parameters"].items()),
                 "Parameter configuration was not supplied to actual compiler")
         require(commands[0]["exit_status"] == 0, "Parameter elaboration failed")
-        if not case["legal"]:
-            child = commands[-1]
-            text = read_raw(path, child["stdout"]) + read_raw(path, child["stderr"])
-            require(child["exit_status"] in (1, -6, 134) and
-                    "SWAGE_S1 PARAMETER ERROR" in text, "Missing explicit invalid diagnostic")
     return result
+
+
+def validate_invalid_parameter(path, record, simulator, case):
+    from simulation import INVALID_TB
+
+    directory = path.parent / f"parameters-{simulator}" / f"invalid-{case['id']}"
+    tb = directory / "tb.sv"
+    commands = [record["commands"][index] for index in case["command_indices"]]
+    scoped = {**record, "commands": commands[:-1]}
+    validate_compile(path, scoped, simulator, case["parameters"], tb, INVALID_TB)
+    if commands[:-1]:
+        require(len(commands) == 2, "Duplicated invalid-parameter compilation")
+        binary = directory / ("simulation.vvp" if simulator == "icarus" else "obj/simulation")
+        if simulator == "icarus":
+            prefix = ["iverilog", "-g2012", "-Wall", "-s", "tb"]
+            suffix = ["-o", str(binary)]
+            parameter_prefix = "-Ptb."
+        else:
+            prefix = ["verilator", "--binary", "--timing", "--assert", "-Wno-fatal",
+                      "--top-module", "tb", "--Mdir", str(binary.parent), "-o", "simulation"]
+            suffix = []
+            parameter_prefix = "-G"
+        suffix += [str(source) for source in sorted((ROOT / "rtl").glob("*.sv"))] + [str(tb)]
+        compiler = commands[0]
+        argv = compiler["requested_argv"]
+        require(argv[:len(prefix)] == prefix and argv[-len(suffix):] == suffix
+                and sorted(argv[len(prefix):-len(suffix)]) == sorted(
+                    f"{parameter_prefix}{key}={value}" for key, value in case["parameters"].items())
+                and compiler["cwd"] == "."
+                and not compiler["timed_out"] and not compiler.get("launch_error")
+                and compiler.get("end")
+                and compiler.get("duration_s", -1) >= 0,
+                "Invalid-parameter compiler command differs")
+    else:
+        require(simulator == "verilator" and len(commands) == 1,
+                "Invalid-parameter build reuse requires exactly one diagnostic execution")
+        binary = directory / "simulation"
+    require(binary.is_file() and (simulator == "icarus" or binary.stat().st_mode & 0o111)
+            and record["artifact_sha256"].get(
+        binary.relative_to(ROOT).as_posix()) == file_hash(binary),
+        "Invalid-parameter executable artifact changed")
+    child = commands[-1]
+    expected_run = ["vvp", str(binary)] if simulator == "icarus" else [str(binary)]
+    require(child["requested_argv"] == expected_run
+            and child["cwd"] == directory.relative_to(ROOT).as_posix()
+            and not child["timed_out"] and not child.get("launch_error") and child.get("end")
+            and child.get("duration_s", -1) >= 0
+            and child["exit_status"] in (1, -6, 134)
+            and child["exit_status"] in child["expected_exit_status"],
+            "Missing completed invalid-parameter diagnostic execution of the compiled binary")
+    text = read_raw(path, child["stdout"]) + read_raw(path, child["stderr"])
+    require("SWAGE_S1 PARAMETER ERROR" in text, "Missing explicit invalid diagnostic")
 
 
 def validate_pipeline(path, record, spec):
@@ -935,6 +993,8 @@ def method_checks(e):
     orchestration_method_checks(e)
     discovery_method_checks(e)
     atomic_receipt_method_checks(e)
+    from recovery_checks import parameter_provenance_method_checks
+    parameter_provenance_method_checks(e)
     deps = aggregate_dependencies()
     e.assertion("exact supplemental inventory", len(definitions), 602)
     plan = scheduling_plan()

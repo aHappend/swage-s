@@ -19,6 +19,159 @@ from simulation import (
 )
 
 
+def parameter_provenance_method_checks(e):
+    """Synthetic provenance fixtures: no fixture is an executed RTL result."""
+    import shutil
+    from types import SimpleNamespace
+    from partitions import artifact_hashes, validate_parameters
+    from simulation import INVALID_TB, parameter_cases
+    from simulator_builds import build_key
+
+    require(e.record["acceptance_evidence"] is False, "Parameter fixtures require preparation")
+    case = next(case for case in parameter_cases() if not case["legal"])
+    counter = 0
+
+    def fixture(simulator, reused, defect=None):
+        nonlocal counter
+        root = e.path / "synthetic-parameter-provenance" / str(counter)
+        counter += 1
+        directory = root / f"parameters-{simulator}" / f"invalid-{case['id']}"
+        directory.mkdir(parents=True)
+        tb = directory / "tb.sv"
+        tb.write_text(INVALID_TB)
+        rtl = sorted((ROOT / "rtl").glob("*.sv"))
+        parameters = case["parameters"]
+        tools = {name: {"synthetic_only": name} for name in ("verilator", "make", "g++")}
+        record = {"synthetic_only": True, "status": "passed", "sources_unchanged": True,
+                  "source_sha256": {p.relative_to(ROOT).as_posix(): file_hash(p) for p in rtl},
+                  "tools": tools, "commands": []}
+
+        def command(argv, cwd, stem, output="", status=0):
+            stdout, stderr = root / f"{stem}.stdout", root / f"{stem}.stderr"
+            stdout.write_text(output)
+            stderr.write_text("")
+            return {"requested_argv": argv, "cwd": cwd.relative_to(ROOT).as_posix(),
+                    "exit_status": status, "expected_exit_status": [1, -6, 134] if status else [0],
+                    "timed_out": False, "end": "synthetic-only", "duration_s": 0,
+                    "stdout": e.relative(stdout), "stderr": e.relative(stderr)}
+
+        origin_dir = root / "origin" if reused else root
+        origin_tb = origin_dir / "tb.sv" if reused else tb
+        origin_tb.parent.mkdir(parents=True, exist_ok=True)
+        if reused:
+            origin_tb.write_text(INVALID_TB)
+        binary = (origin_dir / "obj/simulation" if simulator == "verilator"
+                  else directory / "simulation.vvp")
+        if not reused and simulator == "verilator":
+            binary = directory / "obj/simulation"
+        binary.parent.mkdir(parents=True, exist_ok=True)
+        binary.write_bytes(b"synthetic executable; never run\n")
+        binary.chmod(0o700)
+        if simulator == "icarus":
+            argv = ["iverilog", "-g2012", "-Wall", "-s", "tb",
+                    *[f"-Ptb.{k}={v}" for k, v in parameters.items()], "-o", str(binary)]
+        else:
+            argv = ["verilator", "--binary", "--timing", "--assert", "-Wno-fatal",
+                    "--top-module", "tb", "--Mdir", str(binary.parent), "-o", "simulation",
+                    *[f"-G{k}={v}" for k, v in parameters.items()]]
+        argv += [str(p) for p in rtl] + [str(origin_tb)]
+        compiler = command(argv, ROOT, "compiler")
+        if reused:
+            origin = {**record, "commands": [compiler]}
+            if defect == "origin-command":
+                origin["commands"].append({**compiler, "exit_status": 1})
+            for source in rtl:
+                target = origin_dir / "sources" / source.relative_to(ROOT)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, target)
+            origin_path = origin_dir / "receipt.json"
+            key = build_key(SimpleNamespace(record=record), rtl, origin_tb, parameters)
+            build = {
+                "key": key, "receipt": e.relative(origin_path), "command_index": 0,
+                "testbench": e.relative(origin_tb), "binary": e.relative(binary),
+                "files": {e.relative(p): file_hash(p) for p in (
+                    origin_tb, binary, ROOT / compiler["stdout"], ROOT / compiler["stderr"])},
+            }
+            # Compiler logs must be inside the origin's exclusive output.
+            for stream in ("stdout", "stderr"):
+                old = ROOT / compiler[stream]
+                target = origin_dir / old.name
+                shutil.copyfile(old, target)
+                del build["files"][compiler[stream]]
+                compiler[stream] = e.relative(target)
+                build["files"][compiler[stream]] = file_hash(target)
+            origin_path.write_text(json.dumps(origin))
+            target = directory / "simulation"
+            shutil.copy2(binary, target)
+            record["reused_compilations"] = [{
+                "target": e.relative(target), "sha256": file_hash(target), "origin": build,
+                "origin_receipt_sha256": file_hash(origin_path),
+            }]
+            binary = target
+        else:
+            record["commands"].append(compiler)
+        run = command(["vvp", str(binary)] if simulator == "icarus" else [str(binary)],
+                      directory, "diagnostic", "SWAGE_S1 PARAMETER ERROR\n", 1)
+        record["commands"].append(run)
+        result_case = {**case, "command_indices": list(range(len(record["commands"])))}
+        record["partition_result"] = {
+            "simulator": simulator, "cases": [result_case],
+            "legal_elaborations": 0, "invalid_diagnostics": 1,
+        }
+        record["artifact_sha256"] = artifact_hashes(root)
+        if defect == "parameters":
+            if reused:
+                build["key"]["parameters"] = {**parameters, "SRC_WIDTH": 4097}
+            else:
+                compiler["requested_argv"][compiler["requested_argv"].index(
+                    ("-Ptb." if simulator == "icarus" else "-G") + "SRC_WIDTH=0")] += "1"
+        elif defect == "transactor":
+            tb.write_text(INVALID_TB + "\n// changed synthetic transactor\n")
+        elif defect == "origin":
+            record["reused_compilations"][0]["origin_receipt_sha256"] = "0"*64
+        elif defect == "origin-binary":
+            build["files"][build["binary"]] = "0"*64
+        elif defect == "origin-command":
+            build["command_index"] = 1
+        elif defect == "rtl":
+            record["source_sha256"][next(iter(record["source_sha256"]))] = "0"*64
+        elif defect == "tools":
+            record["tools"] = {**tools, "verilator": {"synthetic_only": "changed"}}
+        elif defect == "binary":
+            binary.write_bytes(b"changed synthetic binary\n")
+        elif defect == "diagnostic":
+            (ROOT / run["stdout"]).write_text("Illegal configuration was accepted\n")
+        elif defect == "execution":
+            run["requested_argv"][-1] += "-wrong"
+        elif defect == "success-exit":
+            run["exit_status"] = 0
+        elif defect == "timeout":
+            run["timed_out"] = True
+        elif defect == "missing-run":
+            result_case["command_indices"] = result_case["command_indices"][:-1]
+        elif defect == "compiler-failure":
+            compiler["exit_status"] = 1
+        spec = {"simulator": simulator, "case_ids": [case["id"]]}
+        return root / "receipt.json", record, spec
+
+    for simulator, reused in (("icarus", False), ("verilator", False), ("verilator", True)):
+        path, record, spec = fixture(simulator, reused)
+        e.assertion(f"{simulator} reused={reused} parameter provenance accepted",
+                    validate_parameters(path, record, spec), record["partition_result"])
+        defects = ["parameters", "transactor", "binary", "diagnostic", "execution",
+                   "success-exit", "timeout", "missing-run"]
+        defects += (["origin", "origin-binary", "origin-command", "rtl", "tools"]
+                    if reused else ["compiler-failure"])
+        for defect in defects:
+            path, record, spec = fixture(simulator, reused, defect)
+            try:
+                validate_parameters(path, record, spec)
+            except AssertionError:
+                e.assertion(f"{simulator} reused={reused} rejects {defect}", True, True)
+            else:
+                raise AssertionError(f"Unsafe parameter provenance accepted: {simulator} {defect}")
+
+
 def row_method_checks(e):
     c = Config(1, 1, 1, 1)
     records = [{"pattern": "zero", "stall": 0, "seed": 17, "abort": 0}]

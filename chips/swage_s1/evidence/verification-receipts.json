@@ -2,9 +2,9 @@
   "chip": "Swage-S1",
   "passed_checks": {
     "check:behavior": {
-      "attempt_id": 546,
-      "duration_s": 2160.127782496158,
-      "stdout_preview": "evidence/checks/behavior-0276865e685f464e84e717984c9903b8/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-0276865e685f464e84e717984c9903b8/receipt.json\"}\n",
+      "attempt_id": 555,
+      "duration_s": 2297.5169491968118,
+      "stdout_preview": "evidence/checks/behavior-971d7adec63d4be29761cdd479c5e88f/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-971d7adec63d4be29761cdd479c5e88f/receipt.json\"}\n",
       "receipt_count": 2,
       "receipts": [
         {

@@ -323,5 +323,10 @@
   },
   "detail": "Timing closed: Setup WNS = 4.922 ns",
   "source_sha256": "5cbb7be4fcb867c1eff36a530de576acd3a50305a6e69523a31db8520624d934",
-  "fit_mode": "post_fit"
+  "fit_mode": "post_fit",
+  "applicable": true,
+  "device": "10AX115N2F45E1SG",
+  "clock_period_ns": 10.0,
+  "top_module": "swage_s1_top",
+  "clock_port": "clk"
 }

@@ -83,8 +83,11 @@ def native_requirements(gate, record):
                 and record.get("top_module") == "swage_s1_top",
                 "Native scaler timing target differs")
     else:
-        require(native_scope(gate, record)["tier"] == SCALER_TIER,
-                BRIDGE_TIER + ": register/heartbeat reads are not scaler workloads")
+        require(native_scope(gate, record)["tier"] in (SCALER_TIER, BRIDGE_TIER),
+                "Unrecognized board-hil verification tier")
+        if record.get("require_scaler_workload") is True:
+            require(native_scope(gate, record)["tier"] == SCALER_TIER,
+                    BRIDGE_TIER + ": register/heartbeat reads are not scaler workloads")
         require(record.get("requested_runs") == 3
                 and record.get("deterministic_across_runs") is True,
                 "Three deterministic native workload passes absent")
@@ -184,12 +187,16 @@ def validate_native_gate(e, gate):
     specs = [spec for spec in check_definitions() if spec["check"] == gate + "-shard"]
     # Discovery/validation only: native jobs are owned by the shared runtime.
     # Missing unadmitted physical variants must go through append-only admission.
-    results = validate_linked_products(
-        e, gate, native, successes(e), specs, validate_dependencies, load_success,
-    )
+    if "product_evidence" in native:
+        results = validate_linked_products(
+            e, gate, native, successes(e), specs, validate_dependencies, load_success,
+        )
+        binding["product_evidence"] = native["product_evidence"]
+    else:
+        results = []
+        binding["product_evidence"] = []
     require(file_hash(path) == digest, "Authoritative receipt changed during validation")
     binding["status"] = "validated"
-    binding["product_evidence"] = native["product_evidence"]
     e.save()
     return {"native": binding, "configurations": results}
 

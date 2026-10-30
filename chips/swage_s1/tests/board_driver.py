@@ -2,7 +2,9 @@
 
 Board setup is project-relative board/verification.json (or SWAGE_BOARD_CONFIG).
 Required keys: device, bdf, vendor_id, device_id, cable, jtag_index,
-board-system, board-settings, board-sdc, dependencies. The three board inputs
+board-system, board-settings, board-sdc, scaler-clock, dependencies. scaler-clock
+names the actual application/scaler clock in TimeQuest, not the PCIe reference.
+The three board inputs
 obey fpga/README.md. Dependencies enumerate the complete board/IP file inventory.
 No defaults manufacture a board identity, programming result or pixel response.
 """

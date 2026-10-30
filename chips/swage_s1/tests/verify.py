@@ -31,7 +31,7 @@ def main():
         "transactors", "prerequisites", "build-interfaces", "quartus-project",
         "board-inputs", "board-discovery", "reset-compute", "quartus-postfit",
         "quartus-interface", "quartus-output",
-        "partition-method", "aggregate-repair", "simulator-reuse",
+        "partition-method", "aggregate-repair", "simulator-reuse", "physical-method",
     ))
     parser.add_argument("--repair-of", help="Project-relative original preparation receipt")
     parser.add_argument("--simulator", choices=("icarus", "verilator"))
@@ -85,6 +85,9 @@ def main():
         elif args.probe == "simulator-reuse":
             from recovery_checks import simulator_reuse
             simulator_reuse(evidence)
+        elif args.probe == "physical-method":
+            from physical_method import method_checks
+            method_checks(evidence)
         elif args.probe == "transactors":
             from simulation import INVALID_TB, compile_sim, execute_config, pipeline_checks
             from reference import Config

@@ -727,6 +727,10 @@ def validate_hardware(e, path, record, spec):
 
     config_name = os.environ.get("SWAGE_BOARD_CONFIG", "board/verification.json")
     board = json.loads(relative_input(config_name).read_text())
+    from physical_evidence import DEVICE
+    require(board.get("device") == DEVICE, "Hardware board target differs")
+    require(isinstance(board.get("dependencies"), list) and board["dependencies"],
+            "Physical board/IP dependency inventory is incomplete")
     names = [config_name, *(board[key] for key in (
         "board-system", "board-settings", "board-sdc")), *board["dependencies"]]
     require(record["board_input_sha256"] == {
@@ -736,7 +740,7 @@ def validate_hardware(e, path, record, spec):
     directory = path.parent / c.label
     result = record["partition_result"]
     require(result["configuration"] == c.parameters(), "Hardware configuration differs")
-    require(validate_sta(e, c, directory, board) == result["timing"],
+    require(validate_sta(e, c, directory, board, execution=record) == result["timing"],
             "Hardware fitted timing ledger differs from reports")
     sof = directory / "output_files" / "swage_s1.sof"
     require(file_hash(sof) == result["programmed_sof_sha256"],
@@ -747,6 +751,14 @@ def validate_hardware(e, path, record, spec):
     ]]
     require(len(program) == 1 and program[0]["exit_status"] == 0,
             "No unique successful programming of current image")
+    require(program[0].get("end") and not program[0].get("timed_out")
+            and not program[0].get("launch_error"),
+            "Programming execution is incomplete")
+    program_text = "\n".join(read_raw(path, program[0][key])
+                             for key in ("stdout", "stderr"))
+    require("successful" in program_text.lower()
+            and re.search(r"\bError(?:\s*\(|:)", program_text) is None,
+            "Raw programmer output does not establish successful programming")
     build_id = result["timing"]["build_id"]
     identity = json.loads((directory / "hardware-identity.json").read_text())
     require(identity == {
@@ -852,7 +864,7 @@ def validate_partition_result(e, path, record, spec):
     if spec["check"] == "quartus-sta-shard":
         from physical import validate_sta
         c = configuration(spec)
-        result = validate_sta(e, c, path.parent / c.label)
+        result = validate_sta(e, c, path.parent / c.label, execution=record)
         require(result == record["partition_result"], "STA ledger differs from raw reports")
         return result
     require(spec["check"] == "board-hil-shard", "Unknown partition result type")

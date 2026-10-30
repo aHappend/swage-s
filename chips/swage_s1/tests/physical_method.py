@@ -2,9 +2,12 @@
 
 Run only the bounded Python diagnostic:
     python3 tests/verify.py --probe physical-method
+
+Product validation always requires current-source-bound partition reports and
+programmed-scaler workloads. Native baseline observations use the supported
+runtime schema; connectivity cannot substitute for the product collector.
 """
 
-import copy
 import hashlib
 import json
 from pathlib import Path
@@ -14,8 +17,7 @@ from unittest.mock import patch
 from evidence import ROOT, file_hash, hashes, require
 from physical_evidence import (
     BRIDGE_TIER, DEVICE, NATIVE_DIRECTORY, SCALER_TIER, configuration_inventory,
-    native_requirements, native_scope, product_links, resource_scope, timing_summary,
-    validate_linked_products,
+    native_requirements, native_scope, resource_scope, timing_summary,
 )
 from reference import Config
 
@@ -64,7 +66,7 @@ def method_checks(e):
     native_timing = {
         "gate": "quartus-sta", "applicable": True, "status": "passed",
         "device": DEVICE, "top_module": "swage_s1_top", "clock_period_ns": 10.0,
-        "sta_summary": summary,
+        "sta_summary": summary, "source_sha256": "1" * 64,
     }
     native_requirements("quartus-sta", native_timing)
     e.assertion("synthetic positive native timing requirements", True, True)
@@ -77,14 +79,16 @@ def method_checks(e):
         "gate": "board-hil", "applicable": True, "status": "passed",
         "device": DEVICE, "chip_id": "SYNTHETIC-NEVER-A-BOARD",
         "verification_tier": SCALER_TIER, "requested_runs": 3,
-        "deterministic_across_runs": True,
+        "deterministic_across_runs": True, "source_sha256": "1" * 64,
     }
     native_requirements("board-hil", native_hil)
     e.assertion("synthetic positive native scaler tier requirements", True, True)
     for update in ({"reg57_probe": {"stdout": "Read register 57"}},
                    {"verification_tier": BRIDGE_TIER}, {"verification_tier": None}):
-        rejected("register-only/unspecified HIL tier", lambda update=update:
-                 native_requirements("board-hil", {**native_hil, **update}), BRIDGE_TIER)
+        observation = {**native_hil, **update}
+        native_requirements("board-hil", observation)
+        e.assertion("register-only/unspecified native HIL remains connectivity",
+                    native_scope("board-hil", observation)["tier"], BRIDGE_TIER)
     for update in ({"requested_runs": 2}, {"deterministic_across_runs": False}):
         rejected("incomplete native workload runs", lambda update=update:
                  native_requirements("board-hil", {**native_hil, **update}), "deterministic")
@@ -99,8 +103,9 @@ def method_checks(e):
                  "Authoritative runtime receipt unavailable")
     sta_fixture_checks(e, rejected)
     hardware_fixture_checks(e, rejected)
-    link_fixture_checks(e, native_timing, rejected)
-    observe_retained_native(e, rejected)
+    coverage_fixture_checks(e, rejected)
+    native_gate_fixture_checks(e, native_timing, native_hil, rejected)
+    observe_retained_native(e)
     write_inventory(e)
 
 
@@ -387,87 +392,134 @@ def hardware_fixture_checks(e, rejected):
         ("two-passes", "Three consecutive"), ("programming", "programming"),
     ):
         rejected(defect, fixture(defect), diagnostic)
-    # Register-only traces are rejected explicitly before attempting a workload
-    # parser; no KeyError or missing-file accident is counted as a method pass.
-    rejected("register-only native HIL",
-             lambda: native_requirements("board-hil", {
-                 "gate": "board-hil", "applicable": True, "status": "passed",
-                 "reg57_probe": {"exit_code": 0}, "requested_runs": 3,
-             }), BRIDGE_TIER)
+    from partitions import check_definitions, validate_partition_result
+    spec = next(spec for spec in check_definitions() if spec["check"] == "board-hil-shard")
+    rejected("register-only product HIL",
+             lambda: validate_partition_result(e, e.path / "register-only.json", {
+                 "partition_result": {"status": "passed", "requested_runs": 3,
+                                      "reg57_probe": {"exit_code": 0}},
+             }, spec), "configuration")
 
 
-def link_fixture_checks(e, native_timing, rejected):
+def coverage_fixture_checks(e, rejected):
     from partitions import check_definitions
 
-    directory = e.path / "synthetic-bindings"
-    directory.mkdir()
-    specs = [spec for spec in check_definitions() if spec["check"] == "quartus-sta-shard"]
-    results, found, links = {}, {}, []
-    for spec in specs:
-        path = directory / f"{spec['id']}.json"
-        result = {
-            "configuration": spec["configuration"], "build_id": "1" * 64,
-            "wns_setup_ns": [0.495], "wns_hold_ns": [0.059],
-        }
-        path.write_text(json.dumps({"synthetic_only": True, "result": result}))
-        found[spec["id"]] = (path, {})
-        results[spec["id"]] = result
-        links.append({"id": spec["id"], "receipt": e.relative(path), "sha256": file_hash(path)})
-    native = {
-        **native_timing, "product_evidence": links,
-        "execution_receipt": links[0], "build_id": "1" * 64,
-        "parameters": specs[0]["configuration"],
-        "source_sha256": {name: value for name, value in e.record["source_sha256"].items()
-                          if not name.startswith("tests/")},
-    }
-
-    def run(record):
-        return validate_linked_products(
-            e, "quartus-sta", record, found, specs,
-            lambda evidence, available, ids: {ident: results[ident] for ident in ids},
-            lambda available, ident: available[ident],
-        )
-
-    e.assertion("synthetic exact 192-configuration binding coverage", len(run(native)), 192)
     for gate, check in (("timing", "quartus-sta-shard"), ("hardware", "board-hil-shard")):
         expected = [spec["configuration"] for spec in check_definitions()
                     if spec["check"] == check]
         configuration_inventory(expected, expected)
+        e.assertion("synthetic exact " + gate + " coverage", len(expected),
+                    192 if gate == "timing" else 48)
         rejected("incomplete " + gate, lambda: configuration_inventory(expected[:-1], expected),
                  "Incomplete")
         rejected("duplicate " + gate, lambda: configuration_inventory(
             [*expected[:-1], expected[0]], expected), "Duplicate")
-    for defect, diagnostic in (
-        ("hash", "Stale/mismatched"), ("path", "Stale/mismatched"),
-        ("coverage", "Incomplete"), ("duplicate", "Duplicate"),
-        ("source", "source identity"), ("build", "build/configuration"),
-        ("primary", "raw execution"), ("slack", "slack differs"),
-    ):
-        altered = copy.deepcopy(native)
-        if defect == "hash":
-            altered["product_evidence"][0]["sha256"] = "0" * 64
-        elif defect == "path":
-            altered["product_evidence"][0]["receipt"] = "evidence/not-the-bound-receipt.json"
-        elif defect == "coverage":
-            altered["product_evidence"].pop()
-        elif defect == "duplicate":
-            altered["product_evidence"][-1] = altered["product_evidence"][0]
-        elif defect == "source":
-            altered["source_sha256"] = "opaque-unverifiable-digest"
-        elif defect == "build":
-            altered["build_id"] = "0" * 64
-        elif defect == "primary":
-            altered["execution_receipt"] = None
-        else:
-            altered["sta_summary"]["wns_hold_ns"] = 0.123
-        rejected("native binding " + defect, lambda altered=altered: run(altered), diagnostic)
-    rejected("missing product links", lambda: product_links(native_timing, specs),
-             "lacks source/build")
+        rejected("empty observed " + gate,
+                 lambda: configuration_inventory([], expected), "Empty physical configuration")
+    rejected("empty expected and observed configurations",
+             lambda: configuration_inventory([], []), "Empty physical configuration")
 
 
-def observe_retained_native(e, rejected):
-    from physical import board_hil, quartus_sta
+def native_gate_fixture_checks(e, native_timing, native_hil, rejected):
+    """Exercise the public validator using only labelled project-local fixtures."""
+    from partitions import check_definitions
+    from physical_evidence import validate_native_gate
 
+    directory = e.path / "synthetic-native-gates"
+    native_directory = directory / "native"
+    native_directory.mkdir(parents=True)
+    definitions = check_definitions()
+    for gate, baseline in (("quartus-sta", native_timing), ("board-hil", native_hil)):
+        specs = [spec for spec in definitions if spec["check"] == gate + "-shard"]
+        results = [{"configuration": spec["configuration"]} for spec in specs]
+        native = {key: baseline[key] for key in (
+            "gate", "status", "source_sha256",
+            *(("sta_summary",) if gate == "quartus-sta"
+              else ("requested_runs", "deterministic_across_runs")),
+        )}
+        if gate == "quartus-sta":
+            native["sta_summary"] = {key: baseline["sta_summary"][key] for key in (
+                "netlist_mode", "wns_setup_ns", "wns_hold_ns")}
+
+        def run(record, *, definitions_override=None, returned=None, failure=None):
+            path = native_directory / f"{gate}.json"
+            path.write_text(json.dumps(record))
+            fixture = SimpleNamespace(
+                record={"source_sha256": e.record["source_sha256"]},
+                relative=e.relative, save=lambda: None,
+            )
+            try:
+                with (
+                    patch("physical_evidence.ROOT", directory),
+                    patch("physical_evidence.NATIVE_DIRECTORY", Path("native")),
+                    patch("partitions.check_definitions", return_value=(
+                        definitions if definitions_override is None else definitions_override)),
+                    patch("partitions.aggregate", return_value=(
+                        results if returned is None else returned),
+                        side_effect=AssertionError(failure) if failure else None) as collector,
+                ):
+                    result = validate_native_gate(fixture, gate)
+                    collector.assert_called_once_with(fixture, gate)
+                    return result
+            except AssertionError:
+                e.assertion("synthetic rejected native " + gate + " remains not validated",
+                            fixture.record["authoritative_physical_evidence"]["status"],
+                            "not_validated")
+                raise
+            finally:
+                observation = fixture.record.get("authoritative_physical_evidence", {})
+                e.assertion("synthetic native " + gate + " preserved scope",
+                            observation.get("scope"), native_scope(gate, record))
+                if observation.get("status") == "validated":
+                    require(definitions_override != [],
+                            "Empty fixture incorrectly marked validated")
+
+        result = run(native)
+        e.assertion("synthetic end-to-end " + gate + " standard schema positive",
+                    len(result["configurations"]), len(specs))
+        e.assertion("synthetic end-to-end " + gate + " validated positive",
+                    result["native"]["status"], "validated")
+        rejected("end-to-end " + gate + " collector failure propagation",
+                 lambda: run(native, failure="synthetic collector rejection"),
+                 "synthetic collector rejection")
+        rejected("end-to-end " + gate + " incomplete coverage",
+                 lambda: run(native, returned=results[:-1]), "Incomplete")
+        rejected("end-to-end " + gate + " duplicate coverage",
+                 lambda: run(native, returned=[*results[:-1], results[0]]), "Duplicate")
+        rejected("end-to-end " + gate + " missing source digest",
+                 lambda: run({**native, "source_sha256": None}), "source identity")
+        for identity in ("opaque-invalid-digest", {}, {"rtl/test.sv": "invalid"}):
+            rejected("end-to-end " + gate + " malformed source digest",
+                     lambda identity=identity: run({**native, "source_sha256": identity}),
+                     "source identity")
+        result = run({**native, "source_sha256": {"rtl/test.sv": "2" * 64}})
+        e.assertion("standard native source map supported", result["native"]["source_sha256"],
+                    {"rtl/test.sv": "2" * 64})
+        rejected("end-to-end " + gate + " failed native baseline",
+                 lambda: run({**native, "status": "failed"}), "Native gate failed")
+        if gate == "quartus-sta":
+            for key, value, diagnostic in (
+                ("netlist_mode", "post_map", "Post-map"),
+                ("wns_setup_ns", -0.001, "setup slack"),
+                ("wns_hold_ns", -0.187, "hold slack"),
+            ):
+                rejected("minimal native summary rejects " + key,
+                         lambda key=key, value=value: run({
+                             **native, "sta_summary": {**native["sta_summary"], key: value},
+                         }), diagnostic)
+        rejected("end-to-end " + gate + " empty configuration coverage",
+                 lambda: run(native, definitions_override=[]), "Empty physical configuration")
+        if gate == "board-hil":
+            for flag in ("absent", False, True):
+                altered = {**native, "reg57_probe": {"stdout": "Read register 57"}}
+                if flag != "absent":
+                    altered["require_scaler_workload"] = flag
+                result = run(altered)
+                e.assertion("native register probe never upgraded to scaler tier",
+                            result["native"]["scope"]["tier"], BRIDGE_TIER)
+
+
+def observe_retained_native(e):
     observations = []
     for gate in ("quartus-sta", "board-hil"):
         path = ROOT / NATIVE_DIRECTORY / f"{gate}.json"
@@ -482,7 +534,8 @@ def observe_retained_native(e, rejected):
             failure = None
         observation = {
             "original_receipt": e.relative(path), "sha256": before,
-            "scope": native_scope(gate, record), "product_validation_error": failure,
+            "scope": native_scope(gate, record), "baseline_validation_error": failure,
+            "product_validation": "not executed; separate admitted partitions mandatory",
             "historical_observation_only": True,
         }
         if gate == "quartus-sta":
@@ -512,13 +565,6 @@ def observe_retained_native(e, rejected):
                  "staged": e.relative(source), "staged_sha256": file_hash(source),
                  "byte_identical": file_hash(source) == file_hash(ROOT / "rtl" / source.name)}
                 for source in sorted((directory / "rtl_staged").glob("*.sv"))]
-        if failure is not None:
-            count = len(e.record["commands"])
-            rejected("retained actual " + gate + " cannot certify product",
-                     lambda: (quartus_sta if gate == "quartus-sta" else board_hil)(e),
-                     failure)
-            e.assertion("no duplicate native execution for " + gate,
-                        len(e.record["commands"]), count)
         require(file_hash(path) == before, "Runtime receipt changed during bounded read")
         observations.append(observation)
     (e.path / "retained-native-observations.json").write_text(json.dumps(observations, indent=2)+"\n")
@@ -566,21 +612,27 @@ def write_inventory(e):
         "native_evidence_contract": {
             "authoritative_receipts": [str(NATIVE_DIRECTORY / f"{gate}.json")
                                        for gate in ("quartus-sta", "board-hil")],
-            "required_bindings": [
-                "device: exact target; parameters: explicit complete configuration",
-                "source_sha256: current design source hash mapping, not opaque digest",
-                "product_evidence: every existing physical partition id/receipt/sha256",
-                "execution_receipt: exact member of product_evidence for native build",
-                "build_id: current source manifest identity of execution_receipt",
-                "board verification_tier: L3_PROGRAMMED_SCALER_VERIFICATION",
+            "standard_runtime_fields": [
+                "gate, status, source_sha256",
+                "sta_summary: post-fit mode and nonnegative setup/hold slack",
+                "requested_runs=3 and deterministic_across_runs=true for HIL",
             ],
-            "missing_binding_action": "Coordinator diagnosis and independent admission; "
-                                      "Verifier never edits or upgrades native receipts",
+            "scope": "Native baseline only; an opaque native digest does not establish "
+                     "product-source freshness or variant/workload coverage.",
+            "product_bindings": "Existing admitted partition receipts independently bind "
+                                "current source snapshots, configurations, build identity, "
+                                "raw execution, fitted reports and programmed-scaler workloads. "
+                                "Their links live in the verifier-owned aggregate receipt, "
+                                "never as required custom fields on native runtime receipts.",
+            "missing_product_action": "Automatically execute admitted missing prerequisites "
+                                      "in dependency order; unadmitted variants require "
+                                      "append-only admission and output allocation first.",
         },
         "designer_documentation_handoff": "SPEC.md: distinguish bridge connectivity from "
-            "programmed-scaler verification; report measured 219 ALMs, 160 registers, "
-            "256 memory bits, six DSPs, four synthesis M20K instances versus zero "
-            "fitted RAM blocks in current reports. Memory acceptance remains unestablished.",
+            "programmed-scaler verification. Use this preparation receipt's retained native "
+            "observations and raw-report hashes for measured resources; do not reuse older "
+            "post-map resource numbers as current fitted results. Product source/build "
+            "associations and full variant coverage remain unestablished.",
     }
     path = e.path / "remaining-physical-admission-inventory.json"
     path.write_text(json.dumps(inventory, indent=2) + "\n")

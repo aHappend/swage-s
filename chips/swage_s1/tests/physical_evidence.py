@@ -142,10 +142,15 @@ def validate_native_gate(e, gate):
     native_requirements(gate, native)
     specs = [spec for spec in check_definitions() if spec["check"] == gate + "-shard"]
     require(specs, "Empty physical configuration coverage")
+    results = aggregate(e, gate)
+    configuration_inventory(
+        [result["configuration"] for result in results],
+        [spec["configuration"] for spec in specs],
+    )
     require(file_hash(path) == digest, "Authoritative receipt changed during validation")
     binding["status"] = "validated"
     e.save()
-    return {"native": binding, "configurations": [spec["configuration"] for spec in specs]}
+    return {"native": binding, "configurations": results}
 
 
 def resource_scope(map_text, fit_text):

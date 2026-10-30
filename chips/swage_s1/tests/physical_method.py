@@ -105,6 +105,7 @@ def method_checks(e):
     hardware_fixture_checks(e, rejected)
     coverage_fixture_checks(e, rejected)
     native_gate_fixture_checks(e, native_timing, native_hil, rejected)
+    product_entrypoint_fixture_checks(e, native_timing, native_hil)
     observe_retained_native(e)
     write_inventory(e)
 
@@ -431,7 +432,9 @@ def native_gate_fixture_checks(e, native_timing, native_hil, rejected):
     definitions = check_definitions()
     for gate, baseline in (("quartus-sta", native_timing), ("board-hil", native_hil)):
         specs = [spec for spec in definitions if spec["check"] == gate + "-shard"]
-        results = [{"configuration": spec["configuration"]} for spec in specs]
+        results = [{"configuration": spec["configuration"],
+                    "synthetic_measurement": index}
+                   for index, spec in enumerate(specs)]
         native = {key: baseline[key] for key in (
             "gate", "status", "source_sha256",
             *(("sta_summary",) if gate == "quartus-sta"
@@ -477,6 +480,8 @@ def native_gate_fixture_checks(e, native_timing, native_hil, rejected):
         result = run(native)
         e.assertion("synthetic end-to-end " + gate + " standard schema positive",
                     len(result["configurations"]), len(specs))
+        e.assertion("synthetic end-to-end " + gate + " returns measured results",
+                    result["configurations"], results)
         e.assertion("synthetic end-to-end " + gate + " validated positive",
                     result["native"]["status"], "validated")
         rejected("end-to-end " + gate + " collector failure propagation",
@@ -517,6 +522,111 @@ def native_gate_fixture_checks(e, native_timing, native_hil, rejected):
                 result = run(altered)
                 e.assertion("native register probe never upgraded to scaler tier",
                             result["native"]["scope"]["tier"], BRIDGE_TIER)
+
+
+def product_entrypoint_fixture_checks(e, native_timing, native_hil):
+    """Run the shipped dispatcher with synthetic inputs, never physical tools."""
+    from contextlib import redirect_stderr, redirect_stdout
+    import io
+    import sys
+
+    import partitions
+    import verify
+
+    definitions = partitions.check_definitions()
+    directory = e.path / "synthetic-product-entrypoints"
+    native_directory = directory / "native"
+    native_directory.mkdir(parents=True)
+    for gate, baseline in (("quartus-sta", native_timing), ("board-hil", native_hil)):
+        specs = [spec for spec in definitions if spec["check"] == gate + "-shard"]
+        results = [{"configuration": spec["configuration"],
+                    "synthetic_measurement": index}
+                   for index, spec in enumerate(specs)]
+        for case in ("complete", "missing-partitions", "incomplete-configurations",
+                     "different-configuration"):
+            record = dict(baseline)
+            if gate == "board-hil":
+                record["verification_tier"] = BRIDGE_TIER
+                record["reg57_probe"] = {"stdout": "SYNTHETIC register-57 reads only"}
+            (native_directory / f"{gate}.json").write_text(json.dumps(record))
+            label = f"{gate}-{case}"
+            fixture_directory = directory / label
+            fixture_directory.mkdir()
+            fixture_record = {
+                "synthetic_only": True, "acceptance_evidence": False,
+                "source_sha256": e.record["source_sha256"],
+            }
+
+            def save():
+                (fixture_directory / "synthetic-record.json").write_text(
+                    json.dumps(fixture_record, indent=2) + "\n")
+
+            def finish(error):
+                fixture_record["status"] = "failed" if error else "passed"
+                fixture_record["error"] = str(error) if error else None
+                save()
+
+            fixture = SimpleNamespace(
+                path=fixture_directory, record=fixture_record,
+                relative=e.relative, save=save, finish=finish,
+                tool=lambda tool: require(tool == "python3",
+                                          "Synthetic entrypoint attempted a physical tool"),
+            )
+            returned = results
+            if case == "incomplete-configurations":
+                returned = results[:-1]
+            elif case == "different-configuration":
+                returned = [*results[:-1], {
+                    "configuration": {**results[-1]["configuration"], "SRC_WIDTH": 4095},
+                    "synthetic_measurement": "different",
+                }]
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with (
+                patch.object(sys, "argv", ["tests/verify.py", "--check", gate]),
+                patch("verify.Evidence", return_value=fixture),
+                patch("physical_evidence.ROOT", directory),
+                patch("physical_evidence.NATIVE_DIRECTORY", Path("native")),
+                patch("partitions.aggregate",
+                      side_effect=(partitions.aggregate
+                                   if case == "missing-partitions" else None),
+                      return_value=returned) as collector,
+                patch("partitions.successes", return_value={}),
+                patch("partitions.execute_prerequisites", return_value={}) as prerequisites,
+                patch("partitions.prerequisite_plan", return_value={"candidate_checks": []}),
+                redirect_stdout(stdout), redirect_stderr(stderr),
+            ):
+                code = verify.main()
+                collector.assert_called_once_with(fixture, gate)
+                if case == "missing-partitions":
+                    prerequisites.assert_called_once_with(fixture, gate, {})
+                else:
+                    prerequisites.assert_not_called()
+            (fixture_directory / "stdout.log").write_text(stdout.getvalue())
+            (fixture_directory / "stderr.log").write_text(stderr.getvalue())
+            # The dispatcher must finish its receipt and return failure, not
+            # merely emit a diagnostic while reporting product success.
+            failed = case != "complete"
+            e.assertion("synthetic product entrypoint " + label + " exit",
+                        code, 1 if failed else 0)
+            e.assertion("synthetic product entrypoint " + label + " receipt status",
+                        fixture_record["status"], "failed" if failed else "passed")
+            e.assertion("synthetic product entrypoint " + label + " aggregate invoked",
+                        collector.call_count, 1)
+            e.assertion("synthetic product entrypoint " + label + " binding status",
+                        fixture_record["authoritative_physical_evidence"]["status"],
+                        "not_validated" if failed else "validated")
+            if failed:
+                diagnostic = ("mandatory partitions missing" if case == "missing-partitions"
+                              else "Incomplete or different frozen physical configuration")
+                require(diagnostic in fixture_record["error"]
+                        and diagnostic in stderr.getvalue(),
+                        "Synthetic entrypoint failed for an unrelated reason: " + label)
+                require(json.loads(stdout.getvalue())["status"] == "failed",
+                        "Synthetic entrypoint printed product success: " + label)
+            if gate == "board-hil":
+                e.assertion("synthetic register-only baseline " + case + " retains tier",
+                            fixture_record["authoritative_physical_evidence"]["scope"]["tier"],
+                            BRIDGE_TIER)
 
 
 def observe_retained_native(e):

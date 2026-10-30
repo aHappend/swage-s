@@ -1,24 +1,24 @@
 {
   "chip": "Swage-S1",
   "fitter_resources": {
-    "alms_used": 219,
+    "alms_used": 224,
     "alms_total": 427200,
     "alms_pct": "< 1 %",
-    "total_registers": 160,
+    "total_registers": 163,
     "block_memory_bits": 256,
-    "m20k_ram_blocks": 0,
+    "m20k_ram_blocks": 4,
     "m20k_ram_blocks_total": 2713,
     "dsp_blocks": 6,
     "virtual_pins": 26
   },
   "timing": {
     "device": "10AX115N2F45E1SG",
-    "netlist_mode": "post_map",
+    "netlist_mode": "post_fit",
     "target_frequency_mhz": 100.0,
-    "fmax_mhz": 267.09,
-    "critical_path_delay_ns": 3.744,
-    "wns_setup_ns": 6.256,
-    "wns_hold_ns": -0.187
+    "fmax_mhz": null,
+    "critical_path_delay_ns": null,
+    "wns_setup_ns": 4.922,
+    "wns_hold_ns": 0.069
   },
   "verification_tiers": {
     "L3_board_hil": "L3_BRIDGE_CONNECTIVITY_PROBE_ONLY",

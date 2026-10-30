@@ -4,6 +4,9 @@ check_definitions() supplies the exact append-only command/dependency inventory
 for Coordinator admission. Original gates validate current receipts and
 execute missing admitted prerequisites;
 they never select the newest receipt or accept partial coverage.
+Shard entrypoints collect only their transitive predecessors, serially, before
+recording partition_execution.start and its command boundary. Invocation start
+is retained unchanged; predecessor completion must precede actual shard work.
 First behavior: Icarus 154. First timing: 178, then 166. First hardware: 10.
 Call-0128 admits a fresh recovery chain if the shared runtime cannot restore
 the original predecessor exactly. It must attempt restoration before scheduling
@@ -32,7 +35,7 @@ import struct
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from functools import lru_cache
 
-from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require
+from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require, stamp
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
 from simulation import parameter_cases, scenario_records
 
@@ -286,7 +289,11 @@ def prerequisite_plan(gate, completed):
     definitions = check_definitions()
     known = {spec["id"]: spec for spec in definitions}
     require(set(completed) <= set(known), "Unknown completed partition in scheduling plan")
-    mandatory = aggregate_dependencies()[gate]
+    if gate in known:
+        mandatory = known[gate]["depends_on"]
+    else:
+        require(gate in aggregate_dependencies(), "Unknown prerequisite target")
+        mandatory = aggregate_dependencies()[gate]
     required = set()
 
     def include(ident):
@@ -453,7 +460,32 @@ def validate_receipt(e, path, record, spec):
         require(e.record["tools"][name] == identity, f"Tool identity changed: {name}")
     duration = (datetime.datetime.fromisoformat(record["end"])
                 - datetime.datetime.fromisoformat(record["start"])).total_seconds()
+    partition_start(record)
     require(0 <= duration < 2700, f"Completed partition exceeded check tier: {path}")
+
+
+def partition_start(record):
+    """Keep invocation time intact when dependencies execute inside an entrypoint."""
+    boundary = record.get("partition_execution")
+    if boundary is None:
+        return datetime.datetime.fromisoformat(record["start"])
+    start = datetime.datetime.fromisoformat(boundary["start"])
+    require(datetime.datetime.fromisoformat(record["start"]) <= start,
+            "Partition execution precedes invocation")
+    if record.get("end"):
+        require(start <= datetime.datetime.fromisoformat(record["end"]),
+                "Partition execution follows receipt completion")
+    offset = boundary["command_offset"]
+    commands = record.get("commands", [])
+    require(type(offset) is int and 0 <= offset <= len(commands),
+            "Invalid partition execution command boundary")
+    for index, command in enumerate(commands):
+        if index < offset:
+            ordered = datetime.datetime.fromisoformat(command["end"]) <= start
+        else:
+            ordered = datetime.datetime.fromisoformat(command["start"]) >= start
+        require(ordered, "Command crosses partition execution boundary")
+    return start
 
 
 def validate_dependencies(e, found, identities, *, validated=None):
@@ -474,7 +506,7 @@ def validate_dependencies(e, found, identities, *, validated=None):
             visit(predecessor)
             predecessor_path, predecessor_record = found[predecessor]
             require(datetime.datetime.fromisoformat(predecessor_record["end"])
-                    <= datetime.datetime.fromisoformat(record["start"]),
+                    <= partition_start(record),
                     "Dependency order was not honored")
             expected_links.append({
                 "id": predecessor, "receipt": e.relative(predecessor_path),
@@ -495,8 +527,8 @@ def predecessor_links(e, spec, found):
     for ident in spec["depends_on"]:
         path, record = load_success(found, ident)
         require(datetime.datetime.fromisoformat(record["end"])
-                <= datetime.datetime.fromisoformat(e.record["start"]),
-                "Partition predecessor did not complete before this invocation")
+                <= partition_start(e.record),
+                "Partition predecessor did not complete before partition execution")
         links.append({"id": ident, "receipt": e.relative(path), "sha256": file_hash(path)})
     return links
 
@@ -514,6 +546,10 @@ def run_partition(e, check, shard, simulator):
                     IDENTITY)
     found = successes(e)
     require(spec["id"] not in found, f"Partition already has a current success: {spec['id']}")
+    found = execute_prerequisites(e, spec["id"], found, workers=1)
+    e.record["partition_execution"] = {
+        "start": stamp(), "command_offset": len(e.record["commands"]),
+    }
     e.record["predecessors"] = predecessor_links(e, spec, found)
     tools_for(e, spec)
     # Predecessor validation may need other tools. Only this partition's tools

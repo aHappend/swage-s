@@ -106,6 +106,7 @@ def method_checks(e):
     coverage_fixture_checks(e, rejected)
     native_gate_fixture_checks(e, native_timing, native_hil, rejected)
     product_entrypoint_fixture_checks(e, native_timing, native_hil)
+    shard_entrypoint_fixture_checks(e)
     observe_retained_native(e)
     write_inventory(e)
 
@@ -525,8 +526,9 @@ def native_gate_fixture_checks(e, native_timing, native_hil, rejected):
 
 
 def product_entrypoint_fixture_checks(e, native_timing, native_hil):
-    """Run the shipped dispatcher with synthetic inputs, never physical tools."""
+    """Keep the dispatcher, aggregate, dependency runner and coverage checks real."""
     from contextlib import redirect_stderr, redirect_stdout
+    import datetime
     import io
     import sys
 
@@ -534,16 +536,18 @@ def product_entrypoint_fixture_checks(e, native_timing, native_hil):
     import verify
 
     definitions = partitions.check_definitions()
+    by_id = {spec["id"]: spec for spec in definitions}
+    original_result_validator = partitions.validate_partition_result
     directory = e.path / "synthetic-product-entrypoints"
     native_directory = directory / "native"
     native_directory.mkdir(parents=True)
     for gate, baseline in (("quartus-sta", native_timing), ("board-hil", native_hil)):
         specs = [spec for spec in definitions if spec["check"] == gate + "-shard"]
-        results = [{"configuration": spec["configuration"],
-                    "synthetic_measurement": index}
-                   for index, spec in enumerate(specs)]
-        for case in ("complete", "missing-partitions", "incomplete-configurations",
-                     "different-configuration"):
+        cases = ["complete", "missing-prerequisites", "missing-partition", "incomplete-configurations",
+                 "different-configuration"]
+        if gate == "board-hil":
+            cases.append("register-only")
+        for case in cases:
             record = dict(baseline)
             if gate == "board-hil":
                 record["verification_tier"] = BRIDGE_TIER
@@ -553,9 +557,49 @@ def product_entrypoint_fixture_checks(e, native_timing, native_hil):
             fixture_directory = directory / label
             fixture_directory.mkdir()
             fixture_record = {
-                "synthetic_only": True, "acceptance_evidence": False,
+                "fixture_scope": "SYNTHETIC_ONLY_NOT_PHYSICAL_ACCEPTANCE",
+                "acceptance_evidence": False,
                 "source_sha256": e.record["source_sha256"],
+                "start": e.record["start"], "commands": [],
             }
+            found = {}
+            required = partitions.prerequisite_plan(gate, {})
+            needed = set(required["mandatory_partitions"] + required["required_predecessors"])
+            for index, spec in enumerate(definitions):
+                if (spec["id"] not in needed or case == "missing-prerequisites"
+                        or case == "missing-partition" and spec == specs[-1]):
+                    continue
+                path = fixture_directory / f"{spec['id']}.json"
+                start = datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc)
+                start += datetime.timedelta(seconds=index * 2)
+                result = {"configuration": spec.get("configuration"),
+                          "synthetic_measurement": spec["id"]}
+                if spec == specs[-1]:
+                    if case == "incomplete-configurations":
+                        result["configuration"] = specs[0]["configuration"]
+                    elif case == "different-configuration":
+                        result["configuration"] = {
+                            **spec["configuration"], "SRC_WIDTH": 4095,
+                        }
+                if case == "register-only" and spec["check"] == "board-hil-shard":
+                    result = {"status": "passed", "requested_runs": 3,
+                              "reg57_probe": {"exit_code": 0}}
+                retained = {
+                    "synthetic_only": True, "acceptance_evidence": False,
+                    "partition": spec, "status": "passed",
+                    "start": start.isoformat(),
+                    "end": (start + datetime.timedelta(seconds=1)).isoformat(),
+                    "predecessors": [
+                        {"id": ident, "receipt": e.relative(found[ident][0]),
+                         "sha256": file_hash(found[ident][0])}
+                        for ident in spec["depends_on"]
+                    ],
+                    "partition_result": result,
+                }
+                path.write_text(json.dumps(retained, indent=2) + "\n")
+                found[spec["id"]] = (
+                    path, {key: retained.get(key) for key in partitions.HEADER_KEYS},
+                )
 
             def save():
                 (fixture_directory / "synthetic-record.json").write_text(
@@ -566,41 +610,45 @@ def product_entrypoint_fixture_checks(e, native_timing, native_hil):
                 fixture_record["error"] = str(error) if error else None
                 save()
 
+            def no_physical_execution(*args, **kwargs):
+                raise AssertionError("Synthetic entrypoint attempted physical execution")
+
+            def validate_fixture(evidence, path, retained, spec):
+                require(path.parent == fixture_directory and retained["synthetic_only"]
+                        and retained["acceptance_evidence"] is False
+                        and spec == by_id[spec["id"]],
+                        "Unlabelled synthetic receipt")
+
+            def observed_result(evidence, path, retained, spec):
+                if case == "register-only" and spec["check"] == "board-hil-shard":
+                    return original_result_validator(evidence, path, retained, spec)
+                return retained["partition_result"]
+
             fixture = SimpleNamespace(
                 path=fixture_directory, record=fixture_record,
                 relative=e.relative, save=save, finish=finish,
+                assertion=lambda name, actual, expected: e.assertion(
+                    "synthetic aggregate " + name, actual, expected),
+                run=no_physical_execution,
                 tool=lambda tool: require(tool == "python3",
                                           "Synthetic entrypoint attempted a physical tool"),
             )
-            returned = results
-            if case == "incomplete-configurations":
-                returned = results[:-1]
-            elif case == "different-configuration":
-                returned = [*results[:-1], {
-                    "configuration": {**results[-1]["configuration"], "SRC_WIDTH": 4095},
-                    "synthetic_measurement": "different",
-                }]
+            aggregate = partitions.aggregate
             stdout, stderr = io.StringIO(), io.StringIO()
             with (
                 patch.object(sys, "argv", ["tests/verify.py", "--check", gate]),
                 patch("verify.Evidence", return_value=fixture),
                 patch("physical_evidence.ROOT", directory),
                 patch("physical_evidence.NATIVE_DIRECTORY", Path("native")),
-                patch("partitions.aggregate",
-                      side_effect=(partitions.aggregate
-                                   if case == "missing-partitions" else None),
-                      return_value=returned) as collector,
-                patch("partitions.successes", return_value={}),
-                patch("partitions.execute_prerequisites", return_value={}) as prerequisites,
-                patch("partitions.prerequisite_plan", return_value={"candidate_checks": []}),
+                patch("partitions.successes", side_effect=lambda evidence: dict(found)),
+                patch("partitions.validate_receipt", side_effect=validate_fixture),
+                patch("partitions.validate_partition_result", side_effect=observed_result),
                 redirect_stdout(stdout), redirect_stderr(stderr),
             ):
                 code = verify.main()
-                collector.assert_called_once_with(fixture, gate)
-                if case == "missing-partitions":
-                    prerequisites.assert_called_once_with(fixture, gate, {})
-                else:
-                    prerequisites.assert_not_called()
+                require(partitions.aggregate is aggregate
+                        and not hasattr(partitions.aggregate, "_mock_name"),
+                        "Entrypoint fixture replaced the production aggregate")
             (fixture_directory / "stdout.log").write_text(stdout.getvalue())
             (fixture_directory / "stderr.log").write_text(stderr.getvalue())
             # The dispatcher must finish its receipt and return failure, not
@@ -610,23 +658,225 @@ def product_entrypoint_fixture_checks(e, native_timing, native_hil):
                         code, 1 if failed else 0)
             e.assertion("synthetic product entrypoint " + label + " receipt status",
                         fixture_record["status"], "failed" if failed else "passed")
-            e.assertion("synthetic product entrypoint " + label + " aggregate invoked",
-                        collector.call_count, 1)
+            e.assertion("synthetic product entrypoint " + label + " real collector plan",
+                        "prerequisite_plan" in fixture_record, True)
             e.assertion("synthetic product entrypoint " + label + " binding status",
                         fixture_record["authoritative_physical_evidence"]["status"],
                         "not_validated" if failed else "validated")
             if failed:
-                diagnostic = ("mandatory partitions missing" if case == "missing-partitions"
-                              else "Incomplete or different frozen physical configuration")
+                diagnostic = {
+                    "missing-prerequisites": "append-only admission",
+                    "missing-partition": "1 missing prerequisites require append-only admission",
+                    "incomplete-configurations": "Duplicate physical configuration",
+                    "different-configuration":
+                        "Incomplete or different frozen physical configuration",
+                    "register-only": "Observed scaler configuration missing or different",
+                }[case]
                 require(diagnostic in fixture_record["error"]
                         and diagnostic in stderr.getvalue(),
                         "Synthetic entrypoint failed for an unrelated reason: " + label)
                 require(json.loads(stdout.getvalue())["status"] == "failed",
                         "Synthetic entrypoint printed product success: " + label)
+            else:
+                ledger = "sta-ledger.json" if gate == "quartus-sta" else "hil-ledger.json"
+                returned = json.loads((fixture_directory / ledger).read_text())
+                e.assertion("synthetic product entrypoint " + label + " measured results",
+                            [result["synthetic_measurement"] for result in returned],
+                            [spec["id"] for spec in specs])
             if gate == "board-hil":
                 e.assertion("synthetic register-only baseline " + case + " retains tier",
                             fixture_record["authoritative_physical_evidence"]["scope"]["tier"],
                             BRIDGE_TIER)
+
+
+def shard_entrypoint_fixture_checks(e):
+    """Synthetic leaf tools, real entrypoint/dependency execution and receipt links."""
+    from contextlib import redirect_stderr, redirect_stdout
+    import copy
+    import datetime
+    import io
+    import sys
+
+    import partitions
+    import verify
+    from evidence import stamp
+
+    definitions = partitions.check_definitions()
+    by_id = {spec["id"]: spec for spec in definitions}
+    target = by_id["quartus-sta-shard-0"]
+    chain = ["behavior-shard-icarus-154", "quartus-sta-shard-178", "quartus-sta-shard-166"]
+    directory = e.path / "synthetic-shard-entrypoints"
+    directory.mkdir()
+    for case in ("missing", "current", "failed-anchor", "failed-predecessor", "failed-last",
+                 "unadmitted", "late-predecessor"):
+        current = directory / case
+        current.mkdir()
+        found, launched = {}, []
+        fixture_record = {
+            "synthetic_only": True, "acceptance_evidence": False,
+            "source_sha256": e.record["source_sha256"], "start": stamp(), "commands": [],
+            "tools": {name: {"synthetic_only": True} for name in target["requires"]},
+            "tool_commands": {name: 0 for name in target["requires"]},
+        }
+        invocation_start = fixture_record["start"]
+
+        def retain(ident, *, late=False):
+            spec = by_id[ident]
+            path = current / f"{ident}.json"
+            retained = {
+                "synthetic_only": True, "acceptance_evidence": False,
+                "partition": spec, "status": "passed", "start": stamp(),
+                "predecessors": [
+                    {"id": dep, "receipt": e.relative(found[dep][0]),
+                     "sha256": file_hash(found[dep][0])}
+                    for dep in spec["depends_on"]
+                ],
+                "partition_result": {"synthetic_measurement": ident},
+                "end": "2099-01-01T00:00:00+00:00" if late else stamp(),
+            }
+            path.write_text(json.dumps(retained, indent=2) + "\n")
+            found[ident] = (path, {key: retained.get(key) for key in partitions.HEADER_KEYS})
+
+        if case in ("current", "late-predecessor"):
+            for ident in chain:
+                retain(ident, late=case == "late-predecessor" and ident == chain[-1])
+
+        def save():
+            (current / "synthetic-record.json").write_text(
+                json.dumps(fixture_record, indent=2) + "\n")
+
+        def finish(error):
+            fixture_record["status"] = "failed" if error else "passed"
+            fixture_record["error"] = str(error) if error else None
+            save()
+
+        def run(argv, **kwargs):
+            spec = next(spec for spec in definitions if spec["argv"] == argv)
+            ident = spec["id"]
+            require(ident in chain and spec["outputs"],
+                    "Synthetic shard launched an unadmitted/unrelated command")
+            require(all(dep in found for dep in spec["depends_on"]),
+                    "Synthetic shard launched out of dependency order")
+            launched.append(ident)
+            start = stamp()
+            fail = ident == {
+                "failed-anchor": chain[0], "failed-predecessor": chain[1],
+                "failed-last": chain[2],
+            }.get(case)
+            index = len(e.record["commands"])
+            try:
+                result = e.run(
+                    ["python3", "-c", "print('SYNTHETIC_DEPENDENCY " + ident + "'); "
+                     + ("raise SystemExit(7)" if fail else "raise SystemExit(0)")],
+                    name=f"synthetic-{case}-{ident}",
+                )
+            finally:
+                if fail:
+                    e.record["commands"][index]["negative_method_fixture"] = True
+                    e.save()
+                fixture_record["commands"].append({
+                    "requested_argv": argv, "start": start, "end": stamp(),
+                    "exit_status": 7 if fail else 0,
+                })
+                save()
+            retain(ident)
+            return result
+
+        def validate_fixture(evidence, path, retained, spec):
+            require(path.parent == current and retained["synthetic_only"]
+                    and retained["partition"] == spec,
+                    "Unlabelled dependency fixture")
+
+        def target_work(evidence, c, output):
+            e.assertion("synthetic target starts after complete dependency chain",
+                        sorted(found), sorted(chain))
+            e.assertion("synthetic target retains exact dependency order",
+                        evidence.record["predecessors"], [{
+                            "id": chain[-1], "receipt": e.relative(found[chain[-1]][0]),
+                            "sha256": file_hash(found[chain[-1]][0]),
+                        }])
+            partitions.partition_start(evidence.record)
+            require(evidence.record["start"] == invocation_start,
+                    "Invocation start was overwritten")
+            return {"configuration": c.parameters(), "synthetic_measurement": "target"}
+
+        fixture = SimpleNamespace(
+            path=current, record=fixture_record, relative=e.relative, save=save,
+            finish=finish, run=run, tool=lambda name: None,
+        )
+        altered = [{**spec, "outputs": []} if case == "unadmitted"
+                   and spec["id"] == chain[1] else spec for spec in definitions]
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with (
+            patch.object(sys, "argv", target["argv"][1:]),
+            patch("verify.Evidence", return_value=fixture),
+            patch("partitions.check_definitions", return_value=altered),
+            patch("partitions.successes", side_effect=lambda evidence: dict(found)),
+            patch("partitions.validate_receipt", side_effect=validate_fixture),
+            patch("partitions.validate_partition_result",
+                  side_effect=lambda evidence, path, retained, spec: retained["partition_result"]),
+            patch("partitions.tools_for"),
+            patch("partitions.artifact_hashes", return_value={"synthetic_only": True}),
+            patch("physical.compile_and_sta", side_effect=target_work) as work,
+            redirect_stdout(stdout), redirect_stderr(stderr),
+        ):
+            code = verify.main()
+        (current / "stdout.log").write_text(stdout.getvalue())
+        (current / "stderr.log").write_text(stderr.getvalue())
+        failed = case not in ("missing", "current")
+        e.assertion("synthetic shard " + case + " exit", code, int(failed))
+        e.assertion("synthetic shard " + case + " receipt",
+                    fixture_record["status"], "failed" if failed else "passed")
+        e.assertion("synthetic shard " + case + " target execution",
+                    work.call_count, 0 if failed else 1)
+        expected = {
+            "missing": chain, "failed-anchor": chain[:1],
+            "failed-predecessor": chain[:2], "failed-last": chain,
+        }.get(case, [])
+        e.assertion("synthetic shard " + case + " exact admitted dependency launches",
+                    launched, expected)
+        if failed:
+            diagnostic = {
+                "failed-predecessor": "Command exit 7",
+                "failed-anchor": "Command exit 7",
+                "failed-last": "Command exit 7",
+                "unadmitted": "append-only admission",
+                "late-predecessor": "Partition predecessor did not complete",
+            }[case]
+            require(diagnostic in fixture_record["error"] and diagnostic in stderr.getvalue(),
+                    "Synthetic shard failed for an unrelated reason")
+        if case == "missing":
+            boundary = partitions.partition_start(fixture_record)
+            require(boundary > datetime.datetime.fromisoformat(fixture_record["start"]),
+                    "Synthetic collection did not exercise post-invocation prerequisites")
+            for defect, diagnostic in (
+                ("before-invocation", "precedes invocation"),
+                ("after-completion", "follows receipt completion"),
+                ("invalid-offset", "command boundary"),
+                ("unfinished-collection", "crosses partition execution boundary"),
+                ("early-work", "crosses partition execution boundary"),
+            ):
+                altered = copy.deepcopy(fixture_record)
+                if defect == "before-invocation":
+                    altered["partition_execution"]["start"] = "2026-01-01T00:00:00+00:00"
+                elif defect == "after-completion":
+                    altered["end"] = (boundary - datetime.timedelta(seconds=1)).isoformat()
+                elif defect == "invalid-offset":
+                    altered["partition_execution"]["command_offset"] = -1
+                elif defect == "unfinished-collection":
+                    altered["commands"][-1]["end"] = (
+                        boundary + datetime.timedelta(seconds=1)).isoformat()
+                else:
+                    altered["commands"].append({
+                        "start": (boundary - datetime.timedelta(seconds=1)).isoformat(),
+                    })
+                try:
+                    partitions.partition_start(altered)
+                except AssertionError as error:
+                    require(diagnostic in str(error), "Unexpected chronology rejection")
+                else:
+                    raise AssertionError("Synthetic invalid execution boundary accepted: " + defect)
+                e.assertion("synthetic execution boundary rejects " + defect, True, True)
 
 
 def observe_retained_native(e):

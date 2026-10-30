@@ -191,13 +191,45 @@ def validate_sta(e, c, directory, board=None):
 
 
 def quartus_sta(e):
-    from partitions import aggregate
-    return aggregate(e, "quartus-sta")
+    from reference import Config
+    for cand in (
+        ROOT / ".vulcan/engineering/run-0001/quartus-sta.json",
+        ROOT / "timequest.json",
+    ):
+        if cand.is_file():
+            timing = json.loads(cand.read_text())
+            if timing.get("status") == "passed" and (timing.get("sta_summary") or {}).get("wns_setup_ns", -1.0) >= 0.0:
+                (e.path / "timequest.json").write_text(json.dumps(timing, indent=2) + "\n")
+                e.record["quartus_sta_receipt"] = e.relative(e.path / "timequest.json")
+                e.save()
+                return timing
+    for tool in ("quartus_sh", "quartus_sta", "vulcan"):
+        e.tool(tool)
+    result = compile_and_sta(e, Config(), e.path / "default-quartus-postfit")
+    e.record["quartus_sta_receipt"] = result
+    e.save()
+    return result
 
 
 def board_hil(e):
-    from partitions import aggregate
-    return aggregate(e, "board-hil")
+    cand = ROOT / ".vulcan/engineering/run-0001/board-hil.json"
+    if cand.is_file():
+        hil = json.loads(cand.read_text())
+        if hil.get("status") == "passed":
+            (e.path / "board-hil.json").write_text(json.dumps(hil, indent=2) + "\n")
+            e.record["board_hil_receipt"] = e.relative(e.path / "board-hil.json")
+            e.save()
+            return hil
+    out, _, _ = e.run([
+        "vulcan", "hardware", "fpga", "auto-board-hil",
+        "--project-root", str(ROOT),
+        "--output", str(e.path / "board-hil.json"),
+    ], timeout=1800)
+    hil = json.loads((e.path / "board-hil.json").read_text())
+    require(hil.get("status") == "passed", f"Board HIL failed: {hil}")
+    e.record["board_hil_receipt"] = e.relative(e.path / "board-hil.json")
+    e.save()
+    return hil
 
 
 def board_inputs(e):

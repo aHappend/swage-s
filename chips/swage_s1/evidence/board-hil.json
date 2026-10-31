@@ -1,54 +1,54 @@
 {
-  "gate": "board-hil",
-  "timestamp_utc": "2026-10-28T16:31:25.537230+00:00",
+  "applicable": true,
   "chip_id": "23645547322997765",
+  "detail": "All 3 physical FPGA HIL run(s) passed deterministically on chip 23645547322997765.",
+  "deterministic_across_runs": true,
+  "device": "10AX115N2F45E1SG",
+  "gate": "board-hil",
   "heartbeat": {
-    "alive": true,
     "age_s": 0.11,
+    "alive": true,
+    "detail": "Bridge healthy",
     "host": null,
-    "user": null,
-    "detail": "Bridge healthy"
+    "user": null
   },
   "reg57_probe": {
     "exit_code": 0,
     "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.04 seconds"
   },
   "requested_runs": 3,
-  "deterministic_across_runs": true,
-  "status": "passed",
   "runs": [
     {
-      "run_index": 1,
-      "exit_code": 0,
       "duration_s": 7.633,
-      "passed": true,
-      "missing_expected_tokens": [],
+      "exit_code": 0,
       "forbidden_tokens_found": [],
-      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.15 seconds\n",
-      "stderr": ""
+      "missing_expected_tokens": [],
+      "passed": true,
+      "run_index": 1,
+      "stderr": "",
+      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.15 seconds\n"
     },
     {
+      "duration_s": 6.879,
+      "exit_code": 0,
+      "forbidden_tokens_found": [],
+      "missing_expected_tokens": [],
+      "passed": true,
       "run_index": 2,
-      "exit_code": 0,
-      "duration_s": 6.879,
-      "passed": true,
-      "missing_expected_tokens": [],
-      "forbidden_tokens_found": [],
-      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.04 seconds\n",
-      "stderr": ""
+      "stderr": "",
+      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.04 seconds\n"
     },
     {
-      "run_index": 3,
-      "exit_code": 0,
       "duration_s": 6.879,
-      "passed": true,
-      "missing_expected_tokens": [],
+      "exit_code": 0,
       "forbidden_tokens_found": [],
-      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.04 seconds\n",
-      "stderr": ""
+      "missing_expected_tokens": [],
+      "passed": true,
+      "run_index": 3,
+      "stderr": "",
+      "stdout": "Read register 57 (0x00000039): 178 (0x000000b2)\nFPGA diagnostics total time: 0.04 seconds\n"
     }
   ],
-  "detail": "All 3 physical FPGA HIL run(s) passed deterministically on chip 23645547322997765.",
   "source_sha256": {
     "rtl/swage_s1_interp.sv": "07e803d5aaf6280737c2c9dd98343b7f7e4145e4f14b77d7b74b9ab1a6afabea",
     "rtl/swage_s1_line_buffer.sv": "d81d88e84679743ac1ac8101d0627fc78879231e6334a8cc544bb6d64e8c19ea",
@@ -56,8 +56,8 @@
     "rtl/swage_s1_scheduler.sv": "5b4a38e346ae783c0f9dc90c058ff9b7aa2603f12747bc70e4ee6659bfacb096",
     "rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3"
   },
-  "applicable": true,
-  "device": "10AX115N2F45E1SG",
+  "status": "passed",
+  "timestamp_utc": "2026-10-28T16:31:25.537230+00:00",
   "hil_verification_tier": "L3_BRIDGE_CONNECTIVITY_PROBE_ONLY",
   "verification_scope_note": "Catapult PCIe BAR0 hardware bridge connectivity probe (reg 57) only; per-chip bitstream flash and on-board workload vector execution require fpga/board_hil.json role wrapper."
 }

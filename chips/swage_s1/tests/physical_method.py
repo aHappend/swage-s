@@ -956,6 +956,40 @@ def write_inventory(e):
             "timing": sum(spec["check"] == "quartus-sta-shard" for spec in remaining),
             "hardware": sum(spec["check"] == "board-hil-shard" for spec in remaining),
         },
+        "admission_evidence_scope": (
+            "Source-defined commands and output wiring only, not a reconstruction "
+            "of shared-runtime executable approvals. Coordinator must independently "
+            "resolve supported restoration/admission before physical collection."
+        ),
+        "board_prerequisites": {
+            "required_project_inputs": {
+                name: {"present": (ROOT / name).is_file(),
+                       "sha256": file_hash(ROOT / name) if (ROOT / name).is_file() else None}
+                for name in ("board/system.tcl", "board/pins.tcl",
+                             "board/timing.sdc", "board/verification.json")
+            },
+            "configuration_override": "SWAGE_BOARD_CONFIG may name an authorized "
+                                      "project-relative configuration; no default identity.",
+            "configuration_keys": [
+                "device", "bdf", "vendor_id", "device_id", "cable", "jtag_index",
+                "board-system", "board-settings", "board-sdc", "scaler-clock",
+                "dependencies",
+            ],
+            "provisioning": [
+                "Authorized board/revision-specific Gen3 x8 Qsys generator with "
+                "the exact fpga/README.md exported interface.",
+                "Matching approved pins, lane order, transceivers, PCIe reference "
+                "clock and PERST; actual generated 100 MHz scaler clock and CDC constraints.",
+                "Complete transitive generator/IP/constraint inventory with readable "
+                "origin, installed versions, authorized license use and file hashes.",
+                "Authorized connected host BDF/vendor/device, writable BAR0 access "
+                "and programmer cable/JTAG chain mapping; observe actual Gen3 x8.",
+            ],
+            "resolution_owner": "Coordinator/shared runtime supported board-support export "
+                                "to Designer, then independent Verifier execution.",
+            "limitation": "Missing local files do not establish unavailable hardware. "
+                          "No board probing or programming was executed by this inventory.",
+        },
         "execution_order": [step for step in execution_order(definitions)
                             if step["id"] in {spec["id"] for spec in physical}
                             or step["id"] == "behavior-shard-icarus-154"],

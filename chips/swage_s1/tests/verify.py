@@ -16,6 +16,7 @@ CHECKS = (
     "quartus-sta", "board-hil", "portable-reproduction",
     "behavior-shard", "parameter-shard", "pipeline-shard",
     "quartus-sta-shard", "board-hil-shard",
+    "physical-acceptance-path-parity",
 )
 
 
@@ -32,6 +33,7 @@ def main():
         "board-inputs", "board-discovery", "reset-compute", "quartus-postfit",
         "quartus-interface", "quartus-output",
         "partition-method", "aggregate-repair", "simulator-reuse", "physical-method",
+        "physical-acceptance-path-parity",
     ))
     parser.add_argument("--repair-of", help="Project-relative original preparation receipt")
     parser.add_argument("--simulator", choices=("icarus", "verilator"))
@@ -76,6 +78,10 @@ def main():
         if sharded:
             from partitions import run_partition
             run_partition(evidence, args.check, args.shard, args.simulator)
+        elif (args.check == "physical-acceptance-path-parity"
+              or args.probe == "physical-acceptance-path-parity"):
+            from physical_acceptance import method_checks
+            method_checks(evidence)
         elif args.probe == "partition-method":
             from partitions import method_checks
             method_checks(evidence)

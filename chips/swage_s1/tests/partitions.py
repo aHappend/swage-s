@@ -902,12 +902,20 @@ def validate_partition_result(e, path, record, spec):
     if spec["check"] == "pipeline-shard":
         return validate_pipeline(path, record, spec)
     if spec["check"] == "quartus-sta-shard":
+        require(all(isinstance(result.get(key), list) and result[key]
+                    for key in ("wns_setup_ns", "wns_hold_ns"))
+                and isinstance(result.get("report_sha256"), dict) and result["report_sha256"],
+                "Missing measured physical result: STA declarations are not fitted reports")
         from physical import validate_sta
         c = configuration(spec)
         result = validate_sta(e, c, path.parent / c.label, execution=record)
         require(result == record["partition_result"], "STA ledger differs from raw reports")
         return result
     require(spec["check"] == "board-hil-shard", "Unknown partition result type")
+    require(isinstance(result.get("passes"), list) and result["passes"]
+            and isinstance(result.get("programmed_sof_sha256"), str)
+            and re.fullmatch(r"[0-9a-f]{64}", result["programmed_sof_sha256"]) is not None,
+            "Missing measured physical result: HIL declarations are not programmed workloads")
     return validate_hardware(e, path, record, spec)
 
 

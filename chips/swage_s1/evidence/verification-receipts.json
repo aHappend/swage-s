@@ -2,9 +2,9 @@
   "chip": "Swage-S1",
   "passed_checks": {
     "check:behavior": {
-      "attempt_id": 622,
-      "duration_s": 3279.9796268700156,
-      "stdout_preview": "evidence/checks/behavior-02502cae9a2a4e7aa150e5d5db449b9e/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-02502cae9a2a4e7aa150e5d5db449b9e/receipt.json\"}\n",
+      "attempt_id": 945,
+      "duration_s": 3398.022268698085,
+      "stdout_preview": "evidence/checks/behavior-61f94a0803e244abb647ffb532078edd/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-61f94a0803e244abb647ffb532078edd/receipt.json\"}\n",
       "receipt_count": 3,
       "receipts": [
         {
@@ -3084,13 +3084,13 @@
       ]
     },
     "check:defect-sensitivity": {
-      "attempt_id": 623,
-      "duration_s": 0.6082901959307492,
-      "stdout_preview": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/receipt.json\"}\n",
+      "attempt_id": 946,
+      "duration_s": 0.6111332708969712,
+      "stdout_preview": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/receipt.json",
+          "path": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3115,8 +3115,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004711976973339915,
-                "end": "2026-10-30T18:04:25.671823+00:00",
+                "duration_s": 0.004493797197937965,
+                "end": "2026-10-31T10:45:43.763893+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3125,9 +3125,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-30T18:04:25.666298+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00000-version-python3.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00000-version-python3.stdout",
+                "start": "2026-10-31T10:45:43.758620+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00000-version-python3.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3138,8 +3138,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.016697451937943697,
-                "end": "2026-10-30T18:04:25.725764+00:00",
+                "duration_s": 0.01653820904903114,
+                "end": "2026-10-31T10:45:43.817016+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3148,9 +3148,9 @@
                   "iverilog",
                   "-V"
                 ],
-                "start": "2026-10-30T18:04:25.708220+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00001-version-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00001-version-iverilog.stdout",
+                "start": "2026-10-31T10:45:43.799656+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00001-version-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00001-version-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3161,8 +3161,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.008340389933437109,
-                "end": "2026-10-30T18:04:25.737468+00:00",
+                "duration_s": 0.008197810966521502,
+                "end": "2026-10-31T10:45:43.828311+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3171,9 +3171,9 @@
                   "vvp",
                   "-V"
                 ],
-                "start": "2026-10-30T18:04:25.728170+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00002-version-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00002-version-vvp.stdout",
+                "start": "2026-10-31T10:45:43.819172+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00002-version-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00002-version-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3193,18 +3193,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.032538605155423284,
-                "end": "2026-10-30T18:04:25.778745+00:00",
+                "duration_s": 0.032476678024977446,
+                "end": "2026-10-31T10:45:43.869248+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3224,30 +3224,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/tb.sv"
                 ],
-                "start": "2026-10-30T18:04:25.745280+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00003-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00003-iverilog.stdout",
+                "start": "2026-10-31T10:45:43.835884+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00003-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00003-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation",
-                "duration_s": 0.03275335603393614,
-                "end": "2026-10-30T18:04:25.846347+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation",
+                "duration_s": 0.03233039518818259,
+                "end": "2026-10-31T10:45:43.937676+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3255,12 +3255,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-30T18:04:25.812644+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00004-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00004-vvp.stdout",
+                "start": "2026-10-31T10:45:43.904429+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00004-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00004-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3280,18 +3280,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.03265663608908653,
-                "end": "2026-10-30T18:04:25.884144+00:00",
+                "duration_s": 0.032474254025146365,
+                "end": "2026-10-31T10:45:43.975216+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3311,30 +3311,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/tb.sv"
                 ],
-                "start": "2026-10-30T18:04:25.850432+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00005-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00005-iverilog.stdout",
+                "start": "2026-10-31T10:45:43.941695+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00005-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00005-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation",
-                "duration_s": 0.0324864590074867,
-                "end": "2026-10-30T18:04:25.950933+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation",
+                "duration_s": 0.032390256179496646,
+                "end": "2026-10-31T10:45:44.043612+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3342,12 +3342,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-30T18:04:25.917440+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00006-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00006-vvp.stdout",
+                "start": "2026-10-31T10:45:44.010188+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00006-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00006-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3367,18 +3367,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.03267658408731222,
-                "end": "2026-10-30T18:04:25.988575+00:00",
+                "duration_s": 0.03245315398089588,
+                "end": "2026-10-31T10:45:44.081109+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3398,30 +3398,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/tb.sv"
                 ],
-                "start": "2026-10-30T18:04:25.954852+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00007-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00007-iverilog.stdout",
+                "start": "2026-10-31T10:45:44.047582+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00007-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00007-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation",
-                "duration_s": 0.03250622493214905,
-                "end": "2026-10-30T18:04:26.062157+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation",
+                "duration_s": 0.03231222997419536,
+                "end": "2026-10-31T10:45:44.148601+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3429,18 +3429,18 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-30T18:04:26.028538+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00008-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-8a467e29ea3c4ed38af17c9c84260210/00008-vvp.stdout",
+                "start": "2026-10-31T10:45:44.115211+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00008-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-be1b9cc8647b406590eb89baaaf714d0/00008-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-10-30T18:04:26.064381+00:00",
+            "end": "2026-10-31T10:45:44.150782+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3464,7 +3464,7 @@
               "tests/implementation_checks.py": "39c9a3bfa529cb37aa9de5d03817c023af4fb73003be8a2186d04fae8c14cb8a",
               "tests/partitions.py": "c9338a305a5404a63bd49539885b2ac5458a3e36bf2c636de9e368edd540c35f",
               "tests/physical.py": "c6b0077c6d143462e3be13a5c4d83dbd30092e007d5121f9403339a6b1b20f9f",
-              "tests/physical_evidence.py": "0040697bd24be09b75fc2776886b08bdf74d01beb88fe9737291251a7defa391",
+              "tests/physical_evidence.py": "31bf59645860fb13bbb5c3a51ffcf93cf8ee40e7218f6deb83a4cc2b18c5e571",
               "tests/physical_method.py": "82418587633094878d77320f562873dc1040b54046839a0769842a167b518a0f",
               "tests/recovery_checks.py": "c99e367c2fed56d649b857032661b9460ed85c00050ac69f1cef887cc381f615",
               "tests/reference.py": "14589cfafc6b635b43a22770453ee1a41c0355486cf31dc50da84229115d9fa1",
@@ -3474,7 +3474,7 @@
               "tests/verify.py": "2fb5b958f4c1ec2f1561407a25e06aae4b15993a39718033a7a8ef36107f3dea"
             },
             "sources_unchanged": true,
-            "start": "2026-10-30T18:04:25.647180+00:00",
+            "start": "2026-10-31T10:45:43.739623+00:00",
             "status": "passed",
             "tool_commands": {
               "iverilog": 1,
@@ -4042,13 +4042,13 @@
       ]
     },
     "check:synthesis": {
-      "attempt_id": 624,
-      "duration_s": 126.13828214304522,
-      "stdout_preview": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/receipt.json\"}\n",
+      "attempt_id": 947,
+      "duration_s": 115.53490569605492,
+      "stdout_preview": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/receipt.json",
+          "path": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -4073,8 +4073,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004434799076989293,
-                "end": "2026-10-30T18:05:04.642004+00:00",
+                "duration_s": 0.00473098992370069,
+                "end": "2026-10-31T10:46:30.963880+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4083,9 +4083,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-30T18:05:04.636759+00:00",
-                "stderr": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00000-version-python3.stderr",
-                "stdout": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00000-version-python3.stdout",
+                "start": "2026-10-31T10:46:30.958301+00:00",
+                "stderr": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00000-version-python3.stderr",
+                "stdout": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4096,8 +4096,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.016526052029803395,
-                "end": "2026-10-30T18:05:04.694690+00:00",
+                "duration_s": 0.016821477096527815,
+                "end": "2026-10-31T10:46:31.019096+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4106,9 +4106,9 @@
                   "yosys",
                   "-V"
                 ],
-                "start": "2026-10-30T18:05:04.677188+00:00",
-                "stderr": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00001-version-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00001-version-yosys.stdout",
+                "start": "2026-10-31T10:46:31.001415+00:00",
+                "stderr": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00001-version-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00001-version-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4118,12 +4118,12 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 5.22783486591652,
-                "end": "2026-10-30T18:05:09.941422+00:00",
+                "duration_s": 4.223708566045389,
+                "end": "2026-10-31T10:46:35.262392+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4133,11 +4133,11 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-10-30T18:05:04.712768+00:00",
-                "stderr": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00002-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00002-yosys.stdout",
+                "start": "2026-10-31T10:46:31.037840+00:00",
+                "stderr": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00002-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00002-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               },
@@ -4147,12 +4147,12 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 117.65529668098316,
-                "end": "2026-10-30T18:07:07.685983+00:00",
+                "duration_s": 108.03797371895052,
+                "end": "2026-10-31T10:48:23.391341+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4162,17 +4162,17 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-10-30T18:05:10.029733+00:00",
-                "stderr": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00003-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-d5ae7b4b753848398b1bee2218c80443/00003-yosys.stdout",
+                "start": "2026-10-31T10:46:35.352305+00:00",
+                "stderr": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00003-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-791d76ec58a344dca4942bed875e40ec/00003-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               }
             ],
             "cwd": ".",
-            "end": "2026-10-30T18:07:10.547380+00:00",
+            "end": "2026-10-31T10:48:26.269004+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -4196,7 +4196,7 @@
               "tests/implementation_checks.py": "39c9a3bfa529cb37aa9de5d03817c023af4fb73003be8a2186d04fae8c14cb8a",
               "tests/partitions.py": "c9338a305a5404a63bd49539885b2ac5458a3e36bf2c636de9e368edd540c35f",
               "tests/physical.py": "c6b0077c6d143462e3be13a5c4d83dbd30092e007d5121f9403339a6b1b20f9f",
-              "tests/physical_evidence.py": "0040697bd24be09b75fc2776886b08bdf74d01beb88fe9737291251a7defa391",
+              "tests/physical_evidence.py": "31bf59645860fb13bbb5c3a51ffcf93cf8ee40e7218f6deb83a4cc2b18c5e571",
               "tests/physical_method.py": "82418587633094878d77320f562873dc1040b54046839a0769842a167b518a0f",
               "tests/recovery_checks.py": "c99e367c2fed56d649b857032661b9460ed85c00050ac69f1cef887cc381f615",
               "tests/reference.py": "14589cfafc6b635b43a22770453ee1a41c0355486cf31dc50da84229115d9fa1",
@@ -4206,7 +4206,7 @@
               "tests/verify.py": "2fb5b958f4c1ec2f1561407a25e06aae4b15993a39718033a7a8ef36107f3dea"
             },
             "sources_unchanged": true,
-            "start": "2026-10-30T18:05:04.617915+00:00",
+            "start": "2026-10-31T10:46:30.938650+00:00",
             "status": "passed",
             "tool_commands": {
               "python3": 0,

@@ -66,14 +66,15 @@ def main():
         args.check or f"verifier-{args.probe}", preparation=bool(args.probe),
         output_prefix=output_prefix,
     )
-    if args.repair_of:
-        original = Path(args.repair_of)
-        require(not original.is_absolute() and ".." not in original.parts and original.is_file(),
-                "--repair-of must identify an existing project-relative receipt")
-        evidence.record["repair_of"] = args.repair_of
-        evidence.save()
     error = None
     try:
+        if args.repair_of:
+            original = Path(args.repair_of)
+            evidence.record["repair_of"] = args.repair_of
+            evidence.save()
+            require(not original.is_absolute() and ".." not in original.parts
+                    and original.is_file(),
+                    "--repair-of must identify an existing project-relative receipt")
         evidence.tool("python3")
         if sharded:
             from partitions import run_partition

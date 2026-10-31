@@ -11,10 +11,11 @@ First behavior: Icarus 154. First timing: 178, then 166. First hardware: 10.
 Call-0128 admits a fresh recovery chain if the shared runtime cannot restore
 the original predecessor exactly. It must attempt restoration before scheduling
 this chain. Historical receipts are retained, never relinked or selected.
-Icarus retains each original scenario in a separate process, including its
-original ID, reset prelude and three-frame transaction. Functional watchdogs
-and integer/float comparisons are unchanged. Duration/cycle tier violations
-fail after retaining the observation, not by shortening a child timeout.
+Icarus executes compact portability scenarios, with original scenario IDs,
+reset preludes and three-frame transactions. Compiled Verilator retains the
+entire frozen matrix. Historical supplemental commands remain addressable;
+only the declared portability subset is needed by the behavior aggregate.
+Functional watchdogs and integer/float comparisons are unchanged.
 Invalid-parameter cases validate the exact INVALID_TB compiler command or the
 source/configuration/tool-bound retained build, then independently validate the
 current diagnostic execution and its executable. Build reuse never substitutes
@@ -32,12 +33,16 @@ import os
 from pathlib import Path
 import re
 import struct
+import time
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from functools import lru_cache
 
 from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require, stamp
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
-from simulation import parameter_cases, scenario_records
+from simulation import (
+    ICARUS_BEHAVIOR_SHARDS, parameter_cases, partition_scenarios,
+    portability_configuration, scenario_records,
+)
 
 
 PREVIOUS_IDENTITY = "swage-s1-scheduling-recovery-call-0017-v1"
@@ -103,6 +108,20 @@ def contract():
                 for index, record in enumerate(scenario_records(c))
             ]} for c in behavior
         ],
+        "simulation_tiers": {
+            "icarus_shards": list(ICARUS_BEHAVIOR_SHARDS),
+            "icarus": [
+                {"requested_configuration": c.parameters(),
+                 "configuration": portability_configuration(c).parameters(),
+                 "scenarios": [
+                     {"id": ident, **record, "frames": 3}
+                     for ident, record in partition_scenarios(
+                         portability_configuration(c), "icarus")
+                 ]}
+                for c in behavior
+            ],
+            "verilator": "complete frozen behavior and reset matrix",
+        },
         "parameters": parameter_cases(), "parameter_partition_count_per_simulator": 7,
         "pipeline": pipeline, "timing": [c.parameters() for c in timing],
         "hardware": [c.parameters() for c in hardware],
@@ -146,6 +165,11 @@ def check_definitions():
         }
         if configuration is not None:
             spec["configuration"] = configuration
+            if check == "behavior-shard" and simulator == "icarus":
+                requested = Config(*(configuration[key] for key in Config().parameters()))
+                spec["requested_configuration"] = configuration
+                spec["configuration"] = portability_configuration(requested).parameters()
+                spec["simulation_tier"] = "compact-portability"
         if cases is not None:
             spec["case_ids"] = cases
         definitions.append(spec)
@@ -187,7 +211,14 @@ def spec_for(check, shard, simulator):
 
 def aggregate_dependencies():
     return {
-        gate: [spec["id"] for spec in check_definitions() if spec["check"] in checks]
+        gate: [
+            spec["id"] for spec in check_definitions()
+            if spec["check"] in checks
+            and not (spec["check"] == "behavior-shard"
+                     and spec["simulator"] == "icarus"
+                     and "shard" in spec
+                     and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)
+        ]
         for gate, checks in (
             ("behavior", ("behavior-shard", "parameter-shard", "pipeline-shard")),
             ("quartus-sta", ("quartus-sta-shard",)),
@@ -206,7 +237,11 @@ def execution_order(definitions):
     require(len(by_id) == len(definitions), "Duplicate partition scheduling identity")
     require(set(priority) <= set(by_id), "Missing recovery priority partition")
     ordered = [by_id[ident] for ident in priority]
-    ordered.extend(spec for spec in definitions if spec["id"] not in priority)
+    ordered.extend(
+        spec for spec in definitions if spec["id"] not in priority
+        and not (spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"
+                 and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)
+    )
     steps, emitted = [], set()
     for spec in ordered:
         require(set(spec["depends_on"]) <= emitted,
@@ -261,6 +296,8 @@ def scheduling_plan():
         "sequential_execution_order": execution_order(definitions),
         "sequential_execution_note": (
             "Advisory order only, not permission to execute or an assertion of admission. "
+            "Historical Icarus sweep commands remain addressable but are not scheduled; "
+            "the compact portability tier supplements the complete compiled matrix. "
             "A consumer without DAG support must independently admit missing checks and "
             "resolve existing output-selector conflicts before scheduling this sequence. "
             "Stop on any failed prerequisite; never advance to dependent aggregators."
@@ -541,7 +578,10 @@ def run_partition(e, check, shard, simulator):
     if check == "behavior-shard" and (simulator, shard) == ("icarus", 154):
         e.assertion("first behavior index", spec["shard"], 154)
         e.assertion("first behavior full parameter tuple",
-                    list(spec["configuration"].values()), [2, 7, 3, 4096, 8, 3, 16, 0])
+                    list(spec["requested_configuration"].values()),
+                    [2, 7, 3, 4096, 8, 3, 16, 0])
+        e.assertion("first behavior compact execution tuple",
+                    list(spec["configuration"].values()), [8, 8, 16, 16, 8, 3, 16, 0])
         e.assertion("scheduling contract identity", e.record["scheduling_contract"]["identity"],
                     IDENTITY)
     found = successes(e)
@@ -561,7 +601,7 @@ def run_partition(e, check, shard, simulator):
     behavior, timing, hardware, pipeline = inventories()
     if check == "behavior-shard":
         from simulation import execute_partition
-        c = behavior[shard]
+        c = configuration(spec)
         result = execute_partition(e, simulator, c, e.path / f"{simulator}-{c.label}")
     elif check == "parameter-shard":
         from simulation import parameter_checks
@@ -613,13 +653,17 @@ def validate_behavior(path, record, spec):
     directory = path.parent / f"{spec['simulator']}-{c.label}"
     validate_compile(path, record, spec["simulator"], c.parameters(),
                      directory / "tb.sv", STREAM_TB)
-    scenarios = list(scenario_records(c))
+    inventory = partition_scenarios(c, spec["simulator"])
+    scenarios = [scenario for _, scenario in inventory]
     parsed = []
     if spec["simulator"] == "icarus":
         observations = result["scenario_observations"]
-        require([obs["id"] for obs in observations] == list(range(len(scenarios))),
+        require([obs["id"] for obs in observations] == [ident for ident, _ in inventory],
                 "Icarus scenario process inventory incomplete")
-        for ident, (scenario, observation) in enumerate(zip(scenarios, observations)):
+        require(c == portability_configuration(c)
+                and spec.get("simulation_tier") == "compact-portability",
+                "Icarus partition is not a compact portability configuration")
+        for (ident, scenario), observation in zip(inventory, observations):
             require(observation["duration_s"] < 60
                     and observation["complete_cycles"] <= 500000,
                     "Retained Icarus scenario violates interpreted tier")
@@ -644,7 +688,7 @@ def validate_behavior(path, record, spec):
         require([{key: model[key] for key in ("id", "pattern", "stall", "seed", "abort", "frames")}
                  for model in models] == [
                      {"id": ident, **scenario, "frames": 3}
-                     for ident, scenario in enumerate(scenarios)],
+                     for ident, scenario in inventory],
                 "Verilator scenario inventory incomplete")
         parsed = parse_stream_output(c, "verilator", scenarios, models,
                                      read_raw(path, result["raw_output"]))["cases"]
@@ -945,6 +989,7 @@ def execute_prerequisites(e, gate, found, *, workers=4):
         "workers": workers, "hardware_serialized": True, "launched": [], "completed": [],
     }
     execution = e.record["prerequisite_execution"]
+    heartbeat = time.monotonic()
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while pending or active:
             for ident, spec in list(pending.items()):
@@ -965,7 +1010,11 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                 if physical:
                     break
             require(active, f"Dependency graph made no progress: {sorted(pending)}")
-            done, _ = wait(active, return_when=FIRST_COMPLETED)
+            done, _ = wait(active, timeout=30, return_when=FIRST_COMPLETED)
+            if time.monotonic() - heartbeat >= 30:
+                print(f"{gate}: completed {len(execution['completed'])}/{len(missing)} "
+                      f"prerequisites, active {len(active)}, pending {len(pending)}", flush=True)
+                heartbeat = time.monotonic()
             for future in done:
                 ident = active.pop(future)
                 # Settle already-running children before propagating a failure.
@@ -980,12 +1029,10 @@ def execute_prerequisites(e, gate, found, *, workers=4):
 
 def aggregate(e, gate):
     """All expected partitions are mandatory; failed/interrupted ones never count."""
-    wanted = {
-        "behavior": ("behavior-shard", "parameter-shard", "pipeline-shard"),
-        "quartus-sta": ("quartus-sta-shard",), "board-hil": ("board-hil-shard",),
-    }[gate]
+    started = time.monotonic()
     definitions = check_definitions()
-    specs = [spec for spec in definitions if spec["check"] in wanted]
+    required = set(aggregate_dependencies()[gate])
+    specs = [spec for spec in definitions if spec["id"] in required]
     found = successes(e)
     found = execute_prerequisites(e, gate, found)
     missing = [spec["id"] for spec in specs if spec["id"] not in found]
@@ -1018,7 +1065,17 @@ def aggregate(e, gate):
         links.append({"id": spec["id"], "receipt": e.relative(path), "sha256": file_hash(path)})
     if gate == "behavior":
         from simulation import coverage_totals
-        e.assertion("configuration/simulator partitions", len(ledger), 336)
+        e.assertion("configuration/simulator partitions", len(ledger),
+                    168 + len(ICARUS_BEHAVIOR_SHARDS))
+        e.assertion("complete compiled configuration inventory",
+                    [run["configuration"] for run in ledger
+                     if run["simulator"] == "verilator"],
+                    [c.parameters() for c in inventories()[0]])
+        e.assertion("compact portability configuration inventory",
+                    [run["configuration"] for run in ledger
+                     if run["simulator"] == "icarus"],
+                    [spec["configuration"] for spec in specs
+                     if spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"])
         e.assertion("parameter partitions", len(parameters), 14)
         e.assertion("pipeline partitions", len(pipelines), 12)
         for simulator in SIM_TOOLS:
@@ -1027,7 +1084,23 @@ def aggregate(e, gate):
             e.assertion(f"{simulator} exact legal/illegal parameter inventory",
                         sorted(case["id"] for case in cases),
                         list(range(len(parameter_cases()))))
-        coverage_totals(e, ledger)
+        coverage_totals(e, [run for run in ledger if run["simulator"] == "verilator"])
+        e.record["simulation_tiering"] = {
+            "icarus": {
+                "scope": "compact portability, startup, stalls and reset",
+                "shards": list(ICARUS_BEHAVIOR_SHARDS),
+                "configurations": len(ICARUS_BEHAVIOR_SHARDS),
+            },
+            "verilator": {
+                "scope": "complete frozen numerical/protocol/reset matrix",
+                "configurations": 168,
+            },
+            "elapsed_s": time.monotonic() - started,
+            "check_budget_s": 2700,
+        }
+        e.save()
+        e.assertion("measured behavior completion within patrol budget",
+                    e.record["simulation_tiering"]["elapsed_s"] < 2700, True)
     else:
         e.assertion("full physical configuration inventory", len(ledger),
                     192 if gate == "quartus-sta" else 48)
@@ -1100,8 +1173,8 @@ def method_checks(e):
                     if spec["id"] in deps["behavior"]), True)
     output_method_checks(e)
     steps = plan["sequential_execution_order"]
-    e.assertion("linear schedule includes all partitions and seven original gates",
-                len(steps), 609)
+    e.assertion("linear schedule includes tiered partitions and seven original gates",
+                len(steps), 454)
     e.assertion("linear schedule has no duplicate steps",
                 len({step["id"] for step in steps}), len(steps))
     e.assertion("linear schedule prioritizes admitted recovery observations",
@@ -1111,7 +1184,9 @@ def method_checks(e):
                 ])
     e.assertion("linear schedule preserves exact partition commands",
                 {step["id"]: step["argv"] for step in steps[:-7]},
-                {spec["id"]: spec["argv"] for spec in definitions})
+                {spec["id"]: spec["argv"] for spec in definitions
+                 if not (spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"
+                         and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)})
     e.assertion("linear schedule retains every unchanged original command",
                 [step["argv"] for step in steps[-7:]],
                 plan["original_commands_remain_mandatory"])
@@ -1143,7 +1218,29 @@ def method_checks(e):
         )
         require("--scheduling-plan does not accept execution/probe options" in err,
                 "Scheduling export did not reject execution options explicitly")
-    e.assertion("behavior aggregate dependencies", len(deps["behavior"]), 362)
+    e.assertion("behavior aggregate dependencies", len(deps["behavior"]), 207)
+    e.assertion("portability partitions do not duplicate the compiled sweep",
+                [spec["shard"] for spec in definitions
+                 if spec["id"] in deps["behavior"]
+                 and spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"],
+                [154, *range(12)])
+    behavior_configs = inventories()[0]
+    for index, c in enumerate(behavior_configs):
+        complete = list(enumerate(scenario_records(c)))
+        e.assertion(f"Verilator {index} retains every original scenario",
+                    partition_scenarios(c, "verilator"), complete)
+        compact = portability_configuration(c)
+        e.assertion(f"Icarus {index} has bounded actual geometry",
+                    max(compact.sw, compact.sh, compact.dw, compact.dh) <= 32, True)
+        e.assertion(f"Icarus {index} preserves packed arithmetic parameters",
+                    (compact.bits, compact.channels, compact.frac, compact.mode),
+                    (c.bits, c.channels, c.frac, c.mode))
+        selected = partition_scenarios(compact, "icarus")
+        require(selected and len(selected) < len(list(scenario_records(compact)))
+                and {record["stall"] for _, record in selected} == {0, 1, 2}
+                and all((ident, record) in enumerate(scenario_records(compact))
+                        for ident, record in selected),
+                "Compact portability inventory lost stalls or original scenario identities")
     e.assertion("timing aggregate dependencies", len(deps["quartus-sta"]), 192)
     e.assertion("hardware aggregate dependencies", len(deps["board-hil"]), 48)
     emitted = set()
@@ -1157,7 +1254,10 @@ def method_checks(e):
         "--simulator", "icarus", "--shard", "154",
     ])
     e.assertion("first exact parameter tuple",
-                list(definitions[0]["configuration"].values()), [2, 7, 3, 4096, 8, 3, 16, 0])
+                list(definitions[0]["requested_configuration"].values()),
+                [2, 7, 3, 4096, 8, 3, 16, 0])
+    e.assertion("first actual portability parameter tuple",
+                list(definitions[0]["configuration"].values()), [8, 8, 16, 16, 8, 3, 16, 0])
     e.assertion("first timing indices",
                 [s["shard"] for s in definitions if s["check"] == "quartus-sta-shard"][:2],
                 [178, 166])

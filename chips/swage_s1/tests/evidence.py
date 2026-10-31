@@ -55,7 +55,8 @@ def partition_receipts(directory):
     # Keep historical receipts visible for explicit exclusion, not reuse.
     patterns = {"*-shard-*/receipt.json"}
     patterns.update(f"{prefix}-*/receipt.json"
-                    for prefix in ADMITTED_PARTITION_OUTPUTS.values())
+                    for prefix in ADMITTED_PARTITION_OUTPUTS.values()
+                    if "-shard-" not in f"{prefix}-")
     return sorted({path for pattern in patterns for path in directory.glob(pattern)})
 
 

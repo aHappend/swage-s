@@ -142,16 +142,11 @@ def validate_native_gate(e, gate):
     native_requirements(gate, native)
     specs = [spec for spec in check_definitions() if spec["check"] == gate + "-shard"]
     require(specs, "Empty physical configuration coverage")
-    if hasattr(aggregate, "_mock_name") or not e.record.get("acceptance_evidence"):
-        results = aggregate(e, gate)
-        configuration_inventory(
-            [result["configuration"] for result in results],
-            [spec["configuration"] for spec in specs],
-        )
-    else:
-        results = [{"configuration": spec["configuration"]} for spec in specs]
-        ledger = "sta-ledger.json" if gate == "quartus-sta" else "hil-ledger.json"
-        (e.path / ledger).write_text(json.dumps(results, indent=2) + "\n")
+    results = aggregate(e, gate)
+    configuration_inventory(
+        [result["configuration"] for result in results],
+        [spec["configuration"] for spec in specs],
+    )
     require(file_hash(path) == digest, "Authoritative receipt changed during validation")
     binding["status"] = "validated"
     e.save()

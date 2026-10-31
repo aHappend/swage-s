@@ -2,9 +2,9 @@
   "chip": "Swage-S1",
   "passed_checks": {
     "check:behavior": {
-      "attempt_id": 954,
-      "duration_s": 3581.9572481468786,
-      "stdout_preview": "evidence/checks/behavior-92f104af8f35476b9acb21b3b4bfd13f/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-92f104af8f35476b9acb21b3b4bfd13f/receipt.json\"}\n",
+      "attempt_id": 972,
+      "duration_s": 98.37104520900175,
+      "stdout_preview": "evidence/checks/behavior-bc6ce131e1ab4c5297062a2d709982ed/receipt.json\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-bc6ce131e1ab4c5297062a2d709982ed/receipt.json\"}\n",
       "receipt_count": 3,
       "receipts": [
         {
@@ -1980,7 +1980,7 @@
           }
         },
         {
-          "path": "evidence/checks/behavior-50dbb624adf54739ab3db63fe739aacc/prerequisite-plan.json",
+          "path": "evidence/checks/behavior-44a7c1f4e42345d2a7e0a8bc935b3d2d/prerequisite-plan.json",
           "data": {
             "advisory_only": true,
             "execution_owner": "shared runtime",
@@ -2968,13 +2968,13 @@
       ]
     },
     "check:board-hil": {
-      "attempt_id": 959,
-      "duration_s": 0.24216974806040525,
-      "stdout_preview": "evidence/checks/board-hil-c47df64991f842fb92e23bfae4475da3/receipt.json\n{\"check\": \"board-hil\", \"status\": \"passed\", \"receipt\": \"evidence/checks/board-hil-c47df64991f842fb92e23bfae4475da3/receipt.json\"}\n",
+      "attempt_id": 968,
+      "duration_s": 0.2849787510931492,
+      "stdout_preview": "evidence/checks/board-hil-dd8fd75c66204658aa35b9584155df69/receipt.json\n{\"check\": \"board-hil\", \"status\": \"passed\", \"receipt\": \"evidence/checks/board-hil-dd8fd75c66204658aa35b9584155df69/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/board-hil-c47df64991f842fb92e23bfae4475da3/receipt.json",
+          "path": "evidence/checks/board-hil-dd8fd75c66204658aa35b9584155df69/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3006,8 +3006,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.0045286850072443485,
-                "end": "2026-10-31T12:09:54.313613+00:00",
+                "duration_s": 0.004816731903702021,
+                "end": "2026-10-31T12:29:23.584306+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3016,15 +3016,15 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:09:54.308528+00:00",
-                "stderr": "evidence/checks/board-hil-c47df64991f842fb92e23bfae4475da3/00000-version-python3.stderr",
-                "stdout": "evidence/checks/board-hil-c47df64991f842fb92e23bfae4475da3/00000-version-python3.stdout",
+                "start": "2026-10-31T12:29:23.578483+00:00",
+                "stderr": "evidence/checks/board-hil-dd8fd75c66204658aa35b9584155df69/00000-version-python3.stderr",
+                "stdout": "evidence/checks/board-hil-dd8fd75c66204658aa35b9584155df69/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:09:54.377591+00:00",
+            "end": "2026-10-31T12:29:23.646377+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3059,7 +3059,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:09:54.297459+00:00",
+            "start": "2026-10-31T12:29:23.559435+00:00",
             "status": "passed",
             "tool_commands": {
               "python3": 0
@@ -3079,13 +3079,13 @@
       ]
     },
     "check:defect-sensitivity": {
-      "attempt_id": 955,
-      "duration_s": 0.5655058089178056,
-      "stdout_preview": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/receipt.json\"}\n",
+      "attempt_id": 973,
+      "duration_s": 0.5473937310744077,
+      "stdout_preview": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/receipt.json",
+          "path": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3110,8 +3110,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004426043946295977,
-                "end": "2026-10-31T12:04:22.674388+00:00",
+                "duration_s": 0.004334758035838604,
+                "end": "2026-10-31T12:43:14.941288+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3120,9 +3120,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:04:22.669538+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00000-version-python3.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00000-version-python3.stdout",
+                "start": "2026-10-31T12:43:14.936440+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00000-version-python3.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3133,8 +3133,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.0164723158814013,
-                "end": "2026-10-31T12:04:22.712071+00:00",
+                "duration_s": 0.016365062911063433,
+                "end": "2026-10-31T12:43:14.978683+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3143,9 +3143,9 @@
                   "iverilog",
                   "-V"
                 ],
-                "start": "2026-10-31T12:04:22.695136+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00001-version-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00001-version-iverilog.stdout",
+                "start": "2026-10-31T12:43:14.961879+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00001-version-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00001-version-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3156,8 +3156,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.008466677973046899,
-                "end": "2026-10-31T12:04:22.724180+00:00",
+                "duration_s": 0.008031955920159817,
+                "end": "2026-10-31T12:43:14.988452+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3166,9 +3166,9 @@
                   "vvp",
                   "-V"
                 ],
-                "start": "2026-10-31T12:04:22.714679+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00002-version-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00002-version-vvp.stdout",
+                "start": "2026-10-31T12:43:14.979905+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00002-version-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00002-version-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3188,18 +3188,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.032545677153393626,
-                "end": "2026-10-31T12:04:22.765748+00:00",
+                "duration_s": 0.032407794846221805,
+                "end": "2026-10-31T12:43:15.025823+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3219,30 +3219,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/tb.sv"
                 ],
-                "start": "2026-10-31T12:04:22.732294+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00003-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00003-iverilog.stdout",
+                "start": "2026-10-31T12:43:14.992929+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00003-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00003-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation",
-                "duration_s": 0.03263177792541683,
-                "end": "2026-10-31T12:04:22.832677+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation",
+                "duration_s": 0.03260243800468743,
+                "end": "2026-10-31T12:43:15.096819+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3250,12 +3250,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-31T12:04:22.799124+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00004-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00004-vvp.stdout",
+                "start": "2026-10-31T12:43:15.063183+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00004-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00004-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3275,18 +3275,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.03252677107229829,
-                "end": "2026-10-31T12:04:22.870169+00:00",
+                "duration_s": 0.032398497918620706,
+                "end": "2026-10-31T12:43:15.134334+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3306,30 +3306,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/tb.sv"
                 ],
-                "start": "2026-10-31T12:04:22.836614+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00005-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00005-iverilog.stdout",
+                "start": "2026-10-31T12:43:15.100880+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00005-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00005-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation",
-                "duration_s": 0.03256440092809498,
-                "end": "2026-10-31T12:04:22.943564+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation",
+                "duration_s": 0.032769910991191864,
+                "end": "2026-10-31T12:43:15.188016+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3337,12 +3337,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-31T12:04:22.909962+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00006-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00006-vvp.stdout",
+                "start": "2026-10-31T12:43:15.154647+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00006-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00006-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3362,18 +3362,18 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.0325062230695039,
-                "end": "2026-10-31T12:04:22.979189+00:00",
+                "duration_s": 0.03264746186323464,
+                "end": "2026-10-31T12:43:15.226477+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3393,30 +3393,30 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/tb.sv"
                 ],
-                "start": "2026-10-31T12:04:22.946046+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00007-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00007-iverilog.stdout",
+                "start": "2026-10-31T12:43:15.192584+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00007-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00007-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation",
-                "duration_s": 0.032618653029203415,
-                "end": "2026-10-31T12:04:23.054138+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation",
+                "duration_s": 0.03280042810365558,
+                "end": "2026-10-31T12:43:15.300474+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3424,18 +3424,18 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-10-31T12:04:23.020199+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00008-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-bc15be10d4c547f1b1a994a56870ee63/00008-vvp.stdout",
+                "start": "2026-10-31T12:43:15.266536+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00008-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-d160298c9e58483aab1d086f0622154b/00008-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:04:23.056602+00:00",
+            "end": "2026-10-31T12:43:15.302630+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3470,7 +3470,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:04:22.658198+00:00",
+            "start": "2026-10-31T12:43:14.925594+00:00",
             "status": "passed",
             "tool_commands": {
               "iverilog": 1,
@@ -3508,13 +3508,13 @@
       ]
     },
     "check:portable-reproduction": {
-      "attempt_id": 960,
-      "duration_s": 4.912640496855602,
-      "stdout_preview": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/receipt.json\n{\"check\": \"portable-reproduction\", \"status\": \"passed\", \"receipt\": \"evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/receipt.json\"}\n",
+      "attempt_id": 969,
+      "duration_s": 4.685842289822176,
+      "stdout_preview": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/receipt.json\n{\"check\": \"portable-reproduction\", \"status\": \"passed\", \"receipt\": \"evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/receipt.json",
+          "path": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3525,7 +3525,7 @@
             ],
             "assertions": [],
             "check": "portable-reproduction",
-            "clean_reproduction_receipt": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/clean/evidence/checks/bounded-reproduction-5f7dbaaac9804ea3997def1f251f0013/receipt.json",
+            "clean_reproduction_receipt": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/clean/evidence/checks/bounded-reproduction-987953084e1c475d82aa28ba60ea65da/receipt.json",
             "commands": [
               {
                 "argv": [
@@ -3534,8 +3534,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004758903989568353,
-                "end": "2026-10-31T12:10:45.786529+00:00",
+                "duration_s": 0.004805029835551977,
+                "end": "2026-10-31T12:30:14.695692+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3544,9 +3544,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:10:45.780886+00:00",
-                "stderr": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00000-version-python3.stderr",
-                "stdout": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00000-version-python3.stdout",
+                "start": "2026-10-31T12:30:14.690123+00:00",
+                "stderr": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00000-version-python3.stderr",
+                "stdout": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3557,8 +3557,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.03273491095751524,
-                "end": "2026-10-31T12:10:45.840755+00:00",
+                "duration_s": 0.01671796408481896,
+                "end": "2026-10-31T12:30:14.732497+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3567,9 +3567,9 @@
                   "iverilog",
                   "-V"
                 ],
-                "start": "2026-10-31T12:10:45.807165+00:00",
-                "stderr": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00001-version-iverilog.stderr",
-                "stdout": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00001-version-iverilog.stdout",
+                "start": "2026-10-31T12:30:14.714845+00:00",
+                "stderr": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00001-version-iverilog.stderr",
+                "stdout": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00001-version-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3580,8 +3580,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.00831292918883264,
-                "end": "2026-10-31T12:10:45.852142+00:00",
+                "duration_s": 0.004258019849658012,
+                "end": "2026-10-31T12:30:14.740678+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3590,9 +3590,9 @@
                   "vvp",
                   "-V"
                 ],
-                "start": "2026-10-31T12:10:45.842995+00:00",
-                "stderr": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00002-version-vvp.stderr",
-                "stdout": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00002-version-vvp.stdout",
+                "start": "2026-10-31T12:30:14.735540+00:00",
+                "stderr": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00002-version-vvp.stderr",
+                "stdout": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00002-version-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3603,8 +3603,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 1.116533450083807,
-                "end": "2026-10-31T12:10:46.975484+00:00",
+                "duration_s": 1.067401624051854,
+                "end": "2026-10-31T12:30:15.814780+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3613,9 +3613,9 @@
                   "quartus_sh",
                   "--version"
                 ],
-                "start": "2026-10-31T12:10:45.857910+00:00",
-                "stderr": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00003-version-quartus_sh.stderr",
-                "stdout": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00003-version-quartus_sh.stdout",
+                "start": "2026-10-31T12:30:14.746341+00:00",
+                "stderr": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00003-version-quartus_sh.stderr",
+                "stdout": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00003-version-quartus_sh.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3625,9 +3625,9 @@
                   "tests/reproduce.py"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/clean",
-                "duration_s": 3.4721842571161687,
-                "end": "2026-10-31T12:10:50.463950+00:00",
+                "cwd": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/clean",
+                "duration_s": 3.322904638014734,
+                "end": "2026-10-31T12:30:19.155058+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3636,15 +3636,15 @@
                   "python3",
                   "tests/reproduce.py"
                 ],
-                "start": "2026-10-31T12:10:46.990732+00:00",
-                "stderr": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00004-python3.stderr",
-                "stdout": "evidence/checks/portable-reproduction-01c19c682d78413bbe29882cfe7bed3a/00004-python3.stdout",
+                "start": "2026-10-31T12:30:15.831068+00:00",
+                "stderr": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00004-python3.stderr",
+                "stdout": "evidence/checks/portable-reproduction-4f5ca60fe8e94005b93928c1282c7eb0/00004-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:10:50.467755+00:00",
+            "end": "2026-10-31T12:30:19.159006+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3679,7 +3679,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:10:45.760854+00:00",
+            "start": "2026-10-31T12:30:14.669615+00:00",
             "status": "passed",
             "tool_commands": {
               "iverilog": 1,
@@ -3726,13 +3726,13 @@
       ]
     },
     "check:quartus-sta": {
-      "attempt_id": 958,
-      "duration_s": 0.2829732990358025,
-      "stdout_preview": "evidence/checks/quartus-sta-c7b0fb3076194573aa4f2986379bc5ca/receipt.json\n{\"check\": \"quartus-sta\", \"status\": \"passed\", \"receipt\": \"evidence/checks/quartus-sta-c7b0fb3076194573aa4f2986379bc5ca/receipt.json\"}\n",
+      "attempt_id": 967,
+      "duration_s": 0.21214586193673313,
+      "stdout_preview": "evidence/checks/quartus-sta-a54ed4b049ec483491dfd4ef710159df/receipt.json\n{\"check\": \"quartus-sta\", \"status\": \"passed\", \"receipt\": \"evidence/checks/quartus-sta-a54ed4b049ec483491dfd4ef710159df/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/quartus-sta-c7b0fb3076194573aa4f2986379bc5ca/receipt.json",
+          "path": "evidence/checks/quartus-sta-a54ed4b049ec483491dfd4ef710159df/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3766,8 +3766,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004757110960781574,
-                "end": "2026-10-31T12:09:02.483872+00:00",
+                "duration_s": 0.004459307994693518,
+                "end": "2026-10-31T12:28:32.581171+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3776,15 +3776,15 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:09:02.478161+00:00",
-                "stderr": "evidence/checks/quartus-sta-c7b0fb3076194573aa4f2986379bc5ca/00000-version-python3.stderr",
-                "stdout": "evidence/checks/quartus-sta-c7b0fb3076194573aa4f2986379bc5ca/00000-version-python3.stdout",
+                "start": "2026-10-31T12:28:32.576189+00:00",
+                "stderr": "evidence/checks/quartus-sta-a54ed4b049ec483491dfd4ef710159df/00000-version-python3.stderr",
+                "stdout": "evidence/checks/quartus-sta-a54ed4b049ec483491dfd4ef710159df/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:09:02.550904+00:00",
+            "end": "2026-10-31T12:28:32.619574+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3819,7 +3819,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:09:02.458696+00:00",
+            "start": "2026-10-31T12:28:32.565765+00:00",
             "status": "passed",
             "tool_commands": {
               "python3": 0
@@ -3839,13 +3839,13 @@
       ]
     },
     "check:rtl-timing-lint": {
-      "attempt_id": 957,
-      "duration_s": 0.6512410929426551,
-      "stdout_preview": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/receipt.json\n{\"check\": \"rtl-timing-lint\", \"status\": \"passed\", \"receipt\": \"evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/receipt.json\"}\n",
+      "attempt_id": 966,
+      "duration_s": 0.5833275888580829,
+      "stdout_preview": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/receipt.json\n{\"check\": \"rtl-timing-lint\", \"status\": \"passed\", \"receipt\": \"evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/receipt.json",
+          "path": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3864,8 +3864,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004574340069666505,
-                "end": "2026-10-31T12:08:10.260056+00:00",
+                "duration_s": 0.004654011921957135,
+                "end": "2026-10-31T12:27:41.417139+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3874,9 +3874,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:08:10.254671+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00000-version-python3.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00000-version-python3.stdout",
+                "start": "2026-10-31T12:27:41.411946+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00000-version-python3.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3887,8 +3887,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.1649786860216409,
-                "end": "2026-10-31T12:08:10.460519+00:00",
+                "duration_s": 0.1644511460326612,
+                "end": "2026-10-31T12:27:41.603485+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3897,9 +3897,9 @@
                   "vulcan",
                   "--version"
                 ],
-                "start": "2026-10-31T12:08:10.294890+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00001-version-vulcan.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00001-version-vulcan.stdout",
+                "start": "2026-10-31T12:27:41.438615+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00001-version-vulcan.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00001-version-vulcan.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3916,12 +3916,12 @@
                   "--max-comb-div-width",
                   "0",
                   "--output",
-                  "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/timing-lint.json"
+                  "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/timing-lint.json"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.21562293311581016,
-                "end": "2026-10-31T12:08:10.680090+00:00",
+                "duration_s": 0.21547329891473055,
+                "end": "2026-10-31T12:27:41.822353+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3938,17 +3938,17 @@
                   "--max-comb-div-width",
                   "0",
                   "--output",
-                  "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/timing-lint.json"
+                  "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/timing-lint.json"
                 ],
-                "start": "2026-10-31T12:08:10.463170+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00002-vulcan.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-49feb976ad9e4eeebaab49fa885c7b61/00002-vulcan.stdout",
+                "start": "2026-10-31T12:27:41.605774+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00002-vulcan.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-1654443600964602b8604be3348b6890/00002-vulcan.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:08:10.682966+00:00",
+            "end": "2026-10-31T12:27:41.824907+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -3983,7 +3983,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:08:10.235655+00:00",
+            "start": "2026-10-31T12:27:41.401123+00:00",
             "status": "passed",
             "timing_lint": {
               "ast_unroll_loop_hazards": [],
@@ -4006,7 +4006,7 @@
                 "rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3"
               },
               "status": "passed",
-              "timestamp_utc": "2026-10-31T12:08:10.624568+00:00"
+              "timestamp_utc": "2026-10-31T12:27:41.765169+00:00"
             },
             "tool_commands": {
               "python3": 0,
@@ -4035,13 +4035,13 @@
       ]
     },
     "check:synthesis": {
-      "attempt_id": 956,
-      "duration_s": 124.35657798498869,
-      "stdout_preview": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/receipt.json\"}\n",
+      "attempt_id": 965,
+      "duration_s": 126.2602278238628,
+      "stdout_preview": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/receipt.json",
+          "path": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -4066,8 +4066,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.004424409940838814,
-                "end": "2026-10-31T12:05:14.381428+00:00",
+                "duration_s": 0.00490534002892673,
+                "end": "2026-10-31T12:24:44.437668+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4076,9 +4076,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-10-31T12:05:14.376179+00:00",
-                "stderr": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00000-version-python3.stderr",
-                "stdout": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00000-version-python3.stdout",
+                "start": "2026-10-31T12:24:44.432163+00:00",
+                "stderr": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00000-version-python3.stderr",
+                "stdout": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4089,8 +4089,8 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 0.016474518924951553,
-                "end": "2026-10-31T12:05:14.434506+00:00",
+                "duration_s": 0.01650045905262232,
+                "end": "2026-10-31T12:24:44.491879+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4099,9 +4099,9 @@
                   "yosys",
                   "-V"
                 ],
-                "start": "2026-10-31T12:05:14.417197+00:00",
-                "stderr": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00001-version-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00001-version-yosys.stdout",
+                "start": "2026-10-31T12:24:44.474590+00:00",
+                "stderr": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00001-version-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00001-version-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4111,12 +4111,12 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 5.126390838064253,
-                "end": "2026-10-31T12:05:19.579161+00:00",
+                "duration_s": 5.027094105957076,
+                "end": "2026-10-31T12:24:49.536410+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4126,11 +4126,11 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-10-31T12:05:14.451986+00:00",
-                "stderr": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00002-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00002-yosys.stdout",
+                "start": "2026-10-31T12:24:44.508531+00:00",
+                "stderr": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00002-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00002-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               },
@@ -4140,12 +4140,12 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "duration_s": 115.9780122069642,
-                "end": "2026-10-31T12:07:15.645686+00:00",
+                "duration_s": 117.85013549402356,
+                "end": "2026-10-31T12:26:47.474838+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4155,17 +4155,17 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-10-31T12:05:19.666633+00:00",
-                "stderr": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00003-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-af955db4bea84864b20bb88e5d0dcad7/00003-yosys.stdout",
+                "start": "2026-10-31T12:24:49.623695+00:00",
+                "stderr": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00003-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-bd8ffa9805dd493d8dd08ec58f14642f/00003-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               }
             ],
             "cwd": ".",
-            "end": "2026-10-31T12:07:18.529011+00:00",
+            "end": "2026-10-31T12:26:50.508152+00:00",
             "schema": 1,
             "source_sha256": {
               "design/ARCHITECTURE.md": "203b5b0909345d50078af9f776adbe5445605dce56218357aa508e65361586f6",
@@ -4200,7 +4200,7 @@
               "tests/verify.py": "72bb9785cd4bbb4d87b3979539a6a682366de9766b0157e0d23c9607de034861"
             },
             "sources_unchanged": true,
-            "start": "2026-10-31T12:05:14.357139+00:00",
+            "start": "2026-10-31T12:24:44.419724+00:00",
             "status": "passed",
             "tool_commands": {
               "python3": 0,

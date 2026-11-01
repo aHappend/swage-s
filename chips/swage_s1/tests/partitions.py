@@ -69,6 +69,7 @@ ARTIFACT_SUFFIXES = {
 HEADER_KEYS = (
     "scheduling_contract", "source_sha256", "status", "partition", "start", "end",
     "acceptance_evidence", "synthetic_only",
+    "predecessors", "parent_execution", "invocation_argv", "execution_budget",
 )
 
 
@@ -403,8 +404,8 @@ def artifact_hashes(directory):
     return manifest
 
 
-def select_successes(records, current_sources, current_contract, known):
-    found, excluded = {}, []
+def select_successes(records, current_sources, current_contract, known, *, dependencies=None):
+    candidates, excluded = {}, []
     for path, record in records:
         if record.get("acceptance_evidence") is not True or record.get("synthetic_only"):
             excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
@@ -424,15 +425,38 @@ def select_successes(records, current_sources, current_contract, known):
             continue
         ident = record.get("partition", {}).get("id")
         require(ident in known, f"Unknown successful partition: {path}")
-        require(ident not in found,
-                f"Duplicate successful partition {ident}: {path}; no newest-wins selection")
-        found[ident] = (path, record)
+        candidates.setdefault(ident, []).append((path, record))
+    found = {}
+    for ident in known if dependencies is None else dependencies:
+        eligible = []
+        for path, record in candidates.get(ident, []):
+            if dependencies is not None:
+                predecessors = dependencies[ident]
+                expected = [
+                    {"id": prior, "receipt": found[prior][0].relative_to(ROOT).as_posix(),
+                     "sha256": file_hash(found[prior][0])}
+                    for prior in predecessors if prior in found
+                ]
+                if (not set(predecessors) <= set(found)
+                        or record.get("predecessors") != expected):
+                    excluded.append({
+                        "receipt": path.relative_to(ROOT).as_posix(),
+                        "reason": "missing or stale predecessor receipt binding",
+                    })
+                    continue
+            eligible.append((path, record))
+        require(len(eligible) <= 1,
+                f"Duplicate successful partition {ident}: "
+                f"{[str(path) for path, _ in eligible]}; no newest-wins selection")
+        if eligible:
+            found[ident] = eligible[0]
     return found, excluded
 
 
 def successes(e):
     """Only complete, source-current successes are eligible; never newest-wins."""
-    known = {spec["id"] for spec in check_definitions()}
+    definitions = check_definitions()
+    known = {spec["id"] for spec in definitions}
     cache = getattr(e, "_partition_headers", {})
     e._partition_headers = cache
 
@@ -445,8 +469,27 @@ def successes(e):
                 cache[path] = (identity, {key: record.get(key) for key in HEADER_KEYS})
             yield path, cache[path][1]
 
-    records = headers()
-    found, excluded = select_successes(records, e.record["source_sha256"], contract(), known)
+    records, invalid = [], []
+    specs = {spec["id"]: spec for spec in definitions}
+    for path, header in headers():
+        if (header.get("status") == "passed"
+                and header.get("source_sha256") == e.record["source_sha256"]
+                and header.get("scheduling_contract") == contract()
+                and header.get("parent_execution") is not None):
+            ident = header.get("partition", {}).get("id")
+            require(ident in specs, f"Unknown successful partition: {path}")
+            try:
+                validate_internal_receipt(e, path, header, specs[ident])
+            except AssertionError as error:
+                invalid.append({"receipt": e.relative(path),
+                                "reason": f"ineligible internal execution: {error}"})
+                continue
+        records.append((path, header))
+    found, excluded = select_successes(
+        records, e.record["source_sha256"], contract(), known,
+        dependencies={spec["id"]: spec["depends_on"] for spec in definitions},
+    )
+    excluded.extend(invalid)
     e.record["excluded_partition_receipts"] = excluded
     e.save()
     return found
@@ -546,9 +589,10 @@ def validate_internal_receipt(e, path, record, spec):
             and commands[0].get("end") and not commands[0].get("timed_out")
             and not commands[0].get("launch_error") and commands[0].get("cwd") == ".",
             "Internal partition lacks successful parent execution")
-    budget = record.get("execution_budget", {})
-    parent_budget = parent.get("execution_budget", {})
-    require(budget.get("limit_s") == parent_budget.get("limit_s") == 2700
+    budget = record.get("execution_budget")
+    parent_budget = parent.get("execution_budget")
+    require(isinstance(budget, dict) and isinstance(parent_budget, dict)
+            and budget.get("limit_s") == parent_budget.get("limit_s") == 2700
             and budget.get("reserve_s") == parent_budget.get("reserve_s") == 60
             and budget.get("deadline_epoch") == parent_budget.get("deadline_epoch", 0) - 5,
             "Internal partition did not inherit outer budget and cleanup margin")
@@ -1739,7 +1783,7 @@ def discovery_method_checks(e):
         "fixture_scope": "SYNTHETIC_ONLY_NOT_PHYSICAL_ACCEPTANCE",
         "acceptance_evidence": True,
         "scheduling_contract": contract(), "source_sha256": e.record["source_sha256"],
-        "status": "running", "partition": spec,
+        "status": "running", "partition": spec, "predecessors": [],
     }
     first = directory / "first.json"
     first.write_text(json.dumps(record))

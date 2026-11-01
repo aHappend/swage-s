@@ -60,10 +60,19 @@ def fixture_main():
     import verify_real
 
     specs = json.loads((ROOT / "fixture-specs.json").read_text())
+    original_discovery = partitions.partition_receipts
     with patch.object(partitions, "check_definitions", return_value=specs), \
             patch.object(partitions, "run_partition", side_effect=fixture_partition), \
+            patch.object(partitions, "partition_receipts",
+                         side_effect=lambda directory: fixture_receipts(
+                             ROOT, original_discovery, directory)), \
             patch.object(partitions, "validate_partition_result", side_effect=fixture_result):
         return verify_real.main()
+
+
+def fixture_receipts(root, discover, directory):
+    hidden = json.loads((root / "fixture-control.json").read_text()).get("hidden", [])
+    return [path for path in discover(directory) if path.relative_to(root).as_posix() not in hidden]
 
 
 def method_checks(e):
@@ -126,6 +135,10 @@ def method_checks(e):
         for module in (evidence, partitions, prerequisite_checks):
             stack.enter_context(patch.object(module, "ROOT", root))
         stack.enter_context(patch.object(partitions, "check_definitions", return_value=specs))
+        discovery = partitions.partition_receipts
+        stack.enter_context(patch.object(
+            partitions, "partition_receipts",
+            side_effect=lambda directory: fixture_receipts(root, discovery, directory)))
         stack.enter_context(patch.object(
             partitions, "validate_partition_result", side_effect=fixture_result))
         return stack
@@ -210,6 +223,28 @@ def method_checks(e):
         e.assertion("retry reuses completed source-bound predecessor",
                     repaired.record["prerequisite_execution"]["launched"], list(identities[1:]))
         repaired.finish()
+
+    root = tree("missing-predecessor")
+    with scope(root):
+        item = parent()
+        found = partitions.execute_prerequisites(item, "quartus-sta", {}, workers=1)
+        item.finish()
+        originals = {path: file_hash(path) for path, _ in found.values()}
+        # Simulate unavailable retained evidence through fixture-only discovery.
+        # No completed receipt is removed, edited, or overwritten.
+        (root / "fixture-control.json").write_text(json.dumps({
+            "hidden": [found[identities[0]][0].relative_to(root).as_posix()],
+        }))
+        resumed = parent()
+        candidates = partitions.successes(resumed)
+        e.assertion("missing predecessor invalidates dependent candidates", candidates, {})
+        collected = partitions.execute_prerequisites(resumed, "quartus-sta", candidates, workers=1)
+        e.assertion("missing transitive predecessor and stale links automatically repaired",
+                    sorted(collected), sorted(identities))
+        e.assertion("dependency repair preserves all prior receipt bytes",
+                    {str(path): file_hash(path) for path in originals},
+                    {str(path): digest for path, digest in originals.items()})
+        resumed.finish()
 
     root = tree("collisions-and-contract")
     with scope(root):

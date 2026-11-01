@@ -2,9 +2,9 @@
   "chip": "Swage-S1",
   "passed_checks": {
     "check:behavior": {
-      "attempt_id": 1340,
-      "duration_s": 1376.0494399650488,
-      "stdout_preview": "requisites, active 4, pending 92\nbehavior: completed 115/206 prerequisites, active 4, pending 87\nbehavior: completed 122/206 prerequisites, active 4, pending 80\nbehavior: completed 127/206 prerequisites, active 4, pending 75\nbehavior: completed 133/206 prerequisites, active 4, pending 69\nbehavior: completed 139/206 prerequisites, active 4, pending 63\nbehavior: completed 144/206 prerequisites, active 4, pending 58\nbehavior: completed 147/206 prerequisites, active 4, pending 55\nbehavior: completed 151/206 prerequisites, active 4, pending 51\nbehavior: completed 154/206 prerequisites, active 4, pending 48\nbehavior: completed 160/206 prerequisites, active 4, pending 42\nbehavior: completed 165/206 prerequisites, active 4, pending 37\nbehavior: completed 169/206 prerequisites, active 4, pending 33\nbehavior: completed 173/206 prerequisites, active 4, pending 29\nbehavior: completed 177/206 prerequisites, active 4, pending 25\nbehavior: completed 181/206 prerequisites, active 4, pending 21\nbehavior: completed 186/206 prerequisites, active 4, pending 16\nbehavior: completed 192/206 prerequisites, active 4, pending 10\nbehavior: completed 193/206 prerequisites, active 4, pending 9\nbehavior: completed 196/206 prerequisites, active 4, pending 6\nbehavior: completed 198/206 prerequisites, active 4, pending 4\nbehavior: completed 203/206 prerequisites, active 3, pending 0\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-8c3095ffbafe4ce282fc67b8a06e53bf/receipt.json\"}\n",
+      "attempt_id": 1347,
+      "duration_s": 1672.46379767498,
+      "stdout_preview": "equisites, active 4, pending 71\nbehavior: completed 135/206 prerequisites, active 4, pending 67\nbehavior: completed 139/206 prerequisites, active 4, pending 63\nbehavior: completed 143/206 prerequisites, active 4, pending 59\nbehavior: completed 145/206 prerequisites, active 4, pending 57\nbehavior: completed 149/206 prerequisites, active 4, pending 53\nbehavior: completed 153/206 prerequisites, active 4, pending 49\nbehavior: completed 156/206 prerequisites, active 4, pending 46\nbehavior: completed 160/206 prerequisites, active 4, pending 42\nbehavior: completed 164/206 prerequisites, active 4, pending 38\nbehavior: completed 168/206 prerequisites, active 4, pending 34\nbehavior: completed 170/206 prerequisites, active 4, pending 32\nbehavior: completed 173/206 prerequisites, active 4, pending 29\nbehavior: completed 176/206 prerequisites, active 4, pending 26\nbehavior: completed 177/206 prerequisites, active 4, pending 25\nbehavior: completed 180/206 prerequisites, active 4, pending 22\nbehavior: completed 184/206 prerequisites, active 4, pending 18\nbehavior: completed 188/206 prerequisites, active 4, pending 14\nbehavior: completed 192/206 prerequisites, active 4, pending 10\nbehavior: completed 194/206 prerequisites, active 4, pending 8\nbehavior: completed 198/206 prerequisites, active 4, pending 4\nbehavior: completed 202/206 prerequisites, active 4, pending 0\n{\"check\": \"behavior\", \"status\": \"passed\", \"receipt\": \"evidence/checks/behavior-514ae49b85634594a71168aa86c735dc/receipt.json\"}\n",
       "receipt_count": 3,
       "receipts": [
         {
@@ -3079,13 +3079,13 @@
       ]
     },
     "check:defect-sensitivity": {
-      "attempt_id": 1341,
-      "duration_s": 0.6266291078645736,
-      "stdout_preview": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/receipt.json\"}\n",
+      "attempt_id": 1348,
+      "duration_s": 0.6444805038627237,
+      "stdout_preview": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/receipt.json\n{\"check\": \"defect-sensitivity\", \"status\": \"passed\", \"receipt\": \"evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/receipt.json",
+          "path": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3110,10 +3110,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.005779589060693979,
-                "effective_timeout_s": 2639.980631351471,
-                "end": "2026-11-01T20:31:09.423828+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.005789445945993066,
+                "effective_timeout_s": 2639.9807777404785,
+                "end": "2026-11-01T22:44:19.402176+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3122,9 +3122,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-11-01T20:31:09.417216+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00000-version-python3.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00000-version-python3.stdout",
+                "start": "2026-11-01T22:44:19.395512+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00000-version-python3.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3135,10 +3135,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.017762528033927083,
-                "effective_timeout_s": 2639.938709497452,
-                "end": "2026-11-01T20:31:09.477742+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.033389753894880414,
+                "effective_timeout_s": 2639.938307285309,
+                "end": "2026-11-01T22:44:19.472361+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3147,9 +3147,9 @@
                   "iverilog",
                   "-V"
                 ],
-                "start": "2026-11-01T20:31:09.459143+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00001-version-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00001-version-iverilog.stdout",
+                "start": "2026-11-01T22:44:19.437987+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00001-version-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00001-version-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3160,10 +3160,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.009245262946933508,
-                "effective_timeout_s": 2639.91792345047,
-                "end": "2026-11-01T20:31:09.490133+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.00924996891990304,
+                "effective_timeout_s": 2639.901740550995,
+                "end": "2026-11-01T22:44:19.484812+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3172,9 +3172,9 @@
                   "vvp",
                   "-V"
                 ],
-                "start": "2026-11-01T20:31:09.479921+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00002-version-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00002-version-vvp.stdout",
+                "start": "2026-11-01T22:44:19.474560+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00002-version-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00002-version-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3194,20 +3194,20 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.033290619030594826,
-                "effective_timeout_s": 2639.900156736374,
-                "end": "2026-11-01T20:31:09.531908+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.03351918491534889,
+                "effective_timeout_s": 2639.8836851119995,
+                "end": "2026-11-01T22:44:19.527085+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3227,32 +3227,32 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/tb.sv"
                 ],
-                "start": "2026-11-01T20:31:09.497696+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00003-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00003-iverilog.stdout",
+                "start": "2026-11-01T22:44:19.492624+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00003-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00003-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.033352393889799714,
-                "effective_timeout_s": 2639.8312726020813,
-                "end": "2026-11-01T20:31:09.600948+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.03338941279798746,
+                "effective_timeout_s": 2639.8142778873444,
+                "end": "2026-11-01T22:44:19.596416+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3260,12 +3260,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/horizontal-phase/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/horizontal-phase/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-11-01T20:31:09.566654+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00004-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00004-vvp.stdout",
+                "start": "2026-11-01T22:44:19.562079+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00004-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00004-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3285,20 +3285,20 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.03339690691791475,
-                "effective_timeout_s": 2639.792908191681,
-                "end": "2026-11-01T20:31:09.639337+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.03311100392602384,
+                "effective_timeout_s": 2639.775698900223,
+                "end": "2026-11-01T22:44:19.634729+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3318,32 +3318,32 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/tb.sv"
                 ],
-                "start": "2026-11-01T20:31:09.604941+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00005-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00005-iverilog.stdout",
+                "start": "2026-11-01T22:44:19.600609+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00005-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00005-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.03357074107043445,
-                "effective_timeout_s": 2639.717667579651,
-                "end": "2026-11-01T20:31:09.714854+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.033217031974345446,
+                "effective_timeout_s": 2639.706319093704,
+                "end": "2026-11-01T22:44:19.704325+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3351,12 +3351,12 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/vertical-weight/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/vertical-weight/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-11-01T20:31:09.680242+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00006-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00006-vvp.stdout",
+                "start": "2026-11-01T22:44:19.670039+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00006-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00006-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3376,20 +3376,20 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/tb.sv"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.033529254142194986,
-                "effective_timeout_s": 2639.67910695076,
-                "end": "2026-11-01T20:31:09.753358+00:00",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.0332735578995198,
+                "effective_timeout_s": 2639.668087244034,
+                "end": "2026-11-01T22:44:19.742593+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3409,32 +3409,32 @@
                   "-Ptb.PHASE_FRAC=8",
                   "-Ptb.INTERPOLATION=0",
                   "-o",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/simulation.vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_interp.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_line_buffer.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_phase.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_scheduler.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/rtl/swage_s1_top.sv",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/tb.sv"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_interp.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_line_buffer.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_phase.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_scheduler.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/rtl/swage_s1_top.sv",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/tb.sv"
                 ],
-                "start": "2026-11-01T20:31:09.718743+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00007-iverilog.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00007-iverilog.stdout",
+                "start": "2026-11-01T22:44:19.708205+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00007-iverilog.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00007-iverilog.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
               {
                 "argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
                 "core_dump_limit_bytes": 0,
-                "cwd": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation",
-                "deadline_epoch": 1793567709.39775,
-                "duration_s": 0.0331470409873873,
-                "effective_timeout_s": 2639.6037244796753,
-                "end": "2026-11-01T20:31:09.828472+00:00",
+                "cwd": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation",
+                "deadline_epoch": 1793575699.3761938,
+                "duration_s": 0.03343038889579475,
+                "effective_timeout_s": 2639.592101097107,
+                "end": "2026-11-01T22:44:19.818861+00:00",
                 "exit_status": 1,
                 "expected_exit_status": [
                   0,
@@ -3442,20 +3442,20 @@
                 ],
                 "requested_argv": [
                   "vvp",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/row-bank-association/simulation/simulation.vvp",
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/row-bank-association/simulation/simulation.vvp",
                   "+vectors=vectors.txt"
                 ],
-                "start": "2026-11-01T20:31:09.794183+00:00",
-                "stderr": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00008-vvp.stderr",
-                "stdout": "evidence/checks/defect-sensitivity-9143df23b50d49c6a8f6e1f5d08c7d64/00008-vvp.stdout",
+                "start": "2026-11-01T22:44:19.784251+00:00",
+                "stderr": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00008-vvp.stderr",
+                "stdout": "evidence/checks/defect-sensitivity-746a704d98964c52a2e85fc3f1a57e9a/00008-vvp.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-11-01T20:31:09.830716+00:00",
+            "end": "2026-11-01T22:44:19.821140+00:00",
             "execution_budget": {
-              "deadline_epoch": 1793567709.39775,
+              "deadline_epoch": 1793575699.3761938,
               "limit_s": 2700,
               "reserve_s": 60
             },
@@ -3486,12 +3486,12 @@
               "tests/discovery.py": "a160139f029ddc2261b7fd6d6cd5531fa40e9d37faef58011365deb01fe4c5c9",
               "tests/evidence.py": "7c8f9e4f3696e940eef29c82f5533cc68487b2145c03cdf773366fc28defe7a7",
               "tests/implementation_checks.py": "39c9a3bfa529cb37aa9de5d03817c023af4fb73003be8a2186d04fae8c14cb8a",
-              "tests/partitions.py": "141bea165918b337e6ce465980f23a0cb05dd69e7aea5724138bca652d2d8a85",
+              "tests/partitions.py": "24d8419e656904fa6d39725eb5e2d3bb02a20053911c81663219461bc9e9b166",
               "tests/physical.py": "c6b0077c6d143462e3be13a5c4d83dbd30092e007d5121f9403339a6b1b20f9f",
               "tests/physical_acceptance.py": "1c340c947791311aeafc535515c30e50159a97f08d1663f1d157da083a294e20",
               "tests/physical_evidence.py": "0040697bd24be09b75fc2776886b08bdf74d01beb88fe9737291251a7defa391",
               "tests/physical_method.py": "8bac559de775d260087075726e820302f287cdf296ef562e0b9127072e84d5e8",
-              "tests/prerequisite_checks.py": "5bb18458a7a85578b7ba824600a19fed62097950361dcaeb17bb3351c376f629",
+              "tests/prerequisite_checks.py": "a20e71c10c47f632007d4d565632845a703f271bc3c79ec34ab8a952d7db2354",
               "tests/recovery_checks.py": "61597591db47887f8fe9af311d2d478b6c4452db4a6f0fa9a682f0bced5af9af",
               "tests/reference.py": "14589cfafc6b635b43a22770453ee1a41c0355486cf31dc50da84229115d9fa1",
               "tests/reproduce.py": "50f60f533930888d4e93ecd290f69c2d42a0d3ab0aeb5be24aadb92678721787",
@@ -3500,7 +3500,7 @@
               "tests/verify.py": "a6c788cc7b5af8a3c506f5e3ba02322bc090de81af646e0ec0fa481f5cf50ff3"
             },
             "sources_unchanged": true,
-            "start": "2026-11-01T20:31:09.397995+00:00",
+            "start": "2026-11-01T22:44:19.376463+00:00",
             "status": "passed",
             "tool_commands": {
               "iverilog": 1,

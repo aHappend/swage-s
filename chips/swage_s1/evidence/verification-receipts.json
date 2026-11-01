@@ -3869,13 +3869,13 @@
       ]
     },
     "check:rtl-timing-lint": {
-      "attempt_id": 1343,
-      "duration_s": 0.6418559779413044,
-      "stdout_preview": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/receipt.json\n{\"check\": \"rtl-timing-lint\", \"status\": \"passed\", \"receipt\": \"evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/receipt.json\"}\n",
+      "attempt_id": 1350,
+      "duration_s": 0.6455675608012825,
+      "stdout_preview": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/receipt.json\n{\"check\": \"rtl-timing-lint\", \"status\": \"passed\", \"receipt\": \"evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/receipt.json",
+          "path": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -3894,10 +3894,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567950.221604,
-                "duration_s": 0.005562674952670932,
-                "effective_timeout_s": 2639.980827331543,
-                "end": "2026-11-01T20:35:10.247269+00:00",
+                "deadline_epoch": 1793575938.897342,
+                "duration_s": 0.005610232008621097,
+                "effective_timeout_s": 2639.9805014133453,
+                "end": "2026-11-01T22:48:18.923486+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3906,9 +3906,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-11-01T20:35:10.240871+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00000-version-python3.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00000-version-python3.stdout",
+                "start": "2026-11-01T22:48:18.916937+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00000-version-python3.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3919,10 +3919,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567950.221604,
-                "duration_s": 0.16564585897140205,
-                "effective_timeout_s": 2639.9386537075043,
-                "end": "2026-11-01T20:35:10.449526+00:00",
+                "deadline_epoch": 1793575938.897342,
+                "duration_s": 0.16556850587949157,
+                "effective_timeout_s": 2639.937891483307,
+                "end": "2026-11-01T22:48:19.125985+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3931,9 +3931,9 @@
                   "vulcan",
                   "--version"
                 ],
-                "start": "2026-11-01T20:35:10.283051+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00001-version-vulcan.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00001-version-vulcan.stdout",
+                "start": "2026-11-01T22:48:18.959565+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00001-version-vulcan.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00001-version-vulcan.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -3950,14 +3950,14 @@
                   "--max-comb-div-width",
                   "0",
                   "--output",
-                  "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/timing-lint.json"
+                  "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/timing-lint.json"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567950.221604,
-                "duration_s": 0.21616521012037992,
-                "effective_timeout_s": 2639.7699933052063,
-                "end": "2026-11-01T20:35:10.669050+00:00",
+                "deadline_epoch": 1793575938.897342,
+                "duration_s": 0.2161970369052142,
+                "effective_timeout_s": 2639.7692036628723,
+                "end": "2026-11-01T22:48:19.345545+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -3974,19 +3974,19 @@
                   "--max-comb-div-width",
                   "0",
                   "--output",
-                  "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/timing-lint.json"
+                  "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/timing-lint.json"
                 ],
-                "start": "2026-11-01T20:35:10.451900+00:00",
-                "stderr": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00002-vulcan.stderr",
-                "stdout": "evidence/checks/rtl-timing-lint-de20eb8689b04832be42a40bd2285bf5/00002-vulcan.stdout",
+                "start": "2026-11-01T22:48:19.128429+00:00",
+                "stderr": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00002-vulcan.stderr",
+                "stdout": "evidence/checks/rtl-timing-lint-53d6576ea18942978bd6e83e915a87ed/00002-vulcan.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               }
             ],
             "cwd": ".",
-            "end": "2026-11-01T20:35:10.671114+00:00",
+            "end": "2026-11-01T22:48:19.347671+00:00",
             "execution_budget": {
-              "deadline_epoch": 1793567950.221604,
+              "deadline_epoch": 1793575938.897342,
               "limit_s": 2700,
               "reserve_s": 60
             },
@@ -4017,12 +4017,12 @@
               "tests/discovery.py": "a160139f029ddc2261b7fd6d6cd5531fa40e9d37faef58011365deb01fe4c5c9",
               "tests/evidence.py": "7c8f9e4f3696e940eef29c82f5533cc68487b2145c03cdf773366fc28defe7a7",
               "tests/implementation_checks.py": "39c9a3bfa529cb37aa9de5d03817c023af4fb73003be8a2186d04fae8c14cb8a",
-              "tests/partitions.py": "141bea165918b337e6ce465980f23a0cb05dd69e7aea5724138bca652d2d8a85",
+              "tests/partitions.py": "24d8419e656904fa6d39725eb5e2d3bb02a20053911c81663219461bc9e9b166",
               "tests/physical.py": "c6b0077c6d143462e3be13a5c4d83dbd30092e007d5121f9403339a6b1b20f9f",
               "tests/physical_acceptance.py": "1c340c947791311aeafc535515c30e50159a97f08d1663f1d157da083a294e20",
               "tests/physical_evidence.py": "0040697bd24be09b75fc2776886b08bdf74d01beb88fe9737291251a7defa391",
               "tests/physical_method.py": "8bac559de775d260087075726e820302f287cdf296ef562e0b9127072e84d5e8",
-              "tests/prerequisite_checks.py": "5bb18458a7a85578b7ba824600a19fed62097950361dcaeb17bb3351c376f629",
+              "tests/prerequisite_checks.py": "a20e71c10c47f632007d4d565632845a703f271bc3c79ec34ab8a952d7db2354",
               "tests/recovery_checks.py": "61597591db47887f8fe9af311d2d478b6c4452db4a6f0fa9a682f0bced5af9af",
               "tests/reference.py": "14589cfafc6b635b43a22770453ee1a41c0355486cf31dc50da84229115d9fa1",
               "tests/reproduce.py": "50f60f533930888d4e93ecd290f69c2d42a0d3ab0aeb5be24aadb92678721787",
@@ -4031,7 +4031,7 @@
               "tests/verify.py": "a6c788cc7b5af8a3c506f5e3ba02322bc090de81af646e0ec0fa481f5cf50ff3"
             },
             "sources_unchanged": true,
-            "start": "2026-11-01T20:35:10.221862+00:00",
+            "start": "2026-11-01T22:48:18.897594+00:00",
             "status": "passed",
             "timing_lint": {
               "ast_unroll_loop_hazards": [],
@@ -4054,7 +4054,7 @@
                 "rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3"
               },
               "status": "passed",
-              "timestamp_utc": "2026-11-01T20:35:10.608603+00:00"
+              "timestamp_utc": "2026-11-01T22:48:19.284601+00:00"
             },
             "tool_commands": {
               "python3": 0,
@@ -4083,13 +4083,13 @@
       ]
     },
     "check:synthesis": {
-      "attempt_id": 1342,
-      "duration_s": 124.71517808316275,
-      "stdout_preview": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/receipt.json\"}\n",
+      "attempt_id": 1349,
+      "duration_s": 122.86524256295525,
+      "stdout_preview": "evidence/checks/synthesis-054997f49862498e93998144041cd070/receipt.json\n{\"check\": \"synthesis\", \"status\": \"passed\", \"receipt\": \"evidence/checks/synthesis-054997f49862498e93998144041cd070/receipt.json\"}\n",
       "receipt_count": 1,
       "receipts": [
         {
-          "path": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/receipt.json",
+          "path": "evidence/checks/synthesis-054997f49862498e93998144041cd070/receipt.json",
           "data": {
             "acceptance_evidence": true,
             "argv": [
@@ -4114,10 +4114,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567767.8516955,
-                "duration_s": 0.005529592977836728,
-                "effective_timeout_s": 2639.980560541153,
-                "end": "2026-11-01T20:32:07.877600+00:00",
+                "deadline_epoch": 1793575757.8147254,
+                "duration_s": 0.005392014980316162,
+                "effective_timeout_s": 2639.9807596206665,
+                "end": "2026-11-01T22:45:17.840356+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4126,9 +4126,9 @@
                   "python3",
                   "--version"
                 ],
-                "start": "2026-11-01T20:32:07.871230+00:00",
-                "stderr": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00000-version-python3.stderr",
-                "stdout": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00000-version-python3.stdout",
+                "start": "2026-11-01T22:45:17.834062+00:00",
+                "stderr": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00000-version-python3.stderr",
+                "stdout": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00000-version-python3.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4139,10 +4139,10 @@
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567767.8516955,
-                "duration_s": 0.017240443965420127,
-                "effective_timeout_s": 2639.9386415481567,
-                "end": "2026-11-01T20:32:07.931225+00:00",
+                "deadline_epoch": 1793575757.8147254,
+                "duration_s": 0.017113141948357224,
+                "effective_timeout_s": 2639.939528465271,
+                "end": "2026-11-01T22:45:17.893280+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4151,9 +4151,9 @@
                   "yosys",
                   "-V"
                 ],
-                "start": "2026-11-01T20:32:07.913155+00:00",
-                "stderr": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00001-version-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00001-version-yosys.stdout",
+                "start": "2026-11-01T22:45:17.875298+00:00",
+                "stderr": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00001-version-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00001-version-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 3600
               },
@@ -4163,14 +4163,14 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-054997f49862498e93998144041cd070/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567767.8516955,
-                "duration_s": 5.026473983889446,
-                "effective_timeout_s": 2639.903879880905,
-                "end": "2026-11-01T20:32:12.975215+00:00",
+                "deadline_epoch": 1793575757.8147254,
+                "duration_s": 4.977509188931435,
+                "effective_timeout_s": 2639.9050459861755,
+                "end": "2026-11-01T22:45:22.888159+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4180,11 +4180,11 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/8-8-16-16-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-054997f49862498e93998144041cd070/8-8-16-16-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-11-01T20:32:07.947916+00:00",
-                "stderr": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00002-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00002-yosys.stdout",
+                "start": "2026-11-01T22:45:17.909782+00:00",
+                "stderr": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00002-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00002-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               },
@@ -4194,14 +4194,14 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-054997f49862498e93998144041cd070/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
                 "core_dump_limit_bytes": 0,
                 "cwd": ".",
-                "deadline_epoch": 1793567767.8516955,
-                "duration_s": 116.47157605411485,
-                "effective_timeout_s": 2634.789661169052,
-                "end": "2026-11-01T20:34:09.534893+00:00",
+                "deadline_epoch": 1793575757.8147254,
+                "duration_s": 114.67964514787309,
+                "effective_timeout_s": 2634.837702512741,
+                "end": "2026-11-01T22:47:17.657768+00:00",
                 "exit_status": 0,
                 "expected_exit_status": [
                   0
@@ -4211,19 +4211,19 @@
                   "-Q",
                   "-T",
                   "-s",
-                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/4096-2-7-3-8-1-8-0/synthesis.ys"
+                  "/data/sufeng/swage-s1-line/workspace/project/evidence/checks/synthesis-054997f49862498e93998144041cd070/4096-2-7-3-8-1-8-0/synthesis.ys"
                 ],
-                "start": "2026-11-01T20:32:13.062140+00:00",
-                "stderr": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00003-yosys.stderr",
-                "stdout": "evidence/checks/synthesis-12bc25b005504a17a51d47669f5770e9/00003-yosys.stdout",
+                "start": "2026-11-01T22:45:22.977129+00:00",
+                "stderr": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00003-yosys.stderr",
+                "stdout": "evidence/checks/synthesis-054997f49862498e93998144041cd070/00003-yosys.stdout",
                 "timed_out": false,
                 "timeout_s": 14400
               }
             ],
             "cwd": ".",
-            "end": "2026-11-01T20:34:12.374979+00:00",
+            "end": "2026-11-01T22:47:20.483545+00:00",
             "execution_budget": {
-              "deadline_epoch": 1793567767.8516955,
+              "deadline_epoch": 1793575757.8147254,
               "limit_s": 2700,
               "reserve_s": 60
             },
@@ -4254,12 +4254,12 @@
               "tests/discovery.py": "a160139f029ddc2261b7fd6d6cd5531fa40e9d37faef58011365deb01fe4c5c9",
               "tests/evidence.py": "7c8f9e4f3696e940eef29c82f5533cc68487b2145c03cdf773366fc28defe7a7",
               "tests/implementation_checks.py": "39c9a3bfa529cb37aa9de5d03817c023af4fb73003be8a2186d04fae8c14cb8a",
-              "tests/partitions.py": "141bea165918b337e6ce465980f23a0cb05dd69e7aea5724138bca652d2d8a85",
+              "tests/partitions.py": "24d8419e656904fa6d39725eb5e2d3bb02a20053911c81663219461bc9e9b166",
               "tests/physical.py": "c6b0077c6d143462e3be13a5c4d83dbd30092e007d5121f9403339a6b1b20f9f",
               "tests/physical_acceptance.py": "1c340c947791311aeafc535515c30e50159a97f08d1663f1d157da083a294e20",
               "tests/physical_evidence.py": "0040697bd24be09b75fc2776886b08bdf74d01beb88fe9737291251a7defa391",
               "tests/physical_method.py": "8bac559de775d260087075726e820302f287cdf296ef562e0b9127072e84d5e8",
-              "tests/prerequisite_checks.py": "5bb18458a7a85578b7ba824600a19fed62097950361dcaeb17bb3351c376f629",
+              "tests/prerequisite_checks.py": "a20e71c10c47f632007d4d565632845a703f271bc3c79ec34ab8a952d7db2354",
               "tests/recovery_checks.py": "61597591db47887f8fe9af311d2d478b6c4452db4a6f0fa9a682f0bced5af9af",
               "tests/reference.py": "14589cfafc6b635b43a22770453ee1a41c0355486cf31dc50da84229115d9fa1",
               "tests/reproduce.py": "50f60f533930888d4e93ecd290f69c2d42a0d3ab0aeb5be24aadb92678721787",
@@ -4268,7 +4268,7 @@
               "tests/verify.py": "a6c788cc7b5af8a3c506f5e3ba02322bc090de81af646e0ec0fa481f5cf50ff3"
             },
             "sources_unchanged": true,
-            "start": "2026-11-01T20:32:07.851939+00:00",
+            "start": "2026-11-01T22:45:17.814942+00:00",
             "status": "passed",
             "tool_commands": {
               "python3": 0,

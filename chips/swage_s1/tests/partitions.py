@@ -4,6 +4,8 @@ check_definitions() supplies the exact append-only command/dependency inventory
 for Coordinator admission. Original gates validate current receipts and
 execute missing prerequisites in fresh parent-owned exclusive outputs;
 they never select the newest receipt or accept partial coverage.
+Unavailable or changed artifact manifests exclude that receipt and its bound
+dependents from reuse; collection creates a fresh chain without editing history.
 Shard entrypoints collect only their transitive predecessors, serially, before
 recording partition_execution.start and its command boundary. Invocation start
 is retained unchanged; predecessor completion must precede actual shard work.
@@ -70,6 +72,7 @@ HEADER_KEYS = (
     "scheduling_contract", "source_sha256", "status", "partition", "start", "end",
     "acceptance_evidence", "synthetic_only",
     "predecessors", "parent_execution", "invocation_argv", "execution_budget",
+    "artifact_sha256",
 )
 
 
@@ -474,16 +477,27 @@ def successes(e):
     for path, header in headers():
         if (header.get("status") == "passed"
                 and header.get("source_sha256") == e.record["source_sha256"]
-                and header.get("scheduling_contract") == contract()
-                and header.get("parent_execution") is not None):
+                and header.get("scheduling_contract") == contract()):
             ident = header.get("partition", {}).get("id")
             require(ident in specs, f"Unknown successful partition: {path}")
-            try:
-                validate_internal_receipt(e, path, header, specs[ident])
-            except AssertionError as error:
+            manifest = header.get("artifact_sha256")
+            observed = artifact_hashes(path.parent)
+            if not isinstance(manifest, dict) or not manifest or manifest != observed:
                 invalid.append({"receipt": e.relative(path),
-                                "reason": f"ineligible internal execution: {error}"})
+                                "reason": "missing or changed retained artifacts",
+                                "missing_artifacts": sorted(set(manifest or {}) - set(observed)),
+                                "changed_artifacts": sorted(
+                                    name for name in set(manifest or {}) & set(observed)
+                                    if manifest[name] != observed[name]),
+                                "added_artifacts": sorted(set(observed) - set(manifest or {}))})
                 continue
+            if header.get("parent_execution") is not None:
+                try:
+                    validate_internal_receipt(e, path, header, specs[ident])
+                except AssertionError as error:
+                    invalid.append({"receipt": e.relative(path),
+                                    "reason": f"ineligible internal execution: {error}"})
+                    continue
         records.append((path, header))
     found, excluded = select_successes(
         records, e.record["source_sha256"], contract(), known,

@@ -61,11 +61,15 @@ def fixture_main():
 
     specs = json.loads((ROOT / "fixture-specs.json").read_text())
     original_discovery = partitions.partition_receipts
+    original_artifacts = partitions.artifact_hashes
     with patch.object(partitions, "check_definitions", return_value=specs), \
             patch.object(partitions, "run_partition", side_effect=fixture_partition), \
             patch.object(partitions, "partition_receipts",
                          side_effect=lambda directory: fixture_receipts(
                              ROOT, original_discovery, directory)), \
+            patch.object(partitions, "artifact_hashes",
+                         side_effect=lambda directory: fixture_artifacts(
+                             ROOT, original_artifacts, directory)), \
             patch.object(partitions, "validate_partition_result", side_effect=fixture_result):
         return verify_real.main()
 
@@ -73,6 +77,13 @@ def fixture_main():
 def fixture_receipts(root, discover, directory):
     hidden = json.loads((root / "fixture-control.json").read_text()).get("hidden", [])
     return [path for path in discover(directory) if path.relative_to(root).as_posix() not in hidden]
+
+
+def fixture_artifacts(root, discover, directory):
+    unavailable = json.loads((root / "fixture-control.json").read_text()).get(
+        "unavailable_artifacts", [])
+    return {name: digest for name, digest in discover(directory).items()
+            if name not in unavailable}
 
 
 def method_checks(e):
@@ -136,9 +147,13 @@ def method_checks(e):
             stack.enter_context(patch.object(module, "ROOT", root))
         stack.enter_context(patch.object(partitions, "check_definitions", return_value=specs))
         discovery = partitions.partition_receipts
+        artifacts = partitions.artifact_hashes
         stack.enter_context(patch.object(
             partitions, "partition_receipts",
             side_effect=lambda directory: fixture_receipts(root, discovery, directory)))
+        stack.enter_context(patch.object(
+            partitions, "artifact_hashes",
+            side_effect=lambda directory: fixture_artifacts(root, artifacts, directory)))
         stack.enter_context(patch.object(
             partitions, "validate_partition_result", side_effect=fixture_result))
         return stack
@@ -245,6 +260,54 @@ def method_checks(e):
                     {str(path): file_hash(path) for path in originals},
                     {str(path): digest for path, digest in originals.items()})
         resumed.finish()
+
+    for unavailable_index in range(len(identities)):
+        root = tree(f"unavailable-artifact-{unavailable_index}")
+        with scope(root):
+            item = parent()
+            found = partitions.execute_prerequisites(item, "quartus-sta", {}, workers=1)
+            item.finish()
+            originals = {path: file_hash(path) for path, _ in found.values()}
+            damaged_id = identities[unavailable_index]
+            damaged_path = found[damaged_id][0]
+            damaged = json.loads(damaged_path.read_text())
+            unavailable = damaged["commands"][-1]["stdout"]
+            original_artifact = file_hash(root / unavailable)
+            # Hide only the artifact observation, including in child processes.
+            # Original receipt and artifact bytes remain intact.
+            (root / "fixture-control.json").write_text(json.dumps({
+                "unavailable_artifacts": [unavailable],
+            }))
+            resumed = parent()
+            reject_probe = parent()
+            reject(reject_probe, lambda: partitions.validate_receipt(
+                reject_probe, damaged_path, damaged, specs[unavailable_index]),
+                "Partition artifacts changed")
+            candidates = partitions.successes(resumed)
+            e.assertion(f"{damaged_id} unavailable artifact excludes dependent chain",
+                        list(candidates), list(identities[:unavailable_index]))
+            e.assertion(f"{damaged_id} unavailable artifact explicitly diagnosed",
+                        any(entry.get("missing_artifacts") == [unavailable]
+                            for entry in resumed.record["excluded_partition_receipts"]), True)
+            collected = partitions.execute_prerequisites(
+                resumed, "quartus-sta", candidates, workers=1)
+            e.assertion(f"{damaged_id} only unavailable closure recollected",
+                        resumed.record["prerequisite_execution"]["launched"],
+                        list(identities[unavailable_index:]))
+            e.assertion(f"{damaged_id} complete validated replacement closure",
+                        sorted(collected), sorted(identities))
+            e.assertion(f"{damaged_id} prior receipts remain immutable",
+                        {str(path): file_hash(path) for path in originals},
+                        {str(path): digest for path, digest in originals.items()})
+            e.assertion(f"{damaged_id} prior artifact remains immutable",
+                        file_hash(root / unavailable), original_artifact)
+            resumed.finish()
+            subsequent = parent()
+            partitions.execute_prerequisites(
+                subsequent, "quartus-sta", partitions.successes(subsequent), workers=1)
+            e.assertion(f"{damaged_id} replacement reused without newest-wins selection",
+                        subsequent.record["prerequisite_execution"]["launched"], [])
+            subsequent.finish()
 
     root = tree("collisions-and-contract")
     with scope(root):

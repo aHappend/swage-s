@@ -34,13 +34,17 @@ def main():
         "quartus-interface", "quartus-output",
         "partition-method", "aggregate-repair", "simulator-reuse", "physical-method",
         "physical-acceptance-path-parity",
+        "self-contained-checks",
     ))
     parser.add_argument("--repair-of", help="Project-relative original preparation receipt")
     parser.add_argument("--simulator", choices=("icarus", "verilator"))
     parser.add_argument("--shard", type=int)
+    parser.add_argument("--parent-receipt", help=argparse.SUPPRESS)
+    parser.add_argument("--child-output", help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.scheduling_plan:
-        if args.shard is not None or args.simulator is not None or args.repair_of is not None:
+        if (args.shard is not None or args.simulator is not None or args.repair_of is not None
+                or args.parent_receipt is not None or args.child_output is not None):
             parser.error("--scheduling-plan does not accept execution/probe options")
         from partitions import scheduling_plan
         print(json.dumps(scheduling_plan(), indent=2))
@@ -55,17 +59,24 @@ def main():
     elif args.shard is not None or args.simulator is not None:
         parser.error("--shard/--simulator are only valid for partition checks")
     output_prefix = partition_output_prefix(args.check, args.shard, args.simulator)
-    if sharded and output_prefix is None:
+    internal = args.parent_receipt is not None or args.child_output is not None
+    if internal and (not sharded or args.parent_receipt is None
+                     or args.child_output is None or args.repair_of is not None):
+        parser.error("Internal execution requires a shard and both parent/output options")
+    if sharded and output_prefix is None and not internal:
         parser.error(
             "Partition has no declared exclusive output selector; "
             "append-only admission and matching verification wiring are required "
             "before execution"
         )
     require(Path.cwd().resolve() == ROOT, "Run from the delivered project root")
-    evidence = Evidence(
-        args.check or f"verifier-{args.probe}", preparation=bool(args.probe),
-        output_prefix=output_prefix,
-    )
+    options = {"output_prefix": output_prefix}
+    if internal:
+        from partitions import spec_for
+        options.update(parent_receipt=args.parent_receipt, child_output=args.child_output,
+                       argv=spec_for(args.check, args.shard, args.simulator)["argv"])
+    evidence = Evidence(args.check or f"verifier-{args.probe}",
+                        preparation=bool(args.probe), **options)
     error = None
     try:
         if args.repair_of:
@@ -85,6 +96,9 @@ def main():
             method_checks(evidence)
         elif args.probe == "partition-method":
             from partitions import method_checks
+            method_checks(evidence)
+        elif args.probe == "self-contained-checks":
+            from prerequisite_checks import method_checks
             method_checks(evidence)
         elif args.probe == "aggregate-repair":
             from recovery_checks import aggregate_repair

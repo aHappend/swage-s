@@ -116,6 +116,11 @@ def method_checks(e):
                         path, {key: retained.get(key) for key in partitions.HEADER_KEYS},
                     )
                 ledger_name = "sta-ledger.json" if gate == "quartus-sta" else "hil-ledger.json"
+                if case == "missing-partition":
+                    # Missing evidence must attempt collection, not fail on a
+                    # separately allocated-output prerequisite. Never run real
+                    # physical tools from these deliberately synthetic fixtures.
+                    found.clear()
                 if case == "declaration-ledger":
                     (current / ledger_name).write_text(json.dumps([
                         {"configuration": spec["configuration"]} for spec in specs
@@ -200,7 +205,7 @@ def method_checks(e):
                             record["authoritative_physical_evidence"]["scope"],
                             native_scope(gate, native))
                 if failed:
-                    diagnostic = ("1 missing prerequisites require append-only admission"
+                    diagnostic = ("Synthetic fixture attempted physical execution"
                                   if case == "missing-partition"
                                   else "Missing measured physical result")
                     require(diagnostic in record["error"] and diagnostic in stderr.getvalue(),

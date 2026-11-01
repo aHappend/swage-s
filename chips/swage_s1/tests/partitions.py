@@ -1,8 +1,8 @@
-"""Admitted scheduling recovery with dependency-aware aggregate execution.
+"""Self-contained checks with dependency-aware, source-bound collection.
 
 check_definitions() supplies the exact append-only command/dependency inventory
 for Coordinator admission. Original gates validate current receipts and
-execute missing admitted prerequisites;
+execute missing prerequisites in fresh parent-owned exclusive outputs;
 they never select the newest receipt or accept partial coverage.
 Shard entrypoints collect only their transitive predecessors, serially, before
 recording partition_execution.start and its command boundary. Invocation start
@@ -21,9 +21,9 @@ source/configuration/tool-bound retained build, then independently validate the
 current diagnostic execution and its executable. Build reuse never substitutes
 for a fresh diagnostic or a current-source numerical comparison.
 Timing shards 0-7 and 15-19 have exclusive allocation wiring matching the
-current executable contract. Approved shards 8-14 remain unwired until the
-shared runtime restores their missing executable records; approval alone
-does not authorize an output allocation or physical collection.
+current executable contract. Standalone shard selectors remain unchanged. Aggregate commands also execute
+missing prerequisites in fresh parent-owned directories, without allocating
+supplemental runtime checks.
 """
 
 import datetime
@@ -34,10 +34,14 @@ from pathlib import Path
 import re
 import struct
 import time
+import uuid
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from functools import lru_cache
 
-from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require, stamp
+from evidence import (
+    ROOT, child_contract, file_hash, hashes, partition_output_prefix,
+    partition_receipts, require, stamp,
+)
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
 from simulation import (
     ICARUS_BEHAVIOR_SHARDS, parameter_cases, partition_scenarios,
@@ -64,6 +68,7 @@ ARTIFACT_SUFFIXES = {
 }
 HEADER_KEYS = (
     "scheduling_contract", "source_sha256", "status", "partition", "start", "end",
+    "acceptance_evidence", "synthetic_only",
 )
 
 
@@ -348,7 +353,10 @@ def prerequisite_plan(gate, completed):
     return {
         "advisory_only": True,
         "execution_owner": "shared runtime",
-        "admission_status": "not inspected; each command requires independent admission",
+        "admission_status": (
+            "Standalone mappings unchanged; internal execution belongs to the existing "
+            "parent check and creates no supplemental runtime allocations"
+        ),
         "gate": gate,
         "mandatory_partitions": mandatory,
         "required_predecessors": [spec["id"] for spec in definitions
@@ -398,6 +406,10 @@ def artifact_hashes(directory):
 def select_successes(records, current_sources, current_contract, known):
     found, excluded = {}, []
     for path, record in records:
+        if record.get("acceptance_evidence") is not True or record.get("synthetic_only"):
+            excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
+                             "reason": "non-acceptance or synthetic evidence"})
+            continue
         if record.get("scheduling_contract") != current_contract:
             excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
                              "reason": "different scheduling contract; historical evidence retained"})
@@ -452,14 +464,18 @@ def validate_receipt(e, path, record, spec):
     require(record.get("partition") == spec and record.get("check") == spec["check"],
             f"Partition identity/inventory mismatch: {path}")
     prefix = partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
-    require(prefix is not None, f"Partition receipt has no admitted output selector: {path}")
-    require(path.parent.parent == ROOT / "evidence" / "checks"
-            and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
-            f"Partition receipt outside admitted exclusive output: {path}")
+    if "parent_execution" in record:
+        validate_internal_receipt(e, path, record, spec)
+    else:
+        require(prefix is not None, f"Partition receipt has no admitted output selector: {path}")
+        require(path.parent.parent == ROOT / "evidence" / "checks"
+                and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
+                f"Partition receipt outside admitted exclusive output: {path}")
     require(record.get("scheduling_contract") == contract()
             and record.get("source_sha256") == hashes()
             and record.get("sources_unchanged") is True
             and record.get("acceptance_evidence") is True
+            and not record.get("synthetic_only")
             and record.get("status") == "passed" and record.get("end"),
             f"Receipt is not a completed current admitted partition: {path}")
     require(record.get("argv") == ["python3", *spec["argv"][1:]],
@@ -501,6 +517,43 @@ def validate_receipt(e, path, record, spec):
     require(0 <= duration < 2700, f"Completed partition exceeded check tier: {path}")
 
 
+def validate_internal_receipt(e, path, record, spec):
+    binding = record["parent_execution"]
+    parent_path, output, parent, entry = child_contract(
+        binding["receipt"], binding["output"], record.get("invocation_argv"),
+    )
+    expected_argv = [*spec["argv"], "--parent-receipt", binding["receipt"],
+                     "--child-output", binding["output"]]
+    require(path == output / "receipt.json"
+            and output.name.startswith(spec["id"] + "-")
+            and binding == {
+                "receipt": e.relative(parent_path), "id": spec["id"],
+                "output": e.relative(output), "argv": expected_argv,
+                "runtime_allocation": False,
+            }
+            and entry["id"] == spec["id"]
+            and entry["argv"] == expected_argv,
+            "Internal partition argv/output identity differs")
+    require(parent.get("acceptance_evidence") is True
+            and not parent.get("synthetic_only")
+            and parent.get("source_sha256") == record["source_sha256"]
+            and parent.get("source_sha256") == e.record["source_sha256"]
+            and parent.get("status") in ("running", "passed", "failed"),
+            "Internal partition parent is stale or synthetic")
+    commands = [command for command in parent.get("commands", [])
+                if command.get("requested_argv") == expected_argv]
+    require(len(commands) == 1 and commands[0].get("exit_status") == 0
+            and commands[0].get("end") and not commands[0].get("timed_out")
+            and not commands[0].get("launch_error") and commands[0].get("cwd") == ".",
+            "Internal partition lacks successful parent execution")
+    budget = record.get("execution_budget", {})
+    parent_budget = parent.get("execution_budget", {})
+    require(budget.get("limit_s") == parent_budget.get("limit_s") == 2700
+            and budget.get("reserve_s") == parent_budget.get("reserve_s") == 60
+            and budget.get("deadline_epoch") == parent_budget.get("deadline_epoch", 0) - 5,
+            "Internal partition did not inherit outer budget and cleanup margin")
+
+
 def partition_start(record):
     """Keep invocation time intact when dependencies execute inside an entrypoint."""
     boundary = record.get("partition_execution")
@@ -531,6 +584,8 @@ def validate_dependencies(e, found, identities, *, validated=None):
     validated = {} if validated is None else validated
 
     def visit(ident):
+        if hasattr(e, "remaining"):
+            e.remaining()
         require(ident in found, f"Missing predecessor success {ident}")
         if ident in validated:
             load_success(found, ident)
@@ -964,7 +1019,7 @@ def validate_partition_result(e, path, record, spec):
 
 
 def execute_prerequisites(e, gate, found, *, workers=4):
-    """Run only admitted dependency-ready commands, retaining every parent exit."""
+    """Run missing dependency-ready work within the existing parent contract."""
     definitions = check_definitions()
     by_id = {spec["id"]: spec for spec in definitions}
     recovery = prerequisite_plan(gate, found)
@@ -975,12 +1030,6 @@ def execute_prerequisites(e, gate, found, *, workers=4):
     }
     needed = set(recovery["mandatory_partitions"]) | set(recovery["required_predecessors"])
     missing = needed - set(found)
-    unadmitted = sorted(ident for ident in missing if not by_id[ident]["outputs"])
-    e.record["unadmitted_prerequisites"] = unadmitted
-    e.save()
-    require(not unadmitted,
-            f"{gate}: {len(unadmitted)} missing prerequisites require append-only admission "
-            f"and exclusive output selectors before automatic execution: {unadmitted}")
     validated = validate_dependencies(e, found, needed & set(found))
     require(isinstance(workers, int) and 1 <= workers <= 4, "Invalid bounded worker count")
     pending = {spec["id"]: spec for spec in definitions if spec["id"] in missing}
@@ -992,6 +1041,8 @@ def execute_prerequisites(e, gate, found, *, workers=4):
     heartbeat = time.monotonic()
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while pending or active:
+            if hasattr(e, "remaining"):
+                e.remaining()
             for ident, spec in list(pending.items()):
                 if len(active) >= workers:
                     break
@@ -1004,7 +1055,8 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                     continue
                 execution["launched"].append(ident)
                 e.save()
-                future = pool.submit(e.run, spec["argv"], name=f"prerequisite-{ident}")
+                argv = internal_command(e, spec)
+                future = pool.submit(e.run, argv, name=f"prerequisite-{ident}")
                 active[future] = ident
                 del pending[ident]
                 if physical:
@@ -1025,6 +1077,23 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                 execution["completed"].append(ident)
                 e.save()
     return found
+
+
+def internal_command(e, spec):
+    """Reserve a unique parent-local destination; never alter runtime mappings."""
+    output = e.path / "prerequisites" / f"{spec['id']}-{uuid.uuid4().hex}"
+    require(not output.exists() and not output.is_symlink(),
+            f"Internal prerequisite output collision: {e.relative(output)}")
+    relative = e.relative(output)
+    entries = e.record.setdefault("internal_prerequisites", [])
+    require(all(entry["output"] != relative for entry in entries),
+            "Internal prerequisite output already reserved")
+    argv = [*spec["argv"], "--parent-receipt", e.relative(e.path / "receipt.json"),
+            "--child-output", relative]
+    entries.append({"id": spec["id"], "output": relative, "argv": argv,
+                    "runtime_allocation": False})
+    e.save()
+    return argv
 
 
 def aggregate(e, gate):
@@ -1316,6 +1385,7 @@ def method_checks(e):
     ident = definitions[0]["id"]
     fixture_path = e.path / "synthetic-only-receipt.json"
     success = {
+        "acceptance_evidence": True,
         "scheduling_contract": contract(), "source_sha256": {"fixture": "current"},
         "status": "passed", "partition": {"id": ident},
     }
@@ -1653,97 +1723,9 @@ def dependency_method_checks(e):
 
 
 def orchestration_method_checks(e):
-    """Run real tiny Python children on synthetic DAGs; never scaler acceptance."""
-    import threading
-    from unittest.mock import patch
-
-    original_run = e.run
-    synthetic = []
-    for ident, predecessors, simulator in (
-        ("anchor", [], "icarus"), ("parallel-a", ["anchor"], "icarus"),
-        ("parallel-b", ["anchor"], "verilator"), ("hardware-10", ["parallel-a", "parallel-b"], None),
-        ("hardware-0", ["hardware-10"], None),
-    ):
-        synthetic.append({
-            "id": ident, "depends_on": predecessors, "simulator": simulator,
-            "check": "behavior-shard", "outputs": ["synthetic-only"],
-            "argv": ["python3", "-c",
-                     f"import time; time.sleep(0.05); print('SYNTHETIC_DAG {ident}')"],
-        })
-    by_id = {spec["id"]: spec for spec in synthetic}
-    complete, active, peak = {}, set(), 0
-    lock = threading.Lock()
-
-    def run(argv, **kwargs):
-        nonlocal peak
-        spec = next(spec for spec in synthetic if spec["argv"] == argv)
-        ident = spec["id"]
-        with lock:
-            require(set(spec["depends_on"]) <= set(complete), "Fixture launched before predecessor")
-            require(spec["simulator"] is not None or not active, "Hardware fixture overlapped")
-            require(not any(by_id[item]["simulator"] is None for item in active),
-                    "Child overlapped physical fixture")
-            active.add(ident)
-            peak = max(peak, len(active))
-        try:
-            result = original_run(argv, **kwargs)
-            with lock:
-                complete[ident] = (e.path / "synthetic-only.json", {"synthetic_only": True})
-            return result
-        finally:
-            with lock:
-                active.remove(ident)
-
-    def validate(evidence, found, identities, *, validated=None):
-        validated = {} if validated is None else validated
-        for ident in identities:
-            require(ident in complete, "Synthetic completion absent")
-            validated[ident] = {"synthetic_only": True}
-        return validated
-
-    module = __name__
-    with patch(f"{module}.check_definitions", return_value=synthetic), \
-            patch(f"{module}.successes", side_effect=lambda evidence: dict(complete)), \
-            patch(f"{module}.validate_dependencies", side_effect=validate), \
-            patch.object(e, "run", side_effect=run):
-        result = execute_prerequisites(e, "behavior", {}, workers=2)
-        e.assertion("synthetic automatic prerequisite closure", sorted(result), sorted(by_id))
-        e.assertion("synthetic bounded independent children overlap", peak, 2)
-        command_count = len(e.record["commands"])
-        execute_prerequisites(e, "behavior", result, workers=2)
-        e.assertion("current synthetic completions execute no duplicate commands",
-                    len(e.record["commands"]), command_count)
-        complete.clear()
-        unadmitted = [{**spec, "outputs": []} if spec["id"] == "parallel-b" else spec
-                      for spec in synthetic]
-        with patch(f"{module}.check_definitions", return_value=unadmitted):
-            try:
-                execute_prerequisites(e, "behavior", {}, workers=2)
-            except AssertionError as error:
-                require("append-only admission" in str(error), "Unexpected admission diagnostic")
-            else:
-                raise AssertionError("Synthetic unmapped command executed")
-        e.assertion("unadmitted synthetic DAG rejected before subprocess execution",
-                    len(e.record["commands"]), command_count)
-        failing = [{**spec, "argv": ["python3", "-c",
-                    "print('SYNTHETIC_EXPECTED_FAILURE'); raise SystemExit(7)"]}
-                   if spec["id"] == "anchor" else spec for spec in synthetic]
-        with patch(f"{module}.check_definitions", return_value=failing), \
-                patch.object(e, "run", side_effect=original_run):
-            try:
-                execute_prerequisites(e, "behavior", {}, workers=2)
-            except AssertionError as error:
-                require("Command exit 7" in str(error), "Failure propagation diagnostic differs")
-            else:
-                raise AssertionError("Failed prerequisite did not stop dependents")
-        e.assertion("failed synthetic predecessor stops every dependent",
-                    len(e.record["commands"]), command_count + 1)
-        e.assertion("failed synthetic child retains exact unexpected exit",
-                    e.record["commands"][-1]["exit_status"], 7)
-        # This is an intentionally failing method fixture, not a passed child.
-        e.record["commands"][-1]["negative_method_fixture"] = True
-    e.record["synthetic_orchestration_only"] = True
-    e.save()
+    """Use isolated subprocess fixtures, including parent-owned outputs."""
+    from prerequisite_checks import method_checks
+    method_checks(e)
 
 
 def discovery_method_checks(e):
@@ -1754,7 +1736,8 @@ def discovery_method_checks(e):
     directory.mkdir()
     spec = check_definitions()[0]
     record = {
-        "synthetic_only": True, "acceptance_evidence": False,
+        "fixture_scope": "SYNTHETIC_ONLY_NOT_PHYSICAL_ACCEPTANCE",
+        "acceptance_evidence": True,
         "scheduling_contract": contract(), "source_sha256": e.record["source_sha256"],
         "status": "running", "partition": spec,
     }

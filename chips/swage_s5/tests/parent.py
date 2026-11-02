@@ -49,7 +49,7 @@ def write_vectors(output, case, seed):
                 elif case.get("frames", 1) > 1:
                     pixel = [min(255, v+(0, 16, 31)[frame % 3]) for v in pixel]
                 keep = 7 if p["CH"] == 3 else 1
-                if p["TOP"] >= 3 and p["CH"] == 3 and not cfg["s4"] and (x+y+seed) % 7 == 0:
+                if p["TOP"] >= 3 and p["CH"] == 3 and (x+y+seed) % 7 == 0:
                     keep = 5
                 if cfg["format"] == 1:
                     keep = 7
@@ -185,7 +185,7 @@ def compare_parent(root, output, run, executable, case, seed, simulator="verilat
 
 def scenarios():
     cases = []
-    for top in (1, 3, 5):
+    for top in (1, 3, 4, 5):
         for pb, ch, fraction, interpolation in ((8, 1, 8, 0), (10, 1, 16, 1),
                                                (8, 3, 16, 0), (8, 3, 8, 1)):
             cases.append({"name": f"s{top}-scale-{pb}bit-{ch}ch-f{fraction}-i{interpolation}",
@@ -223,6 +223,9 @@ def scenarios():
             cases.append({"name": f"s{top}-clahe{tile}", "TOP": top, "TILE": tile,
                           "W": tile+1, "H": tile+1, "flat": True,
                           "config": {"s4": 2, "clip": 1}})
+            cases.append({"name": f"s{top}-clahe{tile}-unclipped-hist", "TOP": top, "TILE": tile,
+                          "W": tile+1, "H": tile+1, "flat": True,
+                          "config": {"enable": 32, "hist_channel": 1, "s4": 2, "clip": tile*tile}})
         for patch in (8, 14, 16):
             for bf16 in (0, 1):
                 cases.append({"name": f"s{top}-patch{patch}-bf16{bf16}", "TOP": top,
@@ -239,7 +242,12 @@ def scenarios():
 def parent_matrix(root, output, run):
     selftest()
     builds, results = {}, []
-    for case in scenarios():
+    cases = scenarios()
+    assert {parameters(case)["TOP"] for case in cases} == {1, 2, 3, 4, 5}
+    for top in (1, 2, 3, 4, 5):
+        assert {(parameters(case)["PB"], parameters(case)["CH"]) for case in cases
+                if parameters(case)["TOP"] == top} >= {(8, 1), (10, 1), (8, 3)}
+    for case in cases:
         for reference in (False, True):
             compiled_case = dict(case)
             if reference and parameters(case)["TOP"] == 5:
@@ -254,4 +262,13 @@ def parent_matrix(root, output, run):
                 result["supplementary_unchanged_reference"] = reference
                 results.append(result)
         print(f"PROGRESS compared inherited scenario={case['name']}", flush=True)
+    assert len(results) == len(cases)*2*3
+    for seed in (11, 29, 47):
+        rows = [result for result in results if result["seed"] == seed and
+                not result["supplementary_unchanged_reference"]]
+        assert any(row["expected"]["frames"] >= 3 for row in rows)
+        assert any(row["expected"]["padded_tokens"] > 0 for row in rows)
+        for field in ("pixel_stalls", "token_stalls", "hist_stalls", "cfg_errors"):
+            assert sum(row["observed"][1][field] for row in rows) > 0, (
+                f"Inherited required event not observed: {field} seed={seed}")
     return results

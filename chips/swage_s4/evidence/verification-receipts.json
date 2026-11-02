@@ -198,7 +198,7 @@
           ]
         },
         {
-          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-enhanced-20261102T182109Z-d2b3d007/comparison.json",
+          "path": "evidence/l1-20261102T180046Z-86849ff9/compact-enhanced-20261102T180048Z-940a9a2e/comparison.json",
           "data": {
             "frames": [
               {
@@ -300,7 +300,7 @@
                 "input_gap_cycles": 0,
                 "final_pixel_stall": 1,
                 "final_token_stall": 1,
-                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+                "simulation_stdout": "evidence/l1-20261102T180046Z-86849ff9/0016-compact-enhanced-simulate.stdout.txt"
               },
               {
                 "case": "compact-enhanced",
@@ -401,7 +401,7 @@
                 "input_gap_cycles": 0,
                 "final_pixel_stall": 1,
                 "final_token_stall": 1,
-                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+                "simulation_stdout": "evidence/l1-20261102T180046Z-86849ff9/0016-compact-enhanced-simulate.stdout.txt"
               },
               {
                 "case": "compact-enhanced",
@@ -502,7 +502,7 @@
                 "input_gap_cycles": 0,
                 "final_pixel_stall": 1,
                 "final_token_stall": 1,
-                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+                "simulation_stdout": "evidence/l1-20261102T180046Z-86849ff9/0016-compact-enhanced-simulate.stdout.txt"
               }
             ],
             "control": {
@@ -580,7 +580,7 @@
           }
         },
         {
-          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-enhanced-20261102T182109Z-d2b3d007/expectations.json",
+          "path": "evidence/l1-20261102T180046Z-86849ff9/compact-enhanced-20261102T180048Z-940a9a2e/expectations.json",
           "data": [
             {
               "case": "compact-enhanced",
@@ -861,7 +861,7 @@
           ]
         },
         {
-          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-legacy-20261102T182108Z-4b9f7899/comparison.json",
+          "path": "evidence/l1-20261102T180046Z-86849ff9/compact-legacy-20261102T180047Z-4f758412/comparison.json",
           "data": {
             "frames": [
               {
@@ -963,7 +963,7 @@
                 "input_gap_cycles": 7,
                 "final_pixel_stall": 1,
                 "final_token_stall": 0,
-                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0006-compact-legacy-simulate.stdout.txt"
+                "simulation_stdout": "evidence/l1-20261102T180046Z-86849ff9/0014-compact-legacy-simulate.stdout.txt"
               }
             ],
             "control": {
@@ -1041,7 +1041,7 @@
           }
         },
         {
-          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-legacy-20261102T182108Z-4b9f7899/expectations.json",
+          "path": "evidence/l1-20261102T180046Z-86849ff9/compact-legacy-20261102T180047Z-4f758412/expectations.json",
           "data": [
             {
               "case": "compact-legacy",

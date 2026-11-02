@@ -83,6 +83,9 @@ class Execution:
     def versions(self, tools):
         for tool, flag in tools:
             text = self.run([tool, flag], f"version-{tool}")
+            if not text.strip():
+                text = (self.root / self.record["commands"][-1]["stderr"]).read_text()
+            assert text.strip(), f"Missing real tool version for {tool}"
             self.record["tool_versions"][tool] = text.splitlines()[:3]
         self.save()
 

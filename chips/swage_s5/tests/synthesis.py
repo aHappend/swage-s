@@ -6,18 +6,18 @@ import json
 from pathlib import Path
 
 
-def synthesize(root, output, run):
+def synthesize(root, output, run, parameters=None):
     rtl = [str(p.relative_to(root)) for p in sorted(root.glob("rtl/*.sv"))]
     relative = output.relative_to(root)
     script = output / "synthesis.ys"
     netlist = output / "netlist.json"
+    parameters = ({"SRC_WIDTH": 3, "SRC_HEIGHT": 2, "DST_WIDTH": 3, "DST_HEIGHT": 2,
+                   "MAX_FRAME_PIXELS": 16, "S5_MAX_WIDTH": 3, "S5_NUM_CLASSES": 3,
+                   "S5_MAX_TOPK": 3, "S5_FIFO_DEPTH": 3} if parameters is None else parameters)
     script.write_text(
         "read_verilog -sv " + " ".join(rtl) + "\n"
-        "chparam -set SRC_WIDTH 3 -set SRC_HEIGHT 2 "
-        "-set DST_WIDTH 3 -set DST_HEIGHT 2 "
-        "-set MAX_FRAME_PIXELS 16 -set S5_MAX_WIDTH 3 "
-        "-set S5_NUM_CLASSES 3 -set S5_MAX_TOPK 3 "
-        "-set S5_FIFO_DEPTH 3 swage_s5_top\n"
+        "chparam " + " ".join(f"-set {key} {value}" for key, value in parameters.items()) +
+        " swage_s5_top\n"
         "hierarchy -check -top swage_s5_top\n"
         "proc\nopt_expr\nopt_clean\ncheck -noinit\n"
         "memory -nomap\nopt_clean\ncheck -assert\n"
@@ -34,6 +34,18 @@ def synthesize(root, output, run):
                 "u_topk", "u_roi_tokens")
     for name in required:
         assert name in top["cells"], f"Missing literal hierarchy: {name}"
+    def child(parent, instance):
+        return modules[parent["cells"][instance]["type"]]
+    for parent, instances in ((child(top, "u_c2f"), ("u_bottleneck0", "u_bottleneck1", "u_fuse")),
+                              (child(top, "u_pyramid"), ("u_level1", "u_level2")),
+                              (child(top, "u_roi_tokens"), ("u_roi_normalizer",)),
+                              (child(top, "u_stem"), ("u_window",))):
+        for instance in instances:
+            assert instance in parent["cells"], f"Missing required child: {instance}"
+    for parent in modules.values():
+        hdlname = parent.get("attributes", {}).get("hdlname", "").lstrip("\\").split()
+        if hdlname and hdlname[0] == "swage_s5_dsconv":
+            assert "u_window" in parent["cells"], "Spatial convolution without literal window"
     counts = {}
     state_bits, memory_bits = 0, 0
     for name, module in modules.items():
@@ -59,6 +71,14 @@ def synthesize(root, output, run):
         assert a == b and any(isinstance(bit, int) for bit in a), f"Disconnected graph: {source}->{target}"
     for port in ("det_axis_tdata", "roi_axis_tdata"):
         assert any(isinstance(bit, int) for bit in top["ports"][port]["bits"]), f"Constant output: {port}"
+    assert (top["cells"]["u_head"]["connections"]["m_data"] ==
+            top["cells"]["u_candidate_queue"]["connections"]["s_data"][:88])
+    assert (top["cells"]["u_candidate_queue"]["connections"]["m_data"][:88] ==
+            top["cells"]["u_topk"]["connections"]["s_data"])
+    assert (top["cells"]["u_topk"]["connections"]["m_slot"] ==
+            top["cells"]["u_roi_tokens"]["connections"]["cmd_slot"])
+    assert (top["cells"]["u_roi_tokens"]["connections"]["m_data"] ==
+            top["ports"]["roi_axis_tdata"]["bits"])
     digest = hashlib.sha256(netlist.read_bytes()).hexdigest()
     size = netlist.stat().st_size
     compressed = output / "netlist.json.gz"
@@ -74,6 +94,7 @@ def synthesize(root, output, run):
     assert recovered_hash.hexdigest() == digest and recovered_size == size, "Netlist retention failure"
     netlist.unlink()
     result = {"stage": "generic inferred memories, not physical mapping or timing",
+              "parameters": parameters,
               "state_bits_unique_modules": state_bits,
               "memory_bits_unique_modules": memory_bits,
               "cell_types_unique_modules": counts,

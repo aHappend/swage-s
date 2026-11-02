@@ -8,6 +8,7 @@ import shutil
 
 from oracle import candidates, fixture, pack, scene
 from leaf import leaf_check
+from primitives import primitive_check
 from receipts import fresh, prune_compile
 from run_focused import vectors
 
@@ -158,6 +159,8 @@ MUTATIONS = (
      "slot <= cmd_slot == K-1 ? 0 : cmd_slot+1'b1;", "ROI mismatch"),
     ("bf16-truncated", "swage_s4_normalizer.sv", "bf_increment4 <= bf_increment;",
      "bf_increment4 <= 0;", "ROI mismatch"),
+    ("temporal-equality", "swage_s4_temporal.sv", "motion < threshold1",
+     "motion <= threshold1", "PRIMITIVE numerical mismatch"),
 )
 
 
@@ -180,7 +183,9 @@ def mutations(root, output, run, selected=None):
         original = source.read_text()
         assert original.count(before) == 1, f"Mutation site must be unique: {name}"
         source.write_text(original.replace(before, after))
-        if name in ("spatial-row", "pointwise-order", "c2f-bypass", "negative-tie"):
+        if name == "temporal-equality":
+            primitive_check(root, directory, run, "temporal", "verilator", copied, True)
+        elif name in ("spatial-row", "pointwise-order", "c2f-bypass", "negative-tie"):
             kind = "window" if name == "spatial-row" else (
                 "dsconv" if name == "negative-tie" else "c2f")
             leaf_check(root, directory, run, kind, 13, 17, 11, "verilator", copied, True)

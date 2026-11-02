@@ -26,7 +26,10 @@ def synthesize(root, output, run):
     run(["yosys", "-s", str(script.relative_to(root))], "synthesis")
     design = json.loads(netlist.read_text())
     modules = design["modules"]
-    top = modules["swage_s5_top"]
+    tops = [module for module in modules.values()
+            if int(module.get("attributes", {}).get("top", "0"), 2) == 1]
+    assert len(tops) == 1, "Expected exactly one synthesized top"
+    top = tops[0]
     required = ("u_isp", "u_fork", "u_stem", "u_c2f", "u_pyramid", "u_head",
                 "u_topk", "u_roi_tokens")
     for name in required:

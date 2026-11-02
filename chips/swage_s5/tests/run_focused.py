@@ -11,11 +11,13 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+import time
 import uuid
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from oracle import detections, fixture, normalize, pack, scene, selftest
 from synthesis import synthesize
+from leaf import leaf_check
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -80,6 +82,7 @@ def main():
     parser.add_argument("--simulator", choices=("icarus", "verilator"), default="icarus")
     parser.add_argument("--repair-of")
     parser.add_argument("--synthesis", action="store_true")
+    parser.add_argument("--leaf", choices=("window", "dsconv", "c2f"))
     args = parser.parse_args()
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     output = ROOT / "evidence" / "preparation" / f"focused-{stamp}-{uuid.uuid4().hex[:12]}"
@@ -109,8 +112,20 @@ def main():
         save()
         try:
             with stdout.open("wb") as out, stderr.open("wb") as err:
-                result = subprocess.run(argv, cwd=ROOT, stdout=out, stderr=err, timeout=timeout)
-            command["exit_code"] = result.returncode
+                with subprocess.Popen(argv, cwd=ROOT, stdout=out, stderr=err) as process:
+                    deadline = time.monotonic() + timeout
+                    while True:
+                        remaining = deadline - time.monotonic()
+                        try:
+                            exit_code = process.wait(timeout=max(0.01, min(30, remaining)))
+                            break
+                        except subprocess.TimeoutExpired:
+                            if remaining <= 30:
+                                process.kill()
+                                process.wait()
+                                raise
+                            print(f"PROGRESS {label} running; logs in {output.relative_to(ROOT)}", flush=True)
+            command["exit_code"] = exit_code
             command["timed_out"] = False
         except subprocess.TimeoutExpired:
             command["exit_code"] = None
@@ -119,8 +134,8 @@ def main():
         finally:
             command["ended_at"] = now()
             save()
-        if result.returncode:
-            raise RuntimeError(f"{label} exited {result.returncode}: {command['stdout']}, {command['stderr']}")
+        if exit_code:
+            raise RuntimeError(f"{label} exited {exit_code}: {command['stdout']}, {command['stderr']}")
         return stdout.read_text()
 
     save()
@@ -129,6 +144,12 @@ def main():
         if args.synthesis:
             receipt["tool_versions"]["yosys"] = run(["yosys", "-V"], "version-yosys").strip()
             receipt["synthesis"] = synthesize(ROOT, output, run)
+            receipt["exit_code"] = 0
+            return 0
+        if args.leaf:
+            receipt["tool_versions"]["iverilog"] = run(["iverilog", "-V"], "version-iverilog").splitlines()[:3]
+            receipt["tool_versions"]["vvp"] = run(["vvp", "-V"], "version-vvp").splitlines()[:3]
+            receipt["leaf"] = leaf_check(ROOT, output, run, args.leaf, args.width, args.height, args.seed)
             receipt["exit_code"] = 0
             return 0
         simulator = args.simulator
@@ -162,6 +183,11 @@ def main():
                  f"+DC={case['descriptor_count']}", f"+RC={case['roi_count']}",
                  f"+STALL={stalled}"], f"simulation-{stalled}",
                 timeout=600 if simulator == "icarus" else 3600)
+        if simulator == "verilator":
+            intermediates = output / "compile-obj"
+            for path in intermediates.iterdir():
+                if path.suffix in (".o", ".a", ".gch", ".d"):
+                    path.unlink()
         receipt["exit_code"] = 0
     except Exception as error:
         receipt["error"] = f"{type(error).__name__}: {error}"

@@ -115,10 +115,7 @@ def convolution(image, layer):
     return result
 
 
-def graph(rgb, masks, layers):
-    centered = [[[p[c] - 128 if masks[y][x] & (1 << c) else 0 for c in range(3)]
-                 for x, p in enumerate(row)] for y, row in enumerate(rgb)]
-    stem = convolution(centered, layers[0])
+def c2f(stem, layers):
     b = [[p[3:] for p in row] for row in stem]
     branches = [b]
     for layer in layers[1:3]:
@@ -132,7 +129,14 @@ def graph(rgb, masks, layers):
         for x, p in enumerate(row):
             concatenated = p + branches[1][y][x] + branches[2][y][x]
             f0[-1].append([affine(concatenated, layers[3], o) for o in range(6)])
-    levels = [f0]
+    return f0
+
+
+def graph(rgb, masks, layers):
+    centered = [[[p[c] - 128 if masks[y][x] & (1 << c) else 0 for c in range(3)]
+                 for x, p in enumerate(row)] for y, row in enumerate(rgb)]
+    stem = convolution(centered, layers[0])
+    levels = [c2f(stem, layers)]
     for layer in layers[4:6]:
         full = convolution(levels[-1], layer)
         levels.append([[p for p in row[::2]] for row in full[::2]])
@@ -186,3 +190,21 @@ def selftest():
     layer.dw[:] = [1] * 9
     layer.pw[:] = [1]
     assert convolution([[[1], [2]], [[3], [4]]], layer) == [[[1], [3]], [[4], [10]]]
+    layer.dw[:] = [0] * 8 + [127]
+    assert convolution([[[127]]], layer) == [[[127]]]
+    layer.pw[:] = [-1]
+    assert convolution([[[-128]]], layer) == [[[127]]]
+    layer.dw[-1] = 1
+    layer.shift[0] = 1
+    assert convolution([[[-3]]], layer) == [[[2]]]
+    endpoint_layers = [Layer.zero(3, 6), Layer.zero(3, 3), Layer.zero(3, 3),
+                       Layer.zero(12, 6, False), Layer.zero(6, 6), Layer.zero(6, 6),
+                       Layer.zero(6, 3, False), Layer.zero(6, 4, False)]
+    endpoint_layers[6].bias[:] = [-1, 65535, 65536]
+    endpoint_layers[7].bias[:] = [-1, 4097, 3, 2]
+    winners, count = detections([[[128, 128, 128]]], [[7]], endpoint_layers, 65535, 3)
+    assert count == 3
+    assert [candidate[0] for candidate in winners] == [
+        (-65535, 1, level, 0, 0) for level in range(3)]
+    assert [candidate[1] for candidate in winners] == [
+        pack([0, 0, 1, 1], 16) | 1 << 64 | 65535 << 72] * 3

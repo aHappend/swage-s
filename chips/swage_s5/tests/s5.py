@@ -41,10 +41,11 @@ def compile_top(root, output, run, geometry, rtl_root=None, simulator="verilator
 
 def compare(root, output, run, executable, geometry, seed, threshold=500, bf16=False,
             layers=None, pixels=None, masks=None, frames=1, reset_mid=False, controls=False,
-            simulator="verilator", means=None, reciprocals=None):
+            simulator="verilator", means=None, reciprocals=None, roi_enable=True,
+            inherited_tokens=False):
     width, height, classes, topk, patch = geometry
     case = vectors(output, width, height, seed, threshold, topk, patch, classes, bf16,
-                   layers, pixels, masks, means, reciprocals)
+                   layers, pixels, masks, means, reciprocals, roi_enable, inherited_tokens)
     records = []
     for stalled in (0, 1):
         normalization = ([] if means is None else [f"+MEAN={pack(means, 24):x}"])
@@ -53,6 +54,8 @@ def compare(root, output, run, executable, geometry, seed, threshold=500, bf16=F
         text = run([*executable, f"+ROOT={output.relative_to(root)}",
                     f"+WC={case['weight_count']}", f"+DC={case['descriptor_count']}",
                     f"+RC={case['roi_count']}", f"+STALL={stalled}", f"+SEED={seed}",
+                    f"+BC={case['base_token_count']}", f"+S4={4 if inherited_tokens else 0}",
+                    f"+S5={3 if roi_enable else 1}",
                     f"+THRESHOLD={threshold}", f"+BF16={int(bf16)}", f"+FRAMES={frames}",
                     f"+RESET_MID={int(reset_mid)}", f"+CONTROL={int(controls)}", *normalization],
                    f"simulation-{stalled}", timeout=600 if simulator == "icarus" else 3600)
@@ -63,6 +66,7 @@ def compare(root, output, run, executable, geometry, seed, threshold=500, bf16=F
             assert record["pixels"] == width * height
             assert record["descriptors"] == case["descriptor_count"]
             assert record["roi"] == case["roi_count"]
+            assert record["base_tokens"] == case["base_token_count"]
             assert record["stalled"] == stalled
             if reset_mid:
                 assert record["abort_beats"] > 0 and record["blocked_cfg"] > 0
@@ -131,6 +135,9 @@ def directed(root, output, run):
         assert (0, 0) in patches and any(x > 0 and y > 0 for x, y in patches)
         assert result["expected"]["eligible_count"] > 16
         results.append(result)
+        case = fresh(output, f"detection-only-seed{seed}")
+        results.append(compare(root, case, run, executable, geometry, seed, 350,
+                               layers=objects, roi_enable=False, frames=2))
     singleton = (1, 1, 8, 16, 16)
     build = fresh(output, "singleton-build")
     executable = compile_top(root, build, run, singleton, depth=16)
@@ -139,6 +146,10 @@ def directed(root, output, run):
         result = compare(root, case, run, executable, singleton, seed, 0, frames=2)
         assert {r["sort_key"][2] for r in result["expected"]["retained"]} == {0, 1, 2}
         results.append(result)
+        case = fresh(output, f"separate-tokens-seed{seed}")
+        results.append(compare(root, case, run, executable, singleton, seed, 0,
+                               inherited_tokens=True, frames=2, pixels=[[[201, 155, 227]]],
+                               masks=[[5]]))
     return results
 
 

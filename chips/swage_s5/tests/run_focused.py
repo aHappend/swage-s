@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from oracle import detections, fixture, normalize, pack, scene, selftest
 from synthesis import synthesize
 from leaf import leaf_check
+from parent_oracle import token_records
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -32,7 +33,8 @@ def hexfile(path, values):
 
 
 def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3, bf16=False,
-            layers=None, rgb=None, masks=None, means=None, reciprocals=None):
+            layers=None, rgb=None, masks=None, means=None, reciprocals=None,
+            roi_enable=True, inherited_tokens=False):
     if rgb is None:
         rgb, masks = scene(width, height, seed)
     if layers is None:
@@ -51,6 +53,8 @@ def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3,
         descriptors.append(data | int(rank == 0) << 88 |
                            int(rank == len(winners) - 1) << 89 | 1 << 90 |
                            rank << 91 | len(winners) << 99)
+        if not roi_enable:
+            continue
         patch_x, patch_y = x // patch, y // patch
         patch_id = patch_y * ((width + patch - 1) // patch) + patch_x
         for element in range(patch * patch):
@@ -68,8 +72,10 @@ def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3,
         descriptors = [(1 << 88) | (1 << 89)]
     hexfile(directory / "descriptors.hex", descriptors)
     hexfile(directory / "roi.hex", tokens)
+    base_tokens = token_records(rgb, patch, means, reciprocals, bf16) if inherited_tokens else []
+    hexfile(directory / "base-token.hex", base_tokens)
     return {"weight_count": len(weights), "descriptor_count": len(descriptors),
-            "roi_count": len(tokens), "eligible_count": eligible,
+            "roi_count": len(tokens), "base_token_count": len(base_tokens), "eligible_count": eligible,
             "retained": [{"sort_key": key, "descriptor": f"{data:022x}", "x": x, "y": y}
                          for key, data, x, y in winners]}
 

@@ -13,13 +13,16 @@ from primitives import primitive_check
 from control import queue_check, topk_check
 from boundaries import boundary_check
 from synthesis import synthesize
+from parent import compare_parent, compile_parent, parent_matrix
+from parent import scenarios as parent_scenarios
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("component", choices=("control", "matrix", "directed", "mutations",
                                             "pipelines", "primitives", "queues", "topk",
-                                            "boundaries", "synthesis"))
+                                            "boundaries", "synthesis", "parent-smoke", "parent-matrix",
+                                            "parent-compact"))
     parser.add_argument("--repair-of")
     parser.add_argument("--mutation", action="append")
     args = parser.parse_args()
@@ -34,6 +37,27 @@ def main():
             executable = compile_top(root, output, execution.run, geometry)
             result = compare(root, output, execution.run, executable, geometry, 11,
                              reset_mid=True, controls=True, frames=2)
+        elif args.component == "parent-smoke":
+            case = {"name": "s5-enhanced", "TOP": 5, "W": 9, "H": 17, "TILE": 8,
+                    "flat": True, "frames": 3,
+                    "config": {"s4": 7, "patch": 14, "bf16": 1,
+                               "means": [32641]*3, "reciprocals": [513]*3}}
+            executable = compile_parent(root, output, execution.run, case)
+            result = compare_parent(root, output, execution.run, executable, case, 11)
+        elif args.component == "parent-compact":
+            execution.versions((("iverilog", "-V"), ("vvp", "-V")))
+            names = {"s1-scale-8bit-3ch-f16-i0", "s2-demosaic-convolution",
+                     "s3-crop-demosaic-conv-hist", "s3-csc1", "s3-csc3",
+                     "s5-scale-10bit-1ch-f16-i1"}
+            result = []
+            for case in parent_scenarios():
+                if case["name"] in names:
+                    directory = fresh(output, case["name"])
+                    executable = compile_parent(root, directory, execution.run, case, simulator="icarus")
+                    result.append(compare_parent(root, directory, execution.run, executable,
+                                                 case, 11, "icarus"))
+        elif args.component == "parent-matrix":
+            result = parent_matrix(root, output, execution.run)
         elif args.component == "boundaries":
             execution.versions((("iverilog", "-V"), ("vvp", "-V")))
             result = boundary_check(root, output, execution.run)

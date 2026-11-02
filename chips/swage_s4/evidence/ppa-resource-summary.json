@@ -1,11 +1,24 @@
 {
   "chip": "Swage-S4",
   "fitter_resources": {
-    "total_registers": 17136,
+    "alms_used": 9642,
+    "alms_total": 427200,
+    "alms_pct": "2 %",
+    "total_registers": 14940,
     "block_memory_bits": 218952,
+    "m20k_ram_blocks": 36,
+    "m20k_ram_blocks_total": 2713,
     "dsp_blocks": 70,
     "virtual_pins": 1092
   },
-  "timing": {},
+  "timing": {
+    "device": "10AX115N2F45E1SG",
+    "netlist_mode": "post_fit",
+    "target_frequency_mhz": 100.0,
+    "fmax_mhz": 110.75,
+    "critical_path_delay_ns": 9.029,
+    "wns_setup_ns": 0.971,
+    "wns_hold_ns": 0.053
+  },
   "verification_tiers": {}
 }

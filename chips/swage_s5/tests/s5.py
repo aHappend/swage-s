@@ -98,6 +98,10 @@ def matrix(root, output, run):
                 for r in result["compared_replays"] if r["stalled"]]
         for field in ("pixel_stalls", "descriptor_stalls", "roi_stalls", "bubbles"):
             assert sum(row[field] for row in rows) > 0, f"Unobserved {field} seed={seed}"
+        for sink in ("p", "d", "r"):
+            for length in (1, 2, 17, 257):
+                field = f"{sink}{length}"
+                assert sum(row[field] for row in rows) > 0, f"Unobserved {field} seed={seed}"
     return results
 
 
@@ -182,6 +186,17 @@ def mutations(root, output, run, selected=None):
     layers = fixture(3)
     scores = sorted({-r[0][0] for r in candidates(rgb, masks, layers)})
     threshold = scores[len(scores) // 2]
+    if selected is None:
+        build = fresh(output, "baseline-build")
+        executable = compile_top(root, build, run, geometry)
+        for name, baseline_threshold, baseline_layers in (
+                ("mixed", threshold, None), ("threshold-equality", max(scores), None),
+                ("roi-ownership", 350, copy.deepcopy(layers))):
+            if baseline_layers is not None:
+                baseline_layers[3].shift = [3]*6
+            baseline = fresh(output, f"unchanged-{name}")
+            compare(root, baseline, run, executable, geometry, 11, baseline_threshold, True,
+                    layers=baseline_layers, means=[32641]*3, reciprocals=[513]*3)
     for name, filename, before, after, assertion in MUTATIONS:
         if selected is not None and name not in selected:
             continue

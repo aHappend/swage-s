@@ -38,6 +38,10 @@ class Execution:
                 target = self.output / "sources" / relative
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(source, target)
+        provenance = self.root / "design" / "GENERATIONAL_HANDOFF.md"
+        if provenance.is_file():
+            self.record["source_sha256"]["design/GENERATIONAL_HANDOFF.md"] = hashlib.sha256(
+                provenance.read_bytes()).hexdigest()
         self.save()
 
     def relative(self, path):

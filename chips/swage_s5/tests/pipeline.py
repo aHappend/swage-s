@@ -19,7 +19,8 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
         levels.append([row[::2] for row in full[::2]])
     if endpoints:
         layers[6].pw = [0] * (6 * classes)
-        layers[6].bias = [65536 if c == classes - 1 else -1 for c in range(classes)]
+        layers[6].bias = [65536 if c == classes - 1 and endpoints != "zero" else -1
+                          for c in range(classes)]
         layers[7].bias = [-1, 4097, 4096, -2147483648]
     weights = []
     for layer in layers[4:6]:
@@ -50,6 +51,16 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
                         x << 57 | y << 70 | level << 83)
         total = sum(len(level) * len(level[0]) for level in levels)
     else:
+        if threshold is None:
+            scores = []
+            for feature in (masked, *levels[1:]):
+                for row in feature:
+                    for pixel in row:
+                        scores.append(max(clamp(affine(pixel, layers[6], c, feature=False), 0, 65535)
+                                          for c in range(classes)))
+            unique = sorted(set(scores))
+            assert len(unique) > 2, "Head threshold fixture must span distinct scores"
+            threshold = unique[len(unique)//2]
         for index, value in enumerate(inputs):
             level = (value >> 80) & 3
             x, y = (value >> 54) & 8191, (value >> 67) & 8191
@@ -70,6 +81,7 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
                                int(score >= threshold) << 88 | level << 89 |
                                ax << 91 | ay << 104 | (value >> 82) << 117)
         total = len(inputs)
+        expected[len(inputs):] = []
     for name, values in (("input", inputs), ("expected", expected), ("weights", weights)):
         (output / f"pipeline-{name}.hex").write_text("".join(f"{v:x}\n" for v in values))
     rtl = [str(p.relative_to(root)) for p in sorted(root.glob("rtl/*.sv"))]
@@ -96,4 +108,5 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
                    timeout=600 if simulator == "icarus" else 3600)
         assert f"records={total}" in text, "Missing pipeline comparison ledger"
     return {"kind": kind, "width": width, "height": height, "classes": classes,
-            "compared_per_replay": total, "score_relations_compared": score_relations}
+            "seed": seed, "threshold": threshold, "compared_per_replay": total,
+            "score_relations_compared": score_relations}

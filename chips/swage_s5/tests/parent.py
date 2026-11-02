@@ -51,6 +51,12 @@ def write_vectors(output, case, seed):
                 keep = 7 if p["CH"] == 3 else 1
                 if p["TOP"] >= 3 and p["CH"] == 3 and not cfg["s4"] and (x+y+seed) % 7 == 0:
                     keep = 5
+                if cfg["format"] == 1:
+                    keep = 7
+                elif cfg["format"] == 2:
+                    keep = 7 if not (x & 1 or y & 1) else 1
+                    if keep == 1:
+                        pixel[1:] = [0, 0]
                 image[-1].append(pixel)
                 masks[-1].append(keep)
                 data = pack(pixel, 8) if p["CH"] == 3 else pixel[0]
@@ -161,13 +167,16 @@ def compare_parent(root, output, run, executable, case, seed, simulator="verilat
     for stalled in (0, 1):
         text = run([*executable, f"+ROOT={output.relative_to(root)}", f"+FRAMES={metadata['frames']}",
                     f"+NP={metadata['pixels']}", f"+NT={metadata['tokens']}",
-                    f"+STALL={stalled}", f"+SEED={seed}"], f"parent-simulation-{stalled}",
+                    f"+STALL={stalled}", f"+SEED={seed}", "+CONTROL=1"], f"parent-simulation-{stalled}",
                    timeout=600 if simulator == "icarus" else 3600)
         lines = [line for line in text.splitlines() if line.startswith("COMPARED parent=")]
         assert len(lines) == 1
         ledger = {key: int(value) for key, value in re.findall(r"(\w+)=(\d+)", lines[0])}
         assert ledger["pixels"] == metadata["pixels"] and ledger["tokens"] == metadata["tokens"]
         assert ledger["hist"] == metadata["hist_blocks"]
+        if parameters(case)["TOP"] >= 3:
+            minimum_errors = 14 if parameters(case)["TOP"] >= 4 else 5
+            assert ledger["cfg_errors"] >= minimum_errors
         ledgers.append(ledger)
     result = {"case": case, "seed": seed, "expected": metadata, "observed": ledgers}
     (output / "parent-comparison.json").write_text(json.dumps(result, indent=2) + "\n")

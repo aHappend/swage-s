@@ -15,6 +15,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import traceback
 
@@ -55,6 +56,16 @@ class Run:
                  "cwd": "." if cwd is None else self.path(cwd), "started_at": time.time(),
                  "timeout_s": timeout, "stdout": self.path(stdout), "stderr": self.path(stderr)}
         self.record["commands"].append(entry)
+        print(json.dumps({"tool_execution": name, "phase": "start"}), flush=True)
+        settled = threading.Event()
+
+        def heartbeat():
+            while not settled.wait(30):
+                print(json.dumps({"tool_execution": name, "phase": "running",
+                                  "elapsed_s": round(time.time()-entry["started_at"])}),
+                      flush=True)
+
+        threading.Thread(target=heartbeat, daemon=True).start()
         try:
             with stdout.open("w") as so, stderr.open("w") as se:
                 result = subprocess.run(entry["argv"], cwd=working_directory, stdout=so, stderr=se,
@@ -66,14 +77,17 @@ class Run:
             entry["timed_out"] = True
             raise
         finally:
+            settled.set()
             entry["ended_at"] = time.time()
         text = stdout.read_text() + stderr.read_text()
-        if (result.returncode != 0) != failure:
+        if failure is not None and (result.returncode != 0) != failure:
             raise AssertionError(f"{name}: exit {result.returncode}; "
                                  f"logs {self.path(stdout)}, {self.path(stderr)}")
         return text
 
     def version(self, tool, args):
+        if tool in self.record["tool_versions"]:
+            return
         self.record["tool_versions"][tool] = self.command([tool, *args], f"version-{tool}")
 
     def finish(self, status):
@@ -81,6 +95,15 @@ class Run:
             self.path(path): hashlib.sha256(path.read_bytes()).hexdigest()
             for pattern in ("*.sv", "*.ys", "*.hex", "cases.txt", "legacy.txt")
             for path in self.directory.rglob(pattern)}
+        self.record["coverage"] = {
+            "completed_runs": len(self.record["runs"]),
+            "compared_pixels": sum(row.get("counts", {}).get("pixels", row.get("pixels", 0))
+                                   for row in self.record["runs"]),
+            "compared_histogram_words": sum(row.get("counts", {}).get("statistics", 0)
+                                            for row in self.record["runs"]),
+            "detected_defects": sum("detected" in row.get("counts", {})
+                                    for row in self.record["runs"]),
+        }
         self.record["exit_code"] = status
         self.record["ended_at"] = time.time()
         receipt = self.directory / "receipt.json"
@@ -140,7 +163,8 @@ def simulate(run, parameters, cases, name, simulator="verilator", rtl=None,
         binary = directory / "sim.vvp"
         run.command(["iverilog", "-g2012", "-Wall", "-s", "tb", "-o",
                      run.path(binary), run.path(bench), *relative_sources], f"{name}-compile")
-        argv = ["vvp", run.path(binary), f"+fixtures={run.path(fixtures)}"]
+        argv = ["vvp", run.path(binary), f"+fixtures={run.path(fixtures)}",
+                "+cycle_limit=500000"]
     else:
         build = directory / "compile-obj"
         run.command(["verilator", "--binary", "--timing", "-Wno-fatal",
@@ -164,6 +188,10 @@ def simulate(run, parameters, cases, name, simulator="verilator", rtl=None,
         if counts["cases"] != len(cases) or counts["pixels"] != sum(
                 len(c["expected"]) for c in cases):
             raise AssertionError(f"{name}: incomplete pixel comparisons")
+        expected_configs = sum(not bool(c.get("flags", 0) & 16) for c in cases) + sum(
+            bool(c.get("flags", 0) & 6) for c in cases)
+        if counts["configs"] != expected_configs:
+            raise AssertionError(f"{name}: incomplete accepted configurations")
         if counts["statistics"] != 32 * sum(bool(c["config"].enable & 32) and
                                            not c.get("flags", 0) & 9 for c in cases):
             raise AssertionError(f"{name}: incomplete histogram comparisons")
@@ -175,10 +203,15 @@ def simulate(run, parameters, cases, name, simulator="verilator", rtl=None,
             counts[key] = value
             if value != sum(bool(c.get("flags", 0) & flag) for c in cases):
                 raise AssertionError(f"{name}: missing {key} event")
+        directed = sum(c.get("traffic", 2) not in (0, 4) for c in cases)
+        if any(counts[key] != directed for key in ("first", "eol", "final")):
+            raise AssertionError(f"{name}: missing directed boundary stall")
+        if counts["responses"] != 32 * counts["statistics"]:
+            raise AssertionError(f"{name}: missing 32-cycle histogram response stalls")
     run.record["runs"].append({"name": name, "parameters": parameters,
                                "simulator": simulator, "counts": counts,
                                "scenarios": [c["name"] for c in cases]})
-    if simulator == "verilator" and not failure:
+    if simulator == "verilator":
         for pattern in ("*.o", "*.a", "*.gch"):
             for path in build.glob(pattern):
                 path.unlink()
@@ -189,14 +222,28 @@ def behavior(run, seeds, compact=False, focus=None):
     run.version("iverilog", ["-V"])
     run.version("vvp", ["-V"])
     run.version("verilator", ["--version"])
+    from oracle_probe import model_checks
+    run.record["oracle_analytical_checks"] = model_checks()
     if focus == "legacy":
         from s3_legacy import legacy
-        legacy(run, ROOT, make_case, compact)
+        legacy(run, ROOT, make_case, simulate, compact)
         return
     if focus == "color":
         from s3_cases import color_cases
         p = (3, 5, 7, 3, 8, 3, 16, 0)
         simulate(run, p, color_cases(p, seeds, make_case), "focused-color")
+        return
+    if focus == "scaler":
+        p = (3, 3, 5, 3, 8, 3, 8, 0)
+        cases = [make_case(p, Config(enable=16), seed=offset, pattern="ramp", traffic=4,
+                           name=f"scale-readiness-phase-{offset}") for offset in range(35)]
+        for sim in ("iverilog", "verilator"):
+            simulate(run, p, cases, f"focused-scaler-{sim}", sim)
+        return
+    if focus == "leaf":
+        from s3_leaf import csc_latency, interpolation_latency
+        csc_latency(run, ROOT, make_case)
+        interpolation_latency(run, ROOT)
         return
     parameters = (3, 3, 5, 3, 8, 3, 8, 0)
     compact_cases = [
@@ -207,18 +254,26 @@ def behavior(run, seeds, compact=False, focus=None):
         make_case(parameters, Config(enable=56, input_format=2, csc_mode=2),
                   name="compact-inverse420"),
     ]
+    compact_cases[0]["flags"] = 16
     for flags in (2, 4, 8, 1, 0):
-        case = make_case(parameters, Config(enable=63, roi=(1, 1, 2, 2)), seed=43,
+        case = make_case(parameters, Config(enable=63, roi=(0, 0, 2, 2) if flags==2 else (1, 1, 2, 2)),
+                         seed=89 if flags==0 else 43, pattern="0" if flags==0 else "random",
                          name=f"reset-and-snapshot-{flags}")
         case["flags"] = flags
         compact_cases.append(case)
+    if compact_cases[-1]["histogram"] == compact_cases[-2]["histogram"]:
+        raise AssertionError("snapshot replacement stimulus must change the expected histogram")
     for sim in ("iverilog", "verilator"):
         simulate(run, parameters, compact_cases, f"compact-{sim}", sim)
+    from s3_leaf import csc_latency, interpolation_latency
+    csc_latency(run, ROOT, make_case)
+    interpolation_latency(run, ROOT)
     if compact:
         return
     parameters = (8, 6, 11, 9, 8, 3, 8, 0)
     cases = [make_case(parameters, Config(enable=enable, roi=(1, 1, 3, 3),
-                                         border=bool(seed & 2)), seed,
+                                         border=bool(seed & 2), absolute=True, shift=2,
+                                         coeff=(-1, 0, 1, -2, 0, 2, -1, 0, 1)), seed,
                        name=f"bypass-{enable:02x}-seed-{seed}")
              for seed in seeds for enable in range(64)]
     simulate(run, parameters, cases, "bypass-matrix")
@@ -233,6 +288,7 @@ def behavior(run, seeds, compact=False, focus=None):
             p = (*geometry, bits, channels, 16 if i & 1 else 8, (i >> 1) & 1)
             configs = [Config(enable=48), Config(enable=32),
                        Config(enable=49, roi=(0, 0, 1, 1)),
+                       Config(enable=49, roi=(p[0]-1, p[1]-1, 1, 1)),
                        Config(enable=49, roi=(0, 0, p[0], p[1]))]
             simulate(run, p, [make_case(p, c, seed, ("ramp", "checkerboard",
                          "impulse")[j % 3], name=f"geometry-{i}-{j}-seed-{seed}")
@@ -245,9 +301,13 @@ def behavior(run, seeds, compact=False, focus=None):
         cases = [make_case(p, Config(enable=enable), 17, str(value), traffic=0,
                            name=f"singleton-{bits}-{value}-enable-{enable}")
                  for value in values for enable in (0, 32)]
+        cases.append(make_case(p, Config(enable=0, hist_channel=3, csc_mode=7,
+                                        roi=(8191, 8191, 0, 0), shift=31,
+                                        coeff=(-32768,)*9),
+                               89, "255", traffic=0, name="mono-ignored-bypass-fields"))
         simulate(run, p, cases, f"singleton-exhaustive-{bits}")
     from s3_legacy import legacy
-    legacy(run, ROOT, make_case)
+    legacy(run, ROOT, make_case, simulate)
 
 
 def portable(run, staged=False):
@@ -255,7 +315,7 @@ def portable(run, staged=False):
         behavior(run, [17], compact=True)
         from s3_legacy import legacy
         from s3_synthesis import synthesize
-        legacy(run, ROOT, make_case, compact=True)
+        legacy(run, ROOT, make_case, simulate, compact=True)
         synthesize(run, ROOT, compact=True)
         return
     staging = run.directory / f"staging-{time.time_ns()}"
@@ -304,7 +364,8 @@ def main():
     parser.add_argument("--compact", action="store_true", help="bounded diagnostic subset")
     parser.add_argument("--preparation", action="store_true", help="retain advisory probe receipt")
     parser.add_argument("--repair-of", help="project-relative retained original receipt")
-    parser.add_argument("--focus", choices=("color", "legacy"), help="bounded diagnostic subset")
+    parser.add_argument("--focus", choices=("color", "legacy", "scaler", "leaf", "parameters"),
+                        help="bounded diagnostic subset")
     parser.add_argument("--staged", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     run = Run(args.suite, args.preparation)
@@ -320,9 +381,10 @@ def main():
             from s3_synthesis import boundaries, synthesize
             run.version("iverilog", ["-V"])
             run.version("vvp", ["-V"])
-            if not args.compact:
+            if not args.compact or args.focus == "parameters":
                 boundaries(run, ROOT)
-            synthesize(run, ROOT, args.compact)
+            if args.focus != "parameters":
+                synthesize(run, ROOT, args.compact)
         elif args.suite == "sensitivity":
             from s3_sensitivity import sensitivity
             sensitivity(run, ROOT, make_case, simulate, args.compact)

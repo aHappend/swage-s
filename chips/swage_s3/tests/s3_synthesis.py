@@ -21,15 +21,9 @@ def boundaries(run, root):
         item[index] = value
         tuples.append(tuple(item))
     tuples.extend([(1, 1, 1, 1, 10, 3, 8, 0), (1, 1, 1, 1, 10, 1, 16, 1)])
-    bench = run.directory / "parameters.sv"
-    bench.write_text("module parameter_tb; swage_s3_top dut(); "
-                     "initial begin #1; $display(\"LEGAL_PARAMETERS\"); $finish; end endmodule\n")
     sources = [run.path(p) for p in sorted((root / "rtl").glob("*.sv"))]
     for i, values in enumerate(tuples):
         binary = run.directory / f"parameters-{i}.vvp"
-        switches = [f"-Pparameter_tb.dut.{key}={value}"
-                    for key, value in zip(PARAMETERS, values)]
-        # Icarus -P overrides root parameters, so make the testbench itself parameterized.
         declarations = ",".join(f"parameter integer {key}={value}"
                                 for key, value in zip(PARAMETERS, values))
         connections = ",".join(f".{key}({key})" for key in PARAMETERS)

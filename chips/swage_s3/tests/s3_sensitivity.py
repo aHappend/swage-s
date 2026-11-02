@@ -34,7 +34,8 @@ def sensitivity(run, root, make_case, simulate, compact=False):
          "step_x <= quotient[PW-1:0];", "step_x <= quotient[PW-1:0] + (PW'(1)<<F);",
          Config(enable=48), "ramp", "PIXEL_MISMATCH"),
         ("histogram-lost-update", "swage_s3_histogram.sv",
-         "increment_reg<=counter_q+32'd1", "increment_reg<=counter_q+32'd0",
+         "increment_reg<=counter_q+32'd1",
+         "increment_reg<=counter_q+(counter_q==0 ? 32'd1 : 32'd0)",
          Config(enable=32), "77", "HISTOGRAM_MISMATCH"),
     ]
     if compact:

@@ -82,7 +82,10 @@ module tb;
   integer compared=0,statistics=0,configs=0,busy_checks=0,stall_checks=0;
   integer first_stalls=0,eol_stalls=0,final_stalls=0,response_stalls=0;
   integer source_bubbles=0,frame_bound;
+  integer cycle_limit=0;
+  integer observed_fd=0;
   integer reset_fill=0,reset_stall=0,reset_response=0,snapshot_replaced=0;
+  integer last_histogram_transfer=-100;
   reg source_fire,output_fire,observed_cfg_ready,observed_req_ready;
   reg observed_rsp_valid,observed_done,stalled=0;
   reg [31:0] output_word,stall_word,rng;
@@ -144,9 +147,16 @@ module tb;
       clk=1;
       if (!rst_n) reset_check();
       #1;
+      if (rst_n && stalled && (m_axis_tvalid !== 1'b1 ||
+          {{3'd0,m_axis_tlast,m_axis_tuser,m_axis_cvalid,24'(m_axis_tdata)}} !== stall_word))
+        $fatal(1,"POST_EDGE_STALL_STABILITY case=%0d",index);
       cycle=cycle+1;
+      if (cycle_limit>0 && cycle>cycle_limit) $fatal(1,"SIMULATOR_CYCLE_BUDGET");
       #4 clk=0;
       if (!rst_n) reset_check();
+      if (rst_n && stalled && (m_axis_tvalid !== 1'b1 ||
+          {{3'd0,m_axis_tlast,m_axis_tuser,m_axis_cvalid,24'(m_axis_tdata)}} !== stall_word))
+        $fatal(1,"NEG_EDGE_STALL_STABILITY case=%0d",index);
     end
   endtask
 
@@ -182,8 +192,10 @@ module tb;
       restore_configuration();
       cfg_enable=1;cfg_roi_width=0;reject_current();
       cfg_enable=1;cfg_roi_height=0;reject_current();
-      cfg_enable=1;cfg_roi_x=8191;cfg_roi_width=8191;reject_current();
-      cfg_enable=1;cfg_roi_y=8191;cfg_roi_height=8191;reject_current();
+      cfg_enable=1;cfg_roi_x=8191;cfg_roi_width=1;cfg_roi_y=0;cfg_roi_height=1;reject_current();
+      cfg_enable=1;cfg_roi_y=8191;cfg_roi_height=1;cfg_roi_x=0;cfg_roi_width=1;reject_current();
+      cfg_enable=1;cfg_roi_x=0;cfg_roi_width=SW+1;cfg_roi_y=0;cfg_roi_height=1;reject_current();
+      cfg_enable=1;cfg_roi_y=0;cfg_roi_height=SH+1;cfg_roi_x=0;cfg_roi_width=1;reject_current();
       cfg_enable=2;cfg_input_format=1;reject_current();
       cfg_enable=4;cfg_input_format=2;reject_current();
       cfg_enable=8;cfg_input_format=0;cfg_csc_mode=5;reject_current();
@@ -222,10 +234,11 @@ module tb;
   task abort_probe;
     begin
       sent=0;frame_cycle=0;m_axis_tready=0;
-      while ((flags[1] && sent==0) || (flags[2] && !m_axis_tvalid)) begin
+      // The aborted epoch differs from the checked frame to expose stale RAM validity.
+      while ((flags[1] && sent<SW+1) || (flags[2] && !m_axis_tvalid)) begin
         s_axis_tvalid=sent<SW*SH;
         if (sent<SW*SH) begin
-          s_axis_tdata=DATA_WIDTH'(src[sent][23:0]);s_axis_cvalid=src[sent][26:24];
+          s_axis_tdata=DATA_WIDTH'(src[sent][23:0]^24'hff);s_axis_cvalid=src[sent][26:24];
           s_axis_tuser=src[sent][27];s_axis_tlast=src[sent][28];
         end
         tick();
@@ -235,7 +248,8 @@ module tb;
           $fatal(1,"RESET_PROBE_BOUND case=%0d",index);
       end
       if (flags[1]) begin
-        if (sent==0 || m_axis_tready) $fatal(1,"RESET_FILL_PRECONDITION");
+        if (sent<SW+1 || sent>=SW*SH || m_axis_tvalid || m_axis_tready)
+          $fatal(1,"RESET_FILL_PRECONDITION");
         reset_fill=reset_fill+1;
       end
       if (flags[2]) begin
@@ -244,7 +258,7 @@ module tb;
           if (!s_axis_tvalid || source_fire) begin
             s_axis_tvalid=sent<SW*SH;
             if (sent<SW*SH) begin
-              s_axis_tdata=DATA_WIDTH'(src[sent][23:0]);s_axis_cvalid=src[sent][26:24];
+              s_axis_tdata=DATA_WIDTH'(src[sent][23:0]^24'hff);s_axis_cvalid=src[sent][26:24];
               s_axis_tuser=src[sent][27];s_axis_tlast=src[sent][28];
             end
           end
@@ -261,6 +275,10 @@ module tb;
   task frame;
     begin : frame_body
       sent=0;got=0;frame_cycle=0;rng=32'(seed);
+      last_histogram_transfer=-100;
+      filename=$sformatf("%s/case-%0d-observed.hex",base,index);
+      observed_fd=$fopen(filename,"w");
+      if (!observed_fd) $fatal(1,"OBSERVATION_OPEN");
       first_hold=0;eol_hold=0;final_hold=0;hold_remaining=0;
       // Finite work: clears, two 32-edge divisions, line scans, serialized bins,
       // plus at most 32 injected stall cycles per boundary and bounded bubbles.
@@ -268,7 +286,8 @@ module tb;
       while (sent<SW*SH || got<nout || !cfg_ready) begin
         advance_random();
         if (!s_axis_tvalid || source_fire) begin
-          s_axis_tvalid=sent<SW*SH && (traffic==0 || rng[2:0]!=0);
+          s_axis_tvalid=sent<SW*SH && (traffic==0 ||
+            (traffic==4 ? (frame_cycle+seed+44)%7!=1 : rng[2:0]!=0));
           if (sent<SW*SH && !s_axis_tvalid) source_bubbles=source_bubbles+1;
           if (sent<SW*SH) begin
             s_axis_tdata=DATA_WIDTH'(src[sent][23:0]);
@@ -276,8 +295,10 @@ module tb;
             s_axis_tuser=src[sent][27];s_axis_tlast=src[sent][28];
           end
         end
-        m_axis_tready=traffic==0 || (traffic==1 ? frame_cycle[0] : rng[4:3]!=0);
-        if (traffic!=0 && m_axis_tvalid && hold_remaining==0) begin
+        m_axis_tready=traffic==0 || (traffic==4 ?
+          ((frame_cycle+seed)%5!=0 && !(got==0 && frame_cycle<32)) :
+          (traffic==1 ? frame_cycle[0] : rng[4:3]!=0));
+        if (traffic!=0 && traffic!=4 && m_axis_tvalid && hold_remaining==0) begin
           if (!first_hold && got==0) begin
             first_hold=1;hold_remaining=32;first_stalls=first_stalls+1;
           end else if (!eol_hold && m_axis_tlast) begin
@@ -304,9 +325,19 @@ module tb;
           if (output_word !== expected[got])
             $fatal(1,"PIXEL_MISMATCH case=%0d pixel=%0d got=%h expected=%h enable=%h",
                    index,got,output_word,expected[got],cfg_enable);
+          $fwrite(observed_fd,"%08h\\n",output_word);
+          if (cfg_enable[5] && (cfg_hist_channel==3 ||
+              output_word[24+cfg_hist_channel]))
+            last_histogram_transfer=cycle;
           got=got+1;compared=compared+1;
         end
         if (source_fire) sent=sent+1;
+        if (sent>0 && (sent<SW*SH || got<nout) && (cfg_ready || hist_req_ready))
+          $fatal(1,"EARLY_FRAME_OR_SNAPSHOT_ADMISSION case=%0d",index);
+        if (sent==SW*SH && !cfg_ready && s_axis_tready)
+          $fatal(1,"NEXT_FRAME_ACCEPTANCE case=%0d",index);
+        if (cfg_enable[5] && sent>0 && hist_done && cycle<last_histogram_transfer+2)
+          $fatal(1,"HISTOGRAM_DONE_BEFORE_COMMIT case=%0d",index);
         if (observed_done && sent>0 && (sent<SW*SH || got<nout))
           $fatal(1,"EARLY_HISTOGRAM_DONE case=%0d",index);
         if (!cfg_enable[5] && hist_done !== 0)
@@ -317,23 +348,38 @@ module tb;
                  index,sent,got,nout);
       end
       cfg_valid=0;s_axis_tvalid=0;m_axis_tready=1;
+      $fclose(observed_fd);observed_fd=0;
       tick();
       if (output_fire) $fatal(1,"EXTRA_OUTPUT_AFTER_FRAME case=%0d",index);
       if (cfg_enable[5] && !flags[0]) begin
         if (!hist_done) $fatal(1,"MISSING_HISTOGRAM_DONE case=%0d",index);
         for (a=0;a<32;a=a+1) begin
           if (!hist_req_ready) $fatal(1,"STATISTICS_NOT_READY case=%0d",index);
+          if (flags[3]) begin
+            s_axis_tvalid=1;s_axis_tdata=DATA_WIDTH'(src[0][23:0]);
+            s_axis_cvalid=src[0][26:24];s_axis_tuser=src[0][27];s_axis_tlast=src[0][28];
+          end
           hist_req_addr=5'(a);hist_req_valid=1;hist_rsp_ready=0;
           tick();
           if (!observed_req_ready) $fatal(1,"STATISTICS_REQUEST case=%0d",index);
+          if (flags[3] && (source_fire || !hist_done))
+            $fatal(1,"SIMULTANEOUS_REQUEST_FRAME_PRIORITY case=%0d",index);
           hist_req_valid=0;
           for (j=1;j<=9;j=j+1) begin
             if (hist_rsp_valid) $fatal(1,"STATISTICS_EARLY_LATENCY case=%0d edge=%0d",index,j);
             tick();
+            if (flags[3] && (source_fire || s_axis_tready || !hist_done))
+              $fatal(1,"SNAPSHOT_SOURCE_RESERVATION case=%0d",index);
           end
           if (!hist_rsp_valid) $fatal(1,"STATISTICS_LATE_LATENCY case=%0d",index);
           if (flags[3]) begin
             if (hist_rsp_data !== histogram[a]) $fatal(1,"RESET_RESPONSE_VALUE");
+            for (j=0;j<32;j=j+1) begin
+              tick();
+              if (!hist_rsp_valid || hist_rsp_data !== histogram[a] ||
+                  source_fire || s_axis_tready || cfg_ready || !hist_done)
+                $fatal(1,"RESET_RESPONSE_RESERVATION case=%0d",index);
+            end
             reset_response=reset_response+1;
             reset_dut();
             disable frame_body;
@@ -372,6 +418,7 @@ module tb;
     rst_n=1;#1;rst_n=0;#1;reset_check();
     tick();rst_n=1;tick();
     if (!$value$plusargs("fixtures=%s",base)) $fatal(1,"FIXTURE_ARGUMENT");
+    if ($value$plusargs("cycle_limit=%d",cycle_limit)) begin end
     filename={{base,"/cases.txt"}};fd=$fopen(filename,"r");
     if (fd==0) $fatal(1,"FIXTURE_OPEN");
     while (!$feof(fd)) begin
@@ -390,7 +437,7 @@ module tb;
         $readmemh(filename,expected,0,nout-1);
         filename=$sformatf("%s/case-%0d-histogram.hex",base,index);
         $readmemh(filename,histogram,0,31);
-        configure();
+        if (!flags[4]) configure();
         if (flags[1] || flags[2]) abort_probe();
         frame();
         index=index+1;

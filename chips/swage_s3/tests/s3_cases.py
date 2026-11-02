@@ -39,6 +39,8 @@ def color_cases(parameters, seeds, make_case):
             ((1, 1, 1, 1, 1, 1, 1, 1, 1), 3),
             ((-1, -2, -1, 0, 0, 0, 1, 2, 1), 1),
             ((0, 0, 0, 0, -1, 0, 0, 0, 0), 0),
+            ((0, 0, 0, 0, 1, 0, 0, 0, 0), 1),
+            ((0, 0, 0, 0, -1, 0, 0, 0, 0), 1),
             ((32767,) * 9, 0),
             ((-32768,) * 9, 31),
             ((-32768, 32767, -32768, 32767, -32768, 32767, -32768, 32767, -32768), 7),
@@ -68,6 +70,9 @@ def color_cases(parameters, seeds, make_case):
                                csc_mode=7, coeff=(-32768,)*9, shift=31, hist_channel=3),
                                seed, "random", traffic=0,
                                name=f"ignored-bypass-controls-{seed}"))
+        cases.append(make_case(parameters, Config(enable=0, input_format=1,
+                                                  hist_channel=3, csc_mode=7),
+                               seed, "primaries", name=f"ignored-ycbcr-histogram-field-{seed}"))
     return cases
 
 

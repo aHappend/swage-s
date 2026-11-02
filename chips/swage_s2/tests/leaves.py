@@ -230,9 +230,9 @@ def verify_leaves(ledger):
             for key, value in dict(W=w, H=h, L=latency, B=bits, INSTANCE=instance).items():
                 text = text.replace(f"@{key}@", str(value))
             geometry = (w, h, w, h, 8, 1, 8, 0)
-            image = image_for(geometry, "rggb", 89)
             rows, expected = [], []
             for border in (0, 1):
+                image = image_for(geometry, "rggb" if border == 0 else "random", 89 + border)
                 result = convolve(image, coeff, 4, 1, border) if operation == "convolution" else (
                     demosaic(image, border))
                 for y in range(h):

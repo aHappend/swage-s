@@ -39,7 +39,7 @@ module tb;
     .m_axis_tdata(pout),.m_axis_tvalid(pvalid),.m_axis_tuser(psof),
     .m_axis_tlast(peol),.m_axis_tready(mr));
   reg [B-1:0] pixels[0:N-1], expected[0:M-1];
-  integer input_file,result_file,rc,frames,f,seed,mode,bd,ab,shift;
+  integer input_file,result_file,rc,frames,f,seed,mode,bd,ab,shift,use_defaults;
   integer si,oi,pi,po,cycles,bubbles,stalls,runstall,maxstall,sofstall,eolstall;
   integer cfgchanges,busycycles,illegal,fillreset,outputreset,stallreset;
   integer sofhold,eolhold,busy_held,first,got_error,abort_kind,abort_done;
@@ -68,6 +68,7 @@ module tb;
       if ((^{sr,cr,ce,mv,ms,ml}) === 1'bx)
         $fatal(1,"UNKNOWN_CONTROL pins=%b",{sr,cr,ce,mv,ms,ml});
       if (mv && $isunknown(md)) $fatal(1,"UNKNOWN_DATA");
+      if (!mv && (ms||ml)) $fatal(1,"INVALID_OUTPUT_MARKER");
       if (pr && (^{pready,pvalid,psof,peol}) === 1'bx)
         $fatal(1,"PARENT_UNKNOWN_CONTROL");
       if (pvalid && (^pout) === 1'bx) $fatal(1,"PARENT_UNKNOWN_DATA");
@@ -99,6 +100,11 @@ module tb;
       @(negedge clk); #1; rst_n=0; pr=0; cv=0; sv=0; pv=0; mr=0;
       blocked=0; pblocked=0;sblocked=0;psblocked=0;in_frame=0;
       #1; reset_check();
+      // Assert and release entirely between edges to distinguish asynchronous reset.
+      #1; rst_n=1;
+      #1;
+      if(mv || ms || ml || md!==0 || ce || !cr) $fatal(1,"ASYNC_RESET_RELEASE");
+      rst_n=0;
       repeat(3) sample_edge();
       @(negedge clk); rst_n=1;
       sample_edge();
@@ -184,11 +190,14 @@ module tb;
       if(!abort_done) begin
         repeat(24) begin
           sample_edge();
-          if(mv || pvalid) $fatal(1,"FINAL_DRAIN");
+          if(accepted_out || accepted_po || mv || pvalid) $fatal(1,"FINAL_DRAIN");
           @(negedge clk);
         end
         if(!cr || si!=N || oi!=M) $fatal(1,"FRAME_LENGTH");
         $fdisplay(result_file,"F %0d %0d %0d %0d %0d",f,si,oi,po,cycles);
+        $fflush(result_file);
+      end else begin
+        $fdisplay(result_file,"A %0d %0d %0d %0d %0d",f,abort_at,si,oi,cycles);
         $fflush(result_file);
       end
     end
@@ -214,8 +223,8 @@ module tb;
     random_state=32'(seed);
     clear_reset();
     for(f=0;f<frames;f=f+1) begin
-      rc=$fscanf(input_file,"%d %d %d %d %h\n",mode,bd,ab,shift,cc);
-      if(rc!=5) $fatal(1,"FRAME_HEADER");
+      rc=$fscanf(input_file,"%d %d %d %d %h %d\n",mode,bd,ab,shift,cc,use_defaults);
+      if(rc!=6) $fatal(1,"FRAME_HEADER");
       for(j=0;j<N;j=j+1) begin
         rc=$fscanf(input_file,"%h\n",pixels[j]);if(rc!=1)$fatal(1,"INPUT");
       end
@@ -223,6 +232,11 @@ module tb;
         rc=$fscanf(input_file,"%h\n",expected[j]);if(rc!=1)$fatal(1,"EXPECTED");
       end
       cb=1'(bd);ca=1'(ab);cs=5'(shift);
+      if(use_defaults) begin
+        if(mode!=0)$fatal(1,"DEFAULT_FIXTURE_MODE");
+        clear_reset();
+        run_frame(0);
+      end else begin
       configure(mode,0);
       if(f<=1 && @ILLEGAL@) begin
         cb=~cb;ca=~ca;cs=~cs;cc=~cc;
@@ -232,14 +246,17 @@ module tb;
       // Aborted epochs never count as completed frames.
       if(f==0 || f==1 || f==3) begin
         for(abort_kind=1;abort_kind<=3;abort_kind=abort_kind+1) begin
-          run_frame(abort_kind);
-          if(!abort_done) $fatal(1,"RESET_SCENARIO_UNREACHED");
-          clear_reset();
-          cb=1'(bd);ca=1'(ab);cs=5'(shift);
-          configure(mode,0);
+          if(!((abort_kind==1&&N==1)||(abort_kind==2&&M==1))) begin
+            run_frame(abort_kind);
+            if(!abort_done) $fatal(1,"RESET_SCENARIO_UNREACHED");
+            clear_reset();
+            cb=1'(bd);ca=1'(ab);cs=5'(shift);
+            configure(mode,0);
+          end
         end
       end
       run_frame(0);
+      end
     end
     $fdisplay(result_file,"C %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d %0d",
       bubbles,stalls,maxstall,sofstall,eolstall,cfgchanges,busycycles,illegal,

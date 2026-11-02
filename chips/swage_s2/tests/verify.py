@@ -20,7 +20,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from execution import ROOT, Ledger, dump, hashes, relative
 from reference import (MATRIX, PATTERNS, PRESETS, convolve, demosaic, frame,
-                       image_for, pack, scale, scenarios)
+                       image_for, pack, scenarios)
 from reference import taps as reference_taps
 from bench import PARAMETERS, architectural
 
@@ -71,7 +71,7 @@ def stimulus(path, frames, seed):
         for item in frames:
             coeff = sum((c & 65535) << (16 * i) for i, c in enumerate(item["coeff"]))
             out.write(f"{item['mode']} {item['border']} {item['absolute']} "
-                      f"{item['shift']} {coeff:036x}\n")
+                      f"{item['shift']} {coeff:036x} {int(item['tag'] == 'reset_default')}\n")
             for word in item["inputs"] + item["expected"]:
                 out.write(f"{word:x}\n")
 
@@ -85,6 +85,7 @@ def compare_results(path, frames, geometry):
     width = geometry[2]
     completed, outputs, parent = {}, collections.defaultdict(list), collections.defaultdict(list)
     counters = None
+    aborted = []
     for line in path.read_text().splitlines():
         fields = line.split()
         if not fields:
@@ -112,6 +113,17 @@ def compare_results(path, frames, geometry):
             completed[fid] = dict(inputs=ins, outputs=outs, parent=pars, cycles=cycles)
         elif kind == "C" and len(fields) == len(COUNTERS) + 1 and counters is None:
             counters = dict(zip(COUNTERS, map(int, fields[1:])))
+        elif kind == "A" and len(fields) == 6:
+            fid, stage, ins, outs, cycles = map(int, fields[1:])
+            if not (0 <= fid < len(frames) and 1 <= stage <= 3 and
+                    0 < ins <= geometry[0] * geometry[1] and
+                    0 <= outs <= geometry[2] * geometry[3] and cycles > 0):
+                raise AssertionError("Invalid aborted reset epoch")
+            if stage == 1 and (outs != 0 or ins >= geometry[0] * geometry[1]):
+                raise AssertionError("Fill reset was not partial")
+            if stage == 2 and not (0 < outs < geometry[2] * geometry[3]):
+                raise AssertionError("Active output reset was not mid-frame")
+            aborted.append(dict(frame=fid, stage=stage, inputs=ins, outputs=outs, cycles=cycles))
         else:
             raise AssertionError(f"Malformed result: {line[:160]}")
     if counters is None or set(completed) != set(range(len(frames))):
@@ -126,7 +138,10 @@ def compare_results(path, frames, geometry):
                 raise AssertionError("Missing parent differential comparison")
         elif parent[fid] or result["parent"]:
             raise AssertionError("Disabled parent consumed outputs")
-    return dict(frames=completed, counters=counters, compared=sum(map(len, outputs.values())),
+    if len(aborted) != sum(counters[name] for name in ("reset_fill", "reset_output", "reset_stall")):
+        raise AssertionError("Reset coverage lacks aborted epoch records")
+    return dict(frames=completed, aborted=aborted, counters=counters,
+                compared=sum(map(len, outputs.values())),
                 parent_compared=sum(map(len, parent.values())))
 
 
@@ -562,7 +577,8 @@ def main():
                      dict(compared_pixels=result["compared"], synthesis=synth))
             else:
                 geometry = (3, 5, 7, 9, 8, 3, 16, 0)
-                frames = scenarios(geometry, 17)[:4]
+                frames = [frame(geometry, 0, "rgb", 17, tag="reset_default"),
+                          *scenarios(geometry, 17)[:4]]
                 if args.probe == "behavior":
                     geometry = MATRIX[5]
                     frames = scenarios(geometry, 17, extended=True)

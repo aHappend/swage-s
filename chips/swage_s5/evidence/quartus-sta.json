@@ -1,12 +1,12 @@
 {
   "gate": "quartus-sta",
-  "timestamp_utc": "2026-11-02T21:44:39.287184+00:00",
+  "timestamp_utc": "2026-11-02T22:45:49.404414+00:00",
   "project_dir": "/data/sufeng/swage-s5-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work",
   "revision": "top",
   "clock_filter": "clk_main",
   "min_setup_slack_ns": 0.0,
   "min_hold_slack_ns": 0.0,
-  "status": "failed",
+  "status": "passed",
   "map_summary": {
     "exists": true,
     "path": "/data/sufeng/swage-s5-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work/top.map.rpt",
@@ -28,302 +28,302 @@
         "period_ns": 10.0
       }
     ],
-    "wns_setup_ns": -14.586,
-    "wns_hold_ns": 0.043,
+    "wns_setup_ns": 0.867,
+    "wns_hold_ns": 0.044,
     "unconstrained_setup_paths": 0,
     "unconstrained_functional_endpoints": 0,
     "unapproved_timing_exceptions": 0,
-    "failing_setup_count": 20,
+    "failing_setup_count": 0,
     "failing_hold_count": 0,
     "setup_paths": [
       {
-        "slack_ns": -14.586,
+        "slack_ns": 0.867,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
       },
       {
-        "slack_ns": -14.528,
+        "slack_ns": 0.876,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.477,
+        "slack_ns": 0.913,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
       },
       {
-        "slack_ns": -14.422,
+        "slack_ns": 0.942,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|altshift_taps:x_pipe_rtl_0|shift_taps_9ov:auto_generated|altera_syncram_lbb1:altera_syncram4|altsyncram_e394:altsyncram7|ram_block8a12~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
       },
       {
-        "slack_ns": -14.419,
+        "slack_ns": 0.948,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[26]"
       },
       {
-        "slack_ns": -14.382,
+        "slack_ns": 0.951,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.364,
+        "slack_ns": 0.965,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|altshift_taps:x_pipe_rtl_0|shift_taps_9ov:auto_generated|altera_syncram_lbb1:altera_syncram4|altsyncram_e394:altsyncram7|ram_block8a12~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
       },
       {
-        "slack_ns": -14.354,
+        "slack_ns": 0.974,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a23~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.324,
+        "slack_ns": 0.974,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.321,
+        "slack_ns": 0.976,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
       },
       {
-        "slack_ns": -14.273,
+        "slack_ns": 0.992,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a23~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[0]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
       },
       {
-        "slack_ns": -14.26,
+        "slack_ns": 0.992,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|altshift_taps:x_pipe_rtl_0|shift_taps_9ov:auto_generated|altera_syncram_lbb1:altera_syncram4|altsyncram_e394:altsyncram7|ram_block8a12~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
       },
       {
-        "slack_ns": -14.252,
+        "slack_ns": 1.001,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a23~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[0]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.252,
+        "slack_ns": 1.003,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a23~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.246,
+        "slack_ns": 1.005,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
       },
       {
-        "slack_ns": -14.242,
+        "slack_ns": 1.005,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[14]"
       },
       {
-        "slack_ns": -14.24,
+        "slack_ns": 1.011,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|altshift_taps:x_pipe_rtl_0|shift_taps_9ov:auto_generated|altera_syncram_lbb1:altera_syncram4|altsyncram_e394:altsyncram7|ram_block8a25~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
       },
       {
-        "slack_ns": -14.238,
+        "slack_ns": 1.019,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|valid_pipe[10]|state.FINISH"
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].sum9[3]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].result10[6]"
       },
       {
-        "slack_ns": -14.236,
+        "slack_ns": 1.021,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|altshift_taps:x_pipe_rtl_0|shift_taps_9ov:auto_generated|altera_syncram_lbb1:altera_syncram4|altsyncram_e394:altsyncram7|ram_block8a12~reg0|state.FINISH"
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].sum9[3]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].result10[4]"
       },
       {
-        "slack_ns": -14.219,
+        "slack_ns": 1.028,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH"
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
       }
     ],
     "hold_paths": [
       {
-        "slack_ns": 0.043,
+        "slack_ns": 0.044,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
         "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[4].pairs1[2][13]|swage_s5_head:u_head|projections[4].pairs2[1][13]"
+        "to_node": "projections[4].pairs1[2][21]|swage_s5_head:u_head|projections[4].pairs2[1][21]"
       },
       {
         "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][2]|swage_s5_head:u_head|projections[2].pairs2[1][2]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[0].pairs1[2][37]|swage_s5_head:u_head|projections[0].pairs2[1][37]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[1].pairs2[2][9]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[1].pairs3[1][9]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[1].pairs1[4][6]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[1].pairs2[2][6]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level1|depthwise[5].pairs2[2][6]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level1|depthwise[5].pairs3[1][6]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][38]|swage_s5_head:u_head|projections[2].pairs2[1][38]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[0].pairs1[2][3]|swage_s5_head:u_head|projections[0].pairs2[1][3]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][17]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][17]"
+      },
+      {
+        "slack_ns": 0.045,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
         "from_node": "swage_s5_dsconv:u_stem",
-        "to_node": "depthwise[0].pairs1[4][12]|swage_s5_dsconv:u_stem|depthwise[0].pairs2[2][12]"
-      },
-      {
-        "slack_ns": 0.044,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[6].pairs1[2][34]|swage_s5_head:u_head|projections[6].pairs2[1][34]"
-      },
-      {
-        "slack_ns": 0.044,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[0].pairs1[2][33]|swage_s5_head:u_head|projections[0].pairs2[1][33]"
+        "to_node": "depthwise[0].pairs2[2][28]|swage_s5_dsconv:u_stem|depthwise[0].pairs3[1][28]"
       },
       {
         "slack_ns": 0.045,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
         "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|depthwise[3].pairs2[2][11]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[3].pairs3[1][11]"
-      },
-      {
-        "slack_ns": 0.045,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level1|depthwise[5].pairs2[2][32]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level1|depthwise[5].pairs3[1][32]"
-      },
-      {
-        "slack_ns": 0.045,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[4].pairs1[2][8]|swage_s5_head:u_head|projections[4].pairs2[1][8]"
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[4].pairs2[2][14]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[4].pairs3[1][14]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|depthwise[5].pairs2[2][39]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[5].pairs3[1][39]"
+        "from_node": "swage_s5_dsconv:u_stem",
+        "to_node": "pointwise[2].groups8[0][39]|swage_s5_dsconv:u_stem|pointwise[2].sum9[39]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_pyramid:u_pyramid",
-        "to_node": "swage_s5_dsconv:u_level2|depthwise[2].pairs2[2][11]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[2].pairs3[1][11]"
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][30]|swage_s5_head:u_head|projections[2].pairs2[1][30]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[6].pairs1[2][12]|swage_s5_head:u_head|projections[6].pairs2[1][12]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s4_temporal:u_temporal|x1[13]~_Duplicate_1|swage_s4_top:u_isp|swage_s4_temporal:u_temporal|x2[13]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
         "from_node": "swage_s5_c2f:u_c2f",
-        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[0].pairs1[4][21]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[0].pairs2[2][21]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_dsconv:u_stem",
-        "to_node": "depthwise[0].pairs1[4][11]|swage_s5_dsconv:u_stem|depthwise[0].pairs2[2][11]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_dsconv:u_stem",
-        "to_node": "depthwise[0].pairs1[4][13]|swage_s5_dsconv:u_stem|depthwise[0].pairs2[2][13]"
+        "to_node": "swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][12]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][12]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
         "from_node": "swage_s5_c2f:u_c2f",
-        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][30]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][30]"
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][39]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][39]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[6].pairs1[2][32]|swage_s5_head:u_head|projections[6].pairs2[1][32]"
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[2].products0[8][2]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[2].pairs1[4][2]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[6].pairs1[2][17]|swage_s5_head:u_head|projections[6].pairs2[1][17]"
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[2].products0[8][8]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[2].pairs1[4][8]"
       },
       {
         "slack_ns": 0.046,
         "from_clock": "clk_main",
         "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[5].pairs1[2][0]|swage_s5_head:u_head|projections[5].pairs2[1][0]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[5].pairs1[2][36]|swage_s5_head:u_head|projections[5].pairs2[1][36]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[4].pairs1[2][4]|swage_s5_head:u_head|projections[4].pairs2[1][4]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[4].pairs1[2][5]|swage_s5_head:u_head|projections[4].pairs2[1][5]"
-      },
-      {
-        "slack_ns": 0.046,
-        "from_clock": "clk_main",
-        "to_clock": "clk_main",
-        "from_node": "swage_s5_head:u_head",
-        "to_node": "projections[4].pairs1[2][38]|swage_s5_head:u_head|projections[4].pairs2[1][38]"
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level1|depthwise[0].pairs2[2][7]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level1|depthwise[0].pairs3[1][7]"
       }
     ],
     "stderr_tail": []
   },
-  "detail": "Setup WNS -14.586 ns < 0.000 ns (worst path: swage_s5_pyramid:u_pyramid -> swage_s5_dsconv:u_level2|altshift_taps:x_pipe_rtl_0|shift_taps_7ov:auto_generated|altera_syncram_hbb1:altera_syncram4|altsyncram_a394:altsyncram7|ram_block8a11~reg0|state.FINISH)",
+  "detail": "Timing closed: Setup WNS = 0.867 ns",
   "quartus_slot_telemetry": {
-    "slot_index": 1,
+    "slot_index": 2,
     "max_slots": 6,
     "slot_wait_s": 0.005
   },
@@ -331,13 +331,13 @@
   "clock_port": "clk",
   "clock_period_ns": 10.0,
   "target_frequency_mhz": 100.0,
-  "fmax_mhz": 40.67,
-  "critical_path_delay_ns": 24.586,
+  "fmax_mhz": 109.49,
+  "critical_path_delay_ns": 9.133,
   "fitter_resource_summary": {
-    "alms_used": 38315,
+    "alms_used": 38152,
     "alms_total": 427200,
     "alms_pct": "9 %",
-    "total_registers": 48468,
+    "total_registers": 48798,
     "block_memory_bits": 342312,
     "m20k_ram_blocks": 62,
     "m20k_ram_blocks_total": 2713,
@@ -345,6 +345,6 @@
     "virtual_pins": 1469
   },
   "parameters": {},
-  "source_sha256": "61ae41b530b89961996119d6cde63c87e94b468912babb6b96cc2168d0a04307",
+  "source_sha256": "d7e3d8dde337649cc6abbf6f79a501eb4a1e54cbe9e7667cb8391fe101d20b83",
   "applicable": true
 }

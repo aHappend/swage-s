@@ -1,14 +1,14 @@
-Fitter Status : Successful - Mon Nov  2 13:42:54 2026
+Fitter Status : Successful - Mon Nov  2 14:44:34 2026
 Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
 Revision Name : top
 Top-level Entity Name : swage_s5_top
 Family : Arria 10
 Device : 10AX115N2F45E1SG
 Timing Models : Final
-Logic utilization (in ALMs) : 38,315 / 427,200 ( 9 % )
+Logic utilization (in ALMs) : 38,152 / 427,200 ( 9 % )
   * Logic utilization warning : A large number of ALMs contain virtual pins and count towards logic utilization
   * ALMs containing virtual pins : 735 / 427,200 ( < 1 % )
-Total registers : 48468
+Total registers : 48798
 Total pins : 0 / 992 ( 0 % )
 Total virtual pins : 1,469
 Total block memory bits : 342,312 / 55,562,240 ( < 1 % )

@@ -1,6 +1,6 @@
 {
   "gate": "rtl-timing-lint",
-  "timestamp_utc": "2026-11-02T21:18:48.194553+00:00",
+  "timestamp_utc": "2026-11-02T21:49:06.783093+00:00",
   "root": "/data/sufeng/swage-s5-line/workspace/project",
   "status": "passed",
   "max_comb_div_width": 0,
@@ -45,7 +45,7 @@
     "rtl/swage_s5_quantize.sv": "cf70a985f4c74db59bcdd814fb95732a3cc110c57c0637b8b0c76d779780b086",
     "rtl/swage_s5_queue.sv": "6a087fefe68127fedde31c7d1d2e533bfcea089db8b3ac9178e0fa0e6ca5a7c5",
     "rtl/swage_s5_roi_tokens.sv": "e41485e1b0e50411c61271412a668a13fc25192792ab6abadd9724358ea25e98",
-    "rtl/swage_s5_top.sv": "358f202b413a514d6884e5397fb8162eb62d902a495d46df15957567c00e4c17",
+    "rtl/swage_s5_top.sv": "bf63824af91c0d3a79678804ce2e59a0033087eef22aec6a7f98f7b45095956a",
     "rtl/swage_s5_topk.sv": "6749e80d877abbf3ba6a3908cfb58dd3db1b57d3fc51475ee18a238ff9792694",
     "rtl/swage_s5_window.sv": "916a0683633dee494bf90ff4f397652b806665a668d75bfe0351b152c6ba4fc9"
   },

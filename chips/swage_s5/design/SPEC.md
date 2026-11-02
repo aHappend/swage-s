@@ -232,6 +232,25 @@ after that edge. Configuration and weights remain blocked until all inherited
 ISP activity, features, candidates, descriptors and enabled ROI outputs drain.
 The next S5 frame is blocked until that same completion.
 
+With detection enabled, the source enters a two-entry registered elastic input
+buffer before `u_isp`. Source ready depends on registered occupancy, not ISP or
+S5 downstream ready; a full buffer does not accept a replacement until the next
+clock after a pop. Both entries carry original data, lane mask, SOF and EOL.
+Buffered beats continue draining after the final source acceptance closes input.
+With detection disabled, input bypasses this buffer with the inherited handshake.
+Configuration and weights require the buffer empty as well as complete drain.
+
+The first accepted source beat at E sets frame-active and a reset-cleared
+registered `start_frame` pulse after E. At E+1, Top-K clears its occupancy and
+the ROI owner initializes its patch-grid sequencer. The first buffered beat may
+enter the ISP at E+1, but the S5 fork branch and stem cannot accept while
+`start_frame` is high. They can first accept at E+2, after initialization.
+The fork retains independent acknowledgement of any earlier public transfer.
+Stripe address and raster counters advance only on actual S5 branch acceptance;
+frame initialization never clears an accepted stripe pixel. This also applies
+when the first source beat is the last beat of a singleton frame. Reset cancels
+the pulse, buffered ownership and all pending frame work.
+
 Weight writes are acknowledged only between frames. Simultaneous `cfg_valid`
 holds `weight_ready=0`. An invalid acknowledged write pulses `weight_error`
 without changing any weight. Reset clears weight_error, all weights/biases and
@@ -381,8 +400,10 @@ Top-K parameter is `MAX_TOPK=16` (legal1..16, diagnostic-safe slot count).
 Inputs are `topk[4:0]`, `start_frame`, `finish_valid`, candidate
 `s_data[87:0],s_eligible,s_level[1:0],s_x,s_y[12:0],s_frame_last,s_valid`;
 outputs `finish_ready,s_ready,idle,delivery_done`. `start_frame` is issued
-only after prior complete delivery; it clears occupied slots without clearing
-image RAM. `finish_valid` is issued only after stripe snapshots and all features
+as the registered pulse following the first accepted source beat, only after
+prior complete delivery; it clears occupied slots without clearing image RAM.
+Initialization precedes S5 branch acceptance and every candidate.
+`finish_valid` is issued only after stripe snapshots and all features
 have drained and has priority over candidate acceptance.
 
 Snapshot input `snapshot_index[4:0]` selects a physical retained slot; outputs
@@ -453,6 +474,10 @@ shifting, NMS pass or ROI-bank reassociation.
 | Reset active | No transfer, ready/valid/error/new sidebands zero | Async control/pipeline cancellation; RAM contents need not clear |
 | First edge after reset | Only asserted valid && ready transfers | No stale completion; empty pipeline remains empty without input |
 | cfg accepted | cfg_valid && cfg_ready; input/weights blocked | Atomic commit after E; rejection leaves all configuration unchanged |
+| First enabled source beat | Source buffer has space; actual valid && ready at E | Frame-active/start pulse after E; initialize at E+1; first S5 branch acceptance no earlier than E+2 |
+| Enabled input buffer full | Source ready=0 even with a simultaneous downstream pop | Pop frees space after E; ready may assert for E+1; no speculative overwrite |
+| Enabled input push && pop | Both transfers sample the pre-edge head and tail | Occupancy unchanged; each pointer toggles; old head is consumed once |
+| Final enabled source beat | Accepted once, including singleton SOF && EOL | External input closes; already buffered beats still drain into ISP |
 | FIFO DEPTH=1 | Full only when its one slot occupied; simultaneous pop/push permitted | Replacement occupies the same slot, not an invalid pointer |
 | FIFO DEPTH=3 or 16 | Read/write pointers wrap explicitly at DEPTH-1 | Occupancy changes only for unequal push/pop |
 | First && last | Legal singleton image/record/patch-completion markers sampled together | Exactly one acceptance; never require separate first/last cycles |
@@ -469,7 +494,10 @@ Residual merge is one registered advance. Split bypasses are handshake-aligned.
 Head is eight: multiply1, reduction3, bias1, RNE1, class/distance select1,
 box assembly1. Both inherited and ROI normalization retain eight advances.
 Latency counts elastic advances, not stalled clocks; composite top latency
-includes stripe scheduling and cannot be described as a fixed frame latency.
+includes the enabled input-buffer advance, registered frame initialization and
+stripe scheduling, and cannot be described as a fixed frame latency. Input
+isolation does not change prescribed arithmetic stages or DSConv II=1; with
+space available it accepts one beat per clock while the prior head drains.
 
 ## Timing and independent acceptance
 

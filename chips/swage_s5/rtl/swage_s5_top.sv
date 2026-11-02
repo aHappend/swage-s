@@ -103,6 +103,12 @@ module swage_s5_top #(
     reg [16:0] stripe_addr;
     reg [24:0] source_count;
     reg [31:0] frame_id;
+    reg start_frame;
+    reg [DATA_WIDTH-1:0] input_data [0:1];
+    reg [2:0] input_keep [0:1];
+    reg [1:0] input_sof, input_eol;
+    reg input_rd_ptr, input_wr_ptr;
+    reg [1:0] input_count;
     reg [431:0] dw_weights [0:7];
     reg [575:0] pw_weights [0:7];
     reg [383:0] biases [0:7];
@@ -148,13 +154,47 @@ module swage_s5_top #(
     wire input_permitted = !(cfg_valid && cfg_ready) && !(weight_valid && weight_ready) &&
         (!enable_reg[0] || !input_closed);
     wire source_transfer = rst_n && s_axis_tvalid && s_axis_tready;
-    wire start_frame = enable_reg[0] && !frame_active && source_transfer;
+    wire input_push = source_transfer && enable_reg[0];
+    wire buffered_valid = rst_n && enable_reg[0] && input_count != 0;
+    wire input_pop = buffered_valid && isp_input_ready;
+    wire [DATA_WIDTH-1:0] source_data = enable_reg[0] ?
+        input_data[input_rd_ptr] : s_axis_tdata;
+    wire [2:0] source_keep = enable_reg[0] ? input_keep[input_rd_ptr] : s_axis_cvalid;
+    wire source_sof = enable_reg[0] ? input_sof[input_rd_ptr] : s_axis_tuser;
+    wire source_eol = enable_reg[0] ? input_eol[input_rd_ptr] : s_axis_tlast;
+    wire source_valid = enable_reg[0] ? buffered_valid : s_axis_tvalid && input_permitted;
     wire branch_transfer = branch_valid && branch_ready;
     wire branch_last = raster_x == width_reg-13'd1 && raster_y == height_reg-13'd1;
-    assign cfg_ready = rst_n && isp_cfg_ready && !frame_active;
+    assign cfg_ready = rst_n && isp_cfg_ready && !frame_active && input_count == 0;
     assign cfg_error = rst_n && isp_cfg_error;
-    assign weight_ready = rst_n && isp_cfg_ready && !frame_active && !cfg_valid;
-    assign s_axis_tready = rst_n && input_permitted && isp_input_ready;
+    assign weight_ready = rst_n && isp_cfg_ready && !frame_active && input_count == 0 && !cfg_valid;
+    assign s_axis_tready = rst_n && input_permitted &&
+        (enable_reg[0] ? input_count < 2 : isp_input_ready);
+
+    always @(posedge clk) begin
+        if (rst_n && input_push) begin
+            input_data[input_wr_ptr] <= s_axis_tdata;
+            input_keep[input_wr_ptr] <= s_axis_cvalid;
+        end
+    end
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            input_sof <= 0; input_eol <= 0;
+            input_rd_ptr <= 0; input_wr_ptr <= 0; input_count <= 0;
+        end else begin
+            if (input_push) begin
+                input_sof[input_wr_ptr] <= s_axis_tuser;
+                input_eol[input_wr_ptr] <= s_axis_tlast;
+                input_wr_ptr <= !input_wr_ptr;
+            end
+            if (input_pop) input_rd_ptr <= !input_rd_ptr;
+            case ({input_push,input_pop})
+                2'b10: input_count <= input_count+2'd1;
+                2'b01: input_count <= input_count-2'd1;
+                default: begin end
+            endcase
+        end
+    end
 
     wire [3:0] weight_layer = weight_addr[15:12];
     wire [1:0] weight_kind = weight_addr[11:10];
@@ -188,9 +228,9 @@ module swage_s5_top #(
         .PIXEL_BITS(PIXEL_BITS),.CHANNELS(CHANNELS),.PHASE_FRAC(PHASE_FRAC),
         .INTERPOLATION(INTERPOLATION),.MAX_FRAME_PIXELS(MAX_FRAME_PIXELS),.CLAHE_TILE(CLAHE_TILE)
     ) u_isp (
-        .clk(clk),.rst_n(rst_n),.s_axis_tdata(s_axis_tdata),.s_axis_cvalid(s_axis_cvalid),
-        .s_axis_tvalid(s_axis_tvalid && input_permitted),.s_axis_tuser(s_axis_tuser),
-        .s_axis_tlast(s_axis_tlast),.s_axis_tready(isp_input_ready),
+        .clk(clk),.rst_n(rst_n),.s_axis_tdata(source_data),.s_axis_cvalid(source_keep),
+        .s_axis_tvalid(source_valid),.s_axis_tuser(source_sof),
+        .s_axis_tlast(source_eol),.s_axis_tready(isp_input_ready),
         .m_axis_tdata(isp_data),.m_axis_cvalid(isp_keep),.m_axis_tvalid(isp_valid),
         .m_axis_tuser(isp_sof),.m_axis_tlast(isp_eol),.m_axis_tready(isp_ready),
         .cfg_valid(cfg_valid && !frame_active),.cfg_ready(isp_cfg_ready),.cfg_error(isp_cfg_error),
@@ -237,10 +277,10 @@ module swage_s5_top #(
     wire [12:0] stem_x, stem_y, c2f_x, c2f_y, pyramid_x, pyramid_y, head_x, head_y;
     wire [1:0] pyramid_level, head_level;
     wire [87:0] head_data;
-    assign branch_ready = rst_n && state == RUN && stem_ready;
+    assign branch_ready = rst_n && state == RUN && !start_frame && stem_ready;
     swage_s5_dsconv #(.CIN(3),.COUT(6),.MAX_WIDTH(S5_MAX_WIDTH)) u_stem (
         .clk(clk),.rst_n(rst_n),.s_data(centered_data),.s_keep(branch_keep),
-        .s_valid(branch_valid && state == RUN),.s_ready(stem_ready),
+        .s_valid(branch_valid && state == RUN && !start_frame),.s_ready(stem_ready),
         .s_sof(branch_sof),.s_eol(branch_eol),.s_frame_last(branch_last),
         .s_x(raster_x),.s_y(raster_y),.image_width(width_reg),.image_height(height_reg),
         .dw_weight(dw_weights[0][215:0]),.pw_weight(pw_weights[0][143:0]),
@@ -362,6 +402,7 @@ module swage_s5_top #(
             patch_reg <= 16; bf16_reg <= 0; mean_reg <= {3{24'd32640}};
             reciprocal_reg <= {3{24'd512}}; width_reg <= 13'(DW); height_reg <= 13'(DH);
             frame_active <= 0; input_closed <= 0; source_count <= 0; frame_id <= 0;
+            start_frame <= 0;
             raster_x <= 0; raster_y <= 0; stripe_row <= 0; stripe_addr <= 0;
             stripe_base_y <= 0; stripe_grid_y <= 0; snapshot_index <= 0;
             final_stripe <= 0; descriptors_done <= 0; weight_error <= 0;
@@ -370,6 +411,7 @@ module swage_s5_top #(
             end
         end else begin
             weight_error <= 0;
+            start_frame <= enable_reg[0] && !frame_active && source_transfer;
             if (cfg_valid && cfg_ready && !illegal_legacy && !illegal_s4 && !illegal_s5) begin
                 enable_reg <= cfg_s5_enable; threshold_reg <= cfg_s5_threshold; topk_reg <= cfg_s5_topk;
                 patch_reg <= cfg_s5_enable[1] ? cfg_patch_size : 5'd16;
@@ -429,7 +471,8 @@ module swage_s5_top #(
                 FINISH: if (finish_ready) state <= DELIVERY;
                 DELIVERY: begin
                     if (topk_done) descriptors_done <= 1;
-                    if ((descriptors_done || topk_done) && roi_idle && isp_cfg_ready && fork_idle) begin
+                    if ((descriptors_done || topk_done) && roi_idle && isp_cfg_ready &&
+                        fork_idle && input_count == 0) begin
                         state <= RUN; frame_active <= 0; input_closed <= 0;
                         source_count <= 0; frame_id <= frame_id+32'd1;
                         raster_x <= 0; raster_y <= 0; stripe_addr <= 0; stripe_row <= 0;

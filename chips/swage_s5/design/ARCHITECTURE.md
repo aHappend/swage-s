@@ -54,6 +54,12 @@ u_isp -> u_fork -> u_stem -> u_c2f -> u_pyramid -> u_head -> u_topk
 The fork has independent acknowledgement flags, not an eager upstream retirement:
 ISP ready asserts only when both enabled branches have acknowledged the current
 beat. Disabled S5 is the ordinary inherited pixel ready/valid path.
+With S5 enabled only, a two-entry registered input buffer precedes `u_isp`.
+Its upstream ready uses occupancy alone, cutting downstream-ready feedback into
+external source acceptance. A full buffer waits for a registered pop before
+advertising space; simultaneous push/pop at partial occupancy sustains one beat
+per clock. The buffer holds original pixels, masks and SOF/EOL until the ISP
+accepts them; it does not change the fork's retirement or acknowledgement rules.
 
 Pyramid forks F0 to the head arbiter and its F1 convolution, then retained F1 to
 the arbiter and its F2 convolution. Independent acknowledgement flags prevent
@@ -107,6 +113,9 @@ image height. C2f bypass queues total336 payload bytes; the candidate FIFO is
 118*S5_FIFO_DEPTH bits plus bounded pointers/control. Weight/bias/shift registers
 are bounded by the fixed channel graph, not frame dimensions. Array padding
 for common weight banks is unused where the layer's declared count is smaller.
+Enabled input isolation adds two original source words with three mask bits and
+two marker bits each, plus two one-bit pointers and a two-bit occupancy count.
+It is bounded independent of image dimensions and is bypassed with S5 disabled.
 These are architectural capacities, not measured Quartus resource counts.
 
 ## Atomic control and stripe schedule
@@ -127,10 +136,22 @@ ongoing source transfers when the request cannot yet be acknowledged: otherwise
 an outstanding request could deadlock frame drain. Weights cannot change while
 the inherited ISP or any S5 frame work is active.
 
-The first source transfer starts S5, clears Top-K occupancy and ROI validity,
-and starts the patch-grid-width subtract/count sequencer. A source-beat counter
+The first actual external source transfer at E stores the first input word and
+sets frame-active plus a reset-cleared registered frame-start pulse after E.
+At E+1 that pulse clears Top-K occupancy and ROI validity and starts the
+patch-grid-width subtract/count sequencer. The buffered first input can begin
+ISP traversal at E+1, but S5 branch valid/ready are both inhibited for that
+initialization edge, permitting first stripe capture only at E+2 or later.
+Any public fork acknowledgement during initialization remains owned and is not
+repeated. Thus even a stalled public sink cannot let candidates arrive before
+frame initialization; no stripe write coincides with the initialization pulse.
+The pulse has no combinational dependence on current downstream readiness.
+A source-beat counter
 closes input after the complete SRC raster; it prevents the next parent frame
-from starting while S5 delivery is outstanding. Output coordinates advance
+from starting while S5 delivery is outstanding. Closing external input does not
+block buffered input from draining. Configuration, weights and DELIVERY release
+also require the input buffer empty. Reset invalidates buffered ownership and
+the pulse without resetting its data storage. Output coordinates advance
 only when the fork's S5 branch accepts, independently of public pixel retirement.
 At each patch-row boundary, S5 pauses branch capture and drains the complete
 stem/C2f/pyramid/head/candidate-FIFO/Top-K insertion graph. Causal windows retain
@@ -179,7 +200,8 @@ normalizer8. The C2f critical transformed path is14+14+5=33 advances,
 with bypass queues matched by accepted-beat order. The stem-to-F0-head path
 is13+33+8=54 advances; F1/F2 add13/26 convolution advances respectively.
 Arbitration, decimation, queue acceptance, Top-K insertion and stripe snapshots
-add scheduling advances; these numbers are not a fixed top output latency.
+add scheduling advances, as do the enabled input-buffer advance and frame-start
+initialization barrier; these numbers are not a fixed top output latency.
 
 | Boundary | Implementation rule |
 | --- | --- |
@@ -188,6 +210,9 @@ add scheduling advances; these numbers are not a fixed top output latency.
 | FIFO depth1/3/16 | Explicit terminal wrap, simultaneous enqueue/dequeue preserves occupancy |
 | Patch8/14/16 | Counter wrap, no modulo; edge padding still emits a complete patch |
 | Independent stalls | Fork acknowledgement flags and elastic enables prevent duplicate/drop |
+| First source beat | Registered frame-start initializes at the next edge; S5 branch waits through that edge, preserving singleton pixels |
+| Input buffer full/pop | Ready uses occupancy only; newly freed space is advertised after the pop edge |
+| Final source beat | External input closes, but the registered buffer continues ISP delivery |
 | Mid-frame reset | Async cancellation of control/pipelines, invalidated RAM ownership, frame ID0 |
 | Invalid cfg/write | Atomic rejection or acknowledged error, no partial state update |
 
@@ -237,11 +262,20 @@ their own distinct target-level claims. Preparation syntax evidence, if listed
 below, establishes elaboration only. The independent product PDF is authored
 after engineering acceptance, never used as a prerequisite for these checks.
 
-Designer static elaboration completed with exit0 using
+Historical Designer static elaboration completed with exit0 using
 `iverilog -g2012 -t null -s swage_s5_top rtl/*.sv`.
 The exact expanded argv, RTL hashes, tool version, timestamps and raw logs are
 retained at
 `evidence/preparation/elaboration-20261102T191451Z-1d6a072efdb3/receipt.json`.
-No compilation failure or repair probe occurred. This is syntax/elaboration
-evidence only; the Designer ran no functional simulation, oracle, mutation,
-synthesis, timing or hardware experiment. Independent verification is pending.
+This receipt predates the frame-start repair and is syntax/elaboration evidence
+only, not certification of changed sources.
+
+The retained native `quartus_sta_work/top.sta.rpt` reported a 79-node
+combinational loop rooted at the formerly combinational frame-start signal and
+setup WNS -14.586 ns (hold +0.043 ns). Registering frame-start removes that
+feedback edge; enabled input isolation ensures source acceptance precedes ISP
+traversal and initialization precedes S5 capture. These are design repairs, not
+a timing-closure claim. The source-matched earlier complete L1 pass remains
+historical; the unchanged aggregate L1 and fresh native timing/HIL gates must
+establish results for repaired sources. No Designer functional simulation,
+oracle, mutation, synthesis, timing or hardware experiment is performed.

@@ -31,9 +31,14 @@ def hexfile(path, values):
     path.write_text("".join(f"{v:x}\n" for v in values))
 
 
-def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3, bf16=False):
-    rgb, masks = scene(width, height, seed)
-    layers = fixture(classes)
+def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3, bf16=False,
+            layers=None, rgb=None, masks=None, means=None, reciprocals=None):
+    if rgb is None:
+        rgb, masks = scene(width, height, seed)
+    if layers is None:
+        layers = fixture(classes)
+    means = [32640] * 3 if means is None else means
+    reciprocals = [512] * 3 if reciprocals is None else reciprocals
     winners, eligible = detections(rgb, masks, layers, threshold, topk)
     weights = [(address << 32) | data for li, layer in enumerate(layers)
                for address, data in layer.writes(li)]
@@ -53,7 +58,7 @@ def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3,
             inside = sx < width and sy < height
             p = rgb[sy][sx] if inside else [0, 0, 0]
             keep = masks[sy][sx] if inside else 0
-            token = normalize(p, keep, [32640] * 3, [512] * 3, bf16)
+            token = normalize(p, keep, means, reciprocals, bf16)
             tokens.append(token | int(rank == 0 and element == 0) << 48 |
                           int(element == patch * patch - 1) << 49 |
                           int(rank == len(winners) - 1 and element == patch * patch - 1) << 50 |

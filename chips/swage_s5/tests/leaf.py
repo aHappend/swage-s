@@ -1,9 +1,11 @@
 """Leaf expectations from mathematical image operators, not DUT internals."""
 
 from oracle import c2f, convolution, fixture, pack, scene
+from receipts import prune_compile
 
 
-def leaf_check(root, output, run, kind, width, height, seed):
+def leaf_check(root, output, run, kind, width, height, seed, simulator="icarus",
+               rtl_root=None, mutation=False):
     layers = fixture()
     rgb, masks = scene(width, height, seed)
     image = [[[p[c] - 128 for c in range(3)] for p in row] for row in rgb]
@@ -49,14 +51,33 @@ def leaf_check(root, output, run, kind, width, height, seed):
     for name, values in (("leaf-input", inputs), ("leaf-expected", records), ("leaf-weights", vectors)):
         (output / f"{name}.hex").write_text("".join(f"{v:x}\n" for v in values))
     relative = str(output.relative_to(root))
-    rtl = [str(p.relative_to(root)) for p in sorted(root.glob("rtl/*.sv"))]
+    rtl_root = root if rtl_root is None else rtl_root
+    rtl = [str(p.relative_to(root)) for p in sorted(rtl_root.glob("rtl/*.sv"))]
     selection = ("window", "dsconv", "c2f").index(kind)
-    binary = f"{relative}/leaf.vvp"
-    run(["iverilog", "-g2012", "-Wall", "-s", "leaf_tb", f"-Pleaf_tb.KIND={selection}",
-         f"-Pleaf_tb.W={width}", f"-Pleaf_tb.H={height}", "-o", binary,
-         "tests/leaf_tb.sv", *rtl], "leaf-compile")
-    for stalled in (0, 1):
-        run(["vvp", binary, f"+ROOT={relative}", f"+STALL={stalled}"],
-            f"leaf-simulation-{stalled}", timeout=600)
+    if simulator == "icarus":
+        binary = f"{relative}/leaf.vvp"
+        run(["iverilog", "-g2012", "-Wall", "-s", "leaf_tb", f"-Pleaf_tb.KIND={selection}",
+             f"-Pleaf_tb.W={width}", f"-Pleaf_tb.H={height}", "-o", binary,
+             "tests/leaf_tb.sv", *rtl], "leaf-compile")
+        executable = ["vvp", binary]
+    else:
+        obj = output / "compile-obj"
+        run(["verilator", "--binary", "--timing", "-Wno-fatal", "--top-module", "leaf_tb",
+             f"-GKIND={selection}", f"-GW={width}", f"-GH={height}", "--Mdir",
+             str(obj.relative_to(root)), "-o", "simulation", "-j", "2",
+             "tests/leaf_tb.sv", *rtl], "leaf-compile")
+        prune_compile(obj)
+        executable = [str((obj / "simulation").relative_to(root))]
+    for stalled in ((0,) if mutation else (0, 1)):
+        argv = [*executable, f"+ROOT={relative}", f"+STALL={stalled}"]
+        if mutation:
+            text = run(argv, "mutation-simulation", expected_exit=None)
+            command = run.__self__.record["commands"][-1]
+            assert command["exit_code"] != 0 and not command["timed_out"], "Undetected leaf mutation"
+            assert "LEAF numerical mismatch" in text, f"Unrelated mutation failure: {text[-1000:]}"
+        else:
+            text = run(argv, f"leaf-simulation-{stalled}",
+                       timeout=600 if simulator == "icarus" else 3600)
+            assert f"elements={width * height}" in text, "Missing leaf comparisons"
     return {"kind": kind, "width": width, "height": height, "seed": seed,
             "elements_per_replay": width * height}

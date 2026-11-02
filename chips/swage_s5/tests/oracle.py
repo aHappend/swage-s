@@ -143,7 +143,7 @@ def graph(rgb, masks, layers):
     return levels
 
 
-def detections(rgb, masks, layers, threshold, topk):
+def candidates(rgb, masks, layers):
     width, height = len(rgb[0]), len(rgb)
     candidates = []
     for level, image in enumerate(graph(rgb, masks, layers)):
@@ -153,8 +153,6 @@ def detections(rgb, masks, layers, threshold, topk):
                           for c in range(layers[6].outputs)]
                 confidence = max(scores)
                 cls = scores.index(confidence)
-                if confidence < threshold:
-                    continue
                 left, top, right, bottom = [
                     clamp(affine(pixel, layers[7], o, feature=False), 0, 4096) for o in range(4)]
                 x, y = ix * (1 << level), iy * (1 << level)
@@ -162,7 +160,13 @@ def detections(rgb, masks, layers, threshold, topk):
                        min(width, x + 1 + right), min(height, y + 1 + bottom)]
                 data = pack(box, 16) | cls << 64 | confidence << 72
                 candidates.append(((-confidence, cls, level, y, x), data, x, y))
-    return sorted(candidates)[:topk], len(candidates)
+    return candidates
+
+
+def detections(rgb, masks, layers, threshold, topk):
+    eligible = [record for record in candidates(rgb, masks, layers)
+                if -record[0][0] >= threshold]
+    return sorted(eligible)[:topk], len(eligible)
 
 
 def scene(width, height, seed):

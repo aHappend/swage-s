@@ -1,6 +1,7 @@
 """Compiled S5 matrix, protocol replay, and unchanged-oracle mutation checks."""
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -239,7 +240,9 @@ def mutations(root, output, run, selected=None):
         command = run.__self__.record["commands"][-1]
         result = {"mutation": name, "source": filename, "before": before, "after": after,
                   "assertion": assertion, "stdout": command["stdout"],
-                  "exit_code": command["exit_code"], "expected_vectors_unchanged": True}
+                  "exit_code": command["exit_code"], "expected_vectors_unchanged": True,
+                  "original_source_sha256": hashlib.sha256(original.encode()).hexdigest(),
+                  "mutant_source_sha256": hashlib.sha256(source.read_bytes()).hexdigest()}
         (directory / "mutation.json").write_text(json.dumps(result, indent=2) + "\n")
         results.append(result)
     return results

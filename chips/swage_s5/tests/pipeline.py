@@ -82,8 +82,10 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
                                ax << 91 | ay << 104 | (value >> 82) << 117)
         total = len(inputs)
         expected[len(inputs):] = []
+    (output / "checkpoint-images").mkdir()
     for name, values in (("input", inputs), ("expected", expected), ("weights", weights)):
-        (output / f"pipeline-{name}.hex").write_text("".join(f"{v:x}\n" for v in values))
+        target = output / ("checkpoint-images" if name == "weights" else "") / f"pipeline-{name}.hex"
+        target.write_text("".join(f"{v:x}\n" for v in values))
     rtl = [str(p.relative_to(root)) for p in sorted(root.glob("rtl/*.sv"))]
     relative = str(output.relative_to(root))
     selection = int(kind == "head")

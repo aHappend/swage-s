@@ -15,6 +15,7 @@ from boundaries import boundary_check
 from synthesis import synthesize
 from parent import compare_parent, compile_parent, parent_matrix
 from parent import scenarios as parent_scenarios
+from verify import reproduction
 
 
 def main():
@@ -22,7 +23,8 @@ def main():
     parser.add_argument("component", choices=("control", "matrix", "directed", "mutations",
                                             "pipelines", "primitives", "queues", "topk",
                                             "boundaries", "synthesis", "parent-smoke", "parent-matrix",
-                                            "parent-compact"))
+                                            "parent-compact", "reproduction", "parent-control",
+                                            "head-boundaries", "synthesis-leaves"))
     parser.add_argument("--repair-of")
     parser.add_argument("--mutation", action="append")
     args = parser.parse_args()
@@ -37,6 +39,40 @@ def main():
             executable = compile_top(root, output, execution.run, geometry)
             result = compare(root, output, execution.run, executable, geometry, 11,
                              reset_mid=True, controls=True, frames=2)
+        elif args.component == "reproduction":
+            result = reproduction(root, output, execution)
+        elif args.component == "parent-control":
+            result = []
+            for top, alpha in ((4, 128), (5, 256)):
+                case = {"name": f"s{top}-temporal{alpha}", "TOP": top, "W": 9, "H": 17,
+                        "frames": 3, "config": {"s4": 1, "alpha": alpha, "motion": 16}}
+                directory = fresh(output, case["name"])
+                executable = compile_parent(root, directory, execution.run, case)
+                result.append(compare_parent(root, directory, execution.run, executable, case, 11))
+        elif args.component == "head-boundaries":
+            execution.versions((("iverilog", "-V"), ("vvp", "-V")))
+            result = []
+            for seed in (11, 29, 47):
+                case = fresh(output, f"head-seed{seed}")
+                comparison = pipeline_check(root, case, execution.run, "head", seed=seed,
+                                            simulator="verilator", threshold=None)
+                assert all(comparison["score_relations_compared"][relation] > 0
+                           for relation in ("below", "equal", "above"))
+                result.append(comparison)
+            for classes in (1, 3, 8):
+                for endpoint in (True, "zero"):
+                    case = fresh(output, f"head-{classes}-{endpoint}")
+                    result.append(pipeline_check(root, case, execution.run, "head", 3, 2,
+                                                 classes=classes, endpoints=endpoint,
+                                                 threshold=65535 if endpoint is True else 0))
+        elif args.component == "synthesis-leaves":
+            execution.versions((("yosys", "-V"),))
+            result = []
+            for top, parameters in (("swage_s5_head", {"NUM_CLASSES": 8}),
+                                    ("swage_s1_top", {"SRC_WIDTH": 3, "SRC_HEIGHT": 2,
+                                                      "DST_WIDTH": 5, "DST_HEIGHT": 3})):
+                case = fresh(output, top)
+                result.append(synthesize(root, case, execution.run, parameters, top))
         elif args.component == "parent-smoke":
             case = {"name": "s5-enhanced", "TOP": 5, "W": 9, "H": 17, "TILE": 8,
                     "flat": True, "frames": 3,

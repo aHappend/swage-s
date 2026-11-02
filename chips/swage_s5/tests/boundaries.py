@@ -36,6 +36,20 @@ def boundary_check(root, output, run):
                   ({"DW": 3, "MW": 2}, False),
                   ({"SW": 4096, "SH": 4096, "DW": 4096, "DH": 4096,
                     "NC": 8, "K": 16, "FD": 16}, True)))
+    for kind, parameter, maximum in ((1, "CI", 6), (2, "CI", 6), (2, "CO", 6),
+                                      (3, "CI", 12), (3, "CO", 8), (6, "NC", 8),
+                                      (7, "K", 16), (8, "DEPTH", 32), (10, "K", 16),
+                                      (1, "MW", 4096), (2, "MW", 4096), (4, "MW", 4096),
+                                      (5, "MW", 4096), (7, "MW", 4096)):
+        for value in sorted({0, 1, 2, maximum-1, maximum, maximum+1}):
+            parameters = {"TYPE": kind, parameter: value}
+            if kind == 3:
+                parameters.setdefault("CI", 3)
+                parameters.setdefault("CO", 6)
+            cases.append((parameters, 1 <= value <= maximum))
+    for kind in (8, 9):
+        for value in (0, 1, 2):
+            cases.append(({"TYPE": kind, "WIDTH": value}, value >= 1))
     rtl = [str(p.relative_to(root)) for p in sorted(root.glob("rtl/*.sv"))]
     results = []
     for parameters, legal in cases:

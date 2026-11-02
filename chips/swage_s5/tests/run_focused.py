@@ -44,7 +44,9 @@ def vectors(directory, width, height, seed, threshold, topk, patch=8, classes=3,
     winners, eligible = detections(rgb, masks, layers, threshold, topk)
     weights = [(address << 32) | data for li, layer in enumerate(layers)
                for address, data in layer.writes(li)]
-    hexfile(directory / "weights.hex", weights)
+    checkpoint = directory / "checkpoint-images"
+    checkpoint.mkdir()
+    hexfile(checkpoint / "weights.hex", weights)
     hexfile(directory / "pixels.hex",
             [pack(p, 8) | masks[y][x] << 24
              for y, row in enumerate(rgb) for x, p in enumerate(row)])

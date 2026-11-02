@@ -51,7 +51,7 @@ def distributable(root):
                                  for part in path.relative_to(root).parts) for path in paths)
     for source in paths:
         text = source.read_text()
-        assert not re.search(r"/(?:data|home)/", text), (
+        assert not re.search(r"(?<![A-Za-z0-9_])/(?:data|home)/", text), (
             f"Private host path in distributable source: {source.relative_to(root)}")
     return paths
 
@@ -167,6 +167,15 @@ def complete(root, output, execution):
                       "S5_MAX_WIDTH": width, "S5_NUM_CLASSES": classes,
                       "S5_MAX_TOPK": topk, "S5_FIFO_DEPTH": depth}
         result.setdefault("synthesis", []).append(synthesize(root, case, run, parameters))
+    for top, parameters in (
+            ("swage_s5_window", {"CIN": 6, "MAX_WIDTH": 4096}),
+            ("swage_s5_dsconv", {"CIN": 6, "COUT": 6, "MAX_WIDTH": 13}),
+            ("swage_s5_head", {"NUM_CLASSES": 8}),
+            ("swage_s1_top", {"SRC_WIDTH": 3, "SRC_HEIGHT": 2, "DST_WIDTH": 5, "DST_HEIGHT": 3}),
+            ("swage_s2_top", {"SRC_WIDTH": 3, "SRC_HEIGHT": 2, "DST_WIDTH": 5, "DST_HEIGHT": 3})):
+        case = fresh(output, f"synthesis-{top}")
+        result.setdefault("synthesis_leaves_parent_tops", []).append(
+            synthesize(root, case, run, parameters, top))
     result["reproduction"] = reproduction(root, output, execution)
     return result
 

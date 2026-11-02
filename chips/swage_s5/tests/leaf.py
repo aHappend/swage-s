@@ -48,8 +48,10 @@ def leaf_check(root, output, run, kind, width, height, seed, simulator="icarus",
                            int(x == 0 and y == 0) << 222 | int(x == width - 1) << 223 |
                            int(x == width - 1 and y == height - 1) << 224 |
                            x << 225 | y << 238)
+    (output / "checkpoint-images").mkdir()
     for name, values in (("leaf-input", inputs), ("leaf-expected", records), ("leaf-weights", vectors)):
-        (output / f"{name}.hex").write_text("".join(f"{v:x}\n" for v in values))
+        target = output / ("checkpoint-images" if name == "leaf-weights" else "") / f"{name}.hex"
+        target.write_text("".join(f"{v:x}\n" for v in values))
     relative = str(output.relative_to(root))
     rtl_root = root if rtl_root is None else rtl_root
     rtl = [str(p.relative_to(root)) for p in sorted(rtl_root.glob("rtl/*.sv"))]

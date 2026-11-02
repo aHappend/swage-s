@@ -1,0 +1,11 @@
+{
+  "chip": "Swage-S4",
+  "fitter_resources": {
+    "total_registers": 17136,
+    "block_memory_bits": 218952,
+    "dsp_blocks": 70,
+    "virtual_pins": 1092
+  },
+  "timing": {},
+  "verification_tiers": {}
+}

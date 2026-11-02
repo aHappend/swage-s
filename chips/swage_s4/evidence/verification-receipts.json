@@ -1,0 +1,1143 @@
+{
+  "chip": "Swage-S4",
+  "passed_checks": {
+    "check:l1-complete": {
+      "attempt_id": 3,
+      "duration_s": 1235.9869528240524,
+      "stdout_preview": "-0174: frames=13 pixels=1053 tokens=0\nCOMPARED matrix-0170: frames=100 pixels=1500 tokens=0\nPROGRESS matrix-0121-compile elapsed=540s\nPROGRESS matrix-0175-compile elapsed=30s\nPROGRESS matrix-0176-compile elapsed=30s\nPROGRESS matrix-0177-compile elapsed=30s\nCOMPARED matrix-0121: frames=220 pixels=8880 tokens=0\nCOMPARED matrix-0178: frames=2 pixels=126 tokens=256\nCOMPARED matrix-0176: frames=15 pixels=3825 tokens=1024\nCOMPARED matrix-0175: frames=15 pixels=3840 tokens=512\nCOMPARED matrix-0177: frames=13 pixels=3757 tokens=0\nCOMPARED matrix-0179: frames=2 pixels=128 tokens=128\nCOMPARED matrix-0181: frames=2 pixels=306 tokens=768\nCOMPARED matrix-0182: frames=2 pixels=390 tokens=784\nCOMPARED matrix-0180: frames=2 pixels=126 tokens=256\nCOMPARED matrix-0183: frames=2 pixels=392 tokens=392\nCOMPARED matrix-0184: frames=2 pixels=390 tokens=784\nCOMPARED matrix-0185: frames=2 pixels=870 tokens=2352\nCOMPARED matrix-0186: frames=2 pixels=510 tokens=1024\nCOMPARED matrix-0187: frames=2 pixels=1122 tokens=3072\nCOMPARED matrix-0188: frames=3 pixels=3 tokens=0\nCOMPARED matrix-0189: frames=3 pixels=771 tokens=0\nCOMPARED matrix-0190: frames=3 pixels=12288 tokens=0\nCOMPARED matrix-0192: frames=1 pixels=4160 tokens=0\nCOMPARED matrix-0191: frames=3 pixels=45 tokens=192\nCOMPARED matrix-0193: frames=5 pixels=75 tokens=0\nCOMPARED matrix-0194: frames=6 pixels=90 tokens=0\nCOMPARED matrix-0195: frames=3 pixels=231 tokens=384\nVERIFICATION_COMPLETE receipt=evidence/l1-20261102T180046Z-86849ff9/receipt.json\n",
+      "receipt_count": 6,
+      "receipts": [
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clahe-cdf-lut-20261102T182001Z-11009470/expectations.json",
+          "data": [
+            {
+              "case": "sensitivity-clahe-cdf-lut",
+              "frame": 0,
+              "seed": 17,
+              "params": [
+                3,
+                5,
+                3,
+                5,
+                8,
+                3,
+                8,
+                0,
+                257,
+                8
+              ],
+              "cfg": {
+                "enable": 0,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 3,
+                "rh": 5,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 0,
+                "s4": 2,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 1,
+                "patch": 8,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [],
+              "expected_pixels": 15,
+              "expected_tokens": 0,
+              "histogram_bins": 0,
+              "cycle_bound": 87584,
+              "comparison_files": {
+                "input": "case-0000-frame-00-input.hex",
+                "pixels": "case-0000-frame-00-pixels.hex",
+                "tokens": "case-0000-frame-00-tokens.hex",
+                "hist": "case-0000-frame-00-hist.hex"
+              }
+            }
+          ]
+        },
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clahe-clipping-redistribution-20261102T181944Z-44392461/expectations.json",
+          "data": [
+            {
+              "case": "sensitivity-clahe-clipping-redistribution",
+              "frame": 0,
+              "seed": 17,
+              "params": [
+                3,
+                5,
+                3,
+                5,
+                8,
+                3,
+                8,
+                0,
+                257,
+                8
+              ],
+              "cfg": {
+                "enable": 0,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 3,
+                "rh": 5,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 0,
+                "s4": 2,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 1,
+                "patch": 8,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [],
+              "expected_pixels": 15,
+              "expected_tokens": 0,
+              "histogram_bins": 0,
+              "cycle_bound": 87584,
+              "comparison_files": {
+                "input": "case-0000-frame-00-input.hex",
+                "pixels": "case-0000-frame-00-pixels.hex",
+                "tokens": "case-0000-frame-00-tokens.hex",
+                "hist": "case-0000-frame-00-hist.hex"
+              }
+            }
+          ]
+        },
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-enhanced-20261102T182109Z-d2b3d007/comparison.json",
+          "data": {
+            "frames": [
+              {
+                "case": "compact-enhanced",
+                "frame": 0,
+                "seed": 17,
+                "params": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  8,
+                  3,
+                  8,
+                  0,
+                  1,
+                  8
+                ],
+                "cfg": {
+                  "enable": 0,
+                  "border": 0,
+                  "abs": 0,
+                  "shift": 0,
+                  "coeff": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "rx": 0,
+                  "ry": 0,
+                  "rw": 1,
+                  "rh": 1,
+                  "format": 0,
+                  "mode": 0,
+                  "out420": 0,
+                  "csc": [
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192
+                  ],
+                  "ib": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "ob": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "hist": 0,
+                  "s4": 7,
+                  "alpha": 128,
+                  "threshold": 16,
+                  "clip": 1,
+                  "patch": 8,
+                  "bf16": 0,
+                  "means": [
+                    32640,
+                    32640,
+                    32640
+                  ],
+                  "reciprocals": [
+                    512,
+                    512,
+                    512
+                  ]
+                },
+                "labels": [
+                  "compact_enhanced"
+                ],
+                "expected_pixels": 1,
+                "expected_tokens": 64,
+                "histogram_bins": 0,
+                "cycle_bound": 75296,
+                "comparison_files": {
+                  "input": "case-0000-frame-00-input.hex",
+                  "pixels": "case-0000-frame-00-pixels.hex",
+                  "tokens": "case-0000-frame-00-tokens.hex",
+                  "hist": "case-0000-frame-00-hist.hex"
+                },
+                "compared_pixels": 1,
+                "compared_tokens": 64,
+                "observed_cycles": 31739,
+                "pixel_stall_cycles": 4,
+                "token_stall_cycles": 36,
+                "input_gap_cycles": 0,
+                "final_pixel_stall": 1,
+                "final_token_stall": 1,
+                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+              },
+              {
+                "case": "compact-enhanced",
+                "frame": 1,
+                "seed": 17,
+                "params": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  8,
+                  3,
+                  8,
+                  0,
+                  1,
+                  8
+                ],
+                "cfg": {
+                  "enable": 0,
+                  "border": 0,
+                  "abs": 0,
+                  "shift": 0,
+                  "coeff": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "rx": 0,
+                  "ry": 0,
+                  "rw": 1,
+                  "rh": 1,
+                  "format": 0,
+                  "mode": 0,
+                  "out420": 0,
+                  "csc": [
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192
+                  ],
+                  "ib": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "ob": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "hist": 0,
+                  "s4": 7,
+                  "alpha": 128,
+                  "threshold": 16,
+                  "clip": 1,
+                  "patch": 8,
+                  "bf16": 0,
+                  "means": [
+                    32640,
+                    32640,
+                    32640
+                  ],
+                  "reciprocals": [
+                    512,
+                    512,
+                    512
+                  ]
+                },
+                "labels": [
+                  "compact_enhanced"
+                ],
+                "expected_pixels": 1,
+                "expected_tokens": 64,
+                "histogram_bins": 0,
+                "cycle_bound": 75296,
+                "comparison_files": {
+                  "input": "case-0000-frame-01-input.hex",
+                  "pixels": "case-0000-frame-01-pixels.hex",
+                  "tokens": "case-0000-frame-01-tokens.hex",
+                  "hist": "case-0000-frame-01-hist.hex"
+                },
+                "compared_pixels": 1,
+                "compared_tokens": 64,
+                "observed_cycles": 31739,
+                "pixel_stall_cycles": 4,
+                "token_stall_cycles": 34,
+                "input_gap_cycles": 0,
+                "final_pixel_stall": 1,
+                "final_token_stall": 1,
+                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+              },
+              {
+                "case": "compact-enhanced",
+                "frame": 2,
+                "seed": 17,
+                "params": [
+                  1,
+                  1,
+                  1,
+                  1,
+                  8,
+                  3,
+                  8,
+                  0,
+                  1,
+                  8
+                ],
+                "cfg": {
+                  "enable": 0,
+                  "border": 0,
+                  "abs": 0,
+                  "shift": 0,
+                  "coeff": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "rx": 0,
+                  "ry": 0,
+                  "rw": 1,
+                  "rh": 1,
+                  "format": 0,
+                  "mode": 0,
+                  "out420": 0,
+                  "csc": [
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192
+                  ],
+                  "ib": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "ob": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "hist": 0,
+                  "s4": 7,
+                  "alpha": 128,
+                  "threshold": 16,
+                  "clip": 1,
+                  "patch": 8,
+                  "bf16": 0,
+                  "means": [
+                    32640,
+                    32640,
+                    32640
+                  ],
+                  "reciprocals": [
+                    512,
+                    512,
+                    512
+                  ]
+                },
+                "labels": [
+                  "compact_enhanced"
+                ],
+                "expected_pixels": 1,
+                "expected_tokens": 64,
+                "histogram_bins": 0,
+                "cycle_bound": 75296,
+                "comparison_files": {
+                  "input": "case-0000-frame-02-input.hex",
+                  "pixels": "case-0000-frame-02-pixels.hex",
+                  "tokens": "case-0000-frame-02-tokens.hex",
+                  "hist": "case-0000-frame-02-hist.hex"
+                },
+                "compared_pixels": 1,
+                "compared_tokens": 64,
+                "observed_cycles": 31739,
+                "pixel_stall_cycles": 4,
+                "token_stall_cycles": 34,
+                "input_gap_cycles": 0,
+                "final_pixel_stall": 1,
+                "final_token_stall": 1,
+                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0008-compact-enhanced-simulate.stdout.txt"
+              }
+            ],
+            "control": {
+              "accepted_configs": 1,
+              "rejected_configs": 0,
+              "busy_samples": 0,
+              "compared_histogram_bins": 0,
+              "hist_priority_samples": 0,
+              "isolated_input_gaps": 0,
+              "sustained_input_gaps": 0,
+              "isolated_output_stalls": 9,
+              "sustained_output_stalls": 25
+            },
+            "simulator": "iverilog",
+            "source_sha256": {
+              "rtl/swage_s1_interp.sv": "07e803d5aaf6280737c2c9dd98343b7f7e4145e4f14b77d7b74b9ab1a6afabea",
+              "rtl/swage_s1_line_buffer.sv": "d81d88e84679743ac1ac8101d0627fc78879231e6334a8cc544bb6d64e8c19ea",
+              "rtl/swage_s1_phase.sv": "17416a128ae65bef3523364eb155f5a3c5f616ad64ee66ca4760b6ad902bebb6",
+              "rtl/swage_s1_scheduler.sv": "5b4a38e346ae783c0f9dc90c058ff9b7aa2603f12747bc70e4ee6659bfacb096",
+              "rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3",
+              "rtl/swage_s2_convolution.sv": "e434d1ea6defae0bc083e7208faa1a6509ab9f2733a0ffa9d8f826a319bba132",
+              "rtl/swage_s2_demosaic.sv": "bd8615dede541a2372135cf098c349ba0439c6f166163ef9f9d5e27bbe5146f1",
+              "rtl/swage_s2_top.sv": "60b7e32f76c129fa20c3973bfeb5e47895664907b40e5fdc1cad5c87709df4f3",
+              "rtl/swage_s2_window.sv": "ba58ac02513dfa4a024c657c4100677bc43684072bf9eed72b12da8cacaae177",
+              "rtl/swage_s3_chroma_expand.sv": "edcd2e481df346de594c5bcb39e31f7ddd7b56225b7d556c63ffcc09b01d0b0d",
+              "rtl/swage_s3_convolution.sv": "38a35400b1bffcb6361fb64063a7df5694acbfc0046959cecddad5df49eef8b8",
+              "rtl/swage_s3_crop.sv": "6f7afb2283b7204651b91ae5dd0a8684482cfdf73e46d4c27e090a31dbeebc40",
+              "rtl/swage_s3_csc.sv": "311c89098845eba6af50b2e4827038df7fcd3efec174aea86bfccc60eb60624c",
+              "rtl/swage_s3_demosaic.sv": "65b403424db33897d9db977743c51251b6d83a2ed5929bd234b1f56d625015e8",
+              "rtl/swage_s3_divider.sv": "39bb635cb214ccee5e0f4ed478b036a23a2298974fc4867b6db8ce4f617d3332",
+              "rtl/swage_s3_fifo.sv": "67d0bd10aa4cb1b082684f0729de002f2139d399f20963536fb1bbb81bfa381d",
+              "rtl/swage_s3_histogram.sv": "1365142833157ffeeb32e1b2aea8e29b344fe86f6e9f0dc3b96639c5b65a937a",
+              "rtl/swage_s3_plane_scaler.sv": "d23aeb0ea7da84a6d3a8829dff6142458e9832571e29ba67658254a2c3ce6185",
+              "rtl/swage_s3_plane_scheduler.sv": "ece5fe195343fe93aa514bcaeece81c5767e3da512ebf16a264893b1857f39d1",
+              "rtl/swage_s3_scaler.sv": "d053f668dd424aa386e782e65ef7c4985645bfb33d045d9ba808aac754bb28d8",
+              "rtl/swage_s3_top.sv": "37bb01e0ae13d732b8c3cfd8a66c4e2eeab0ab12b86d650501728018992d652a",
+              "rtl/swage_s3_window.sv": "9b07b8476ffb83d53109da2a9cfbe8d364079989574236aecf8e1028318c6c49",
+              "rtl/swage_s4_clahe.sv": "baddae5d94073516d3ce5c93b6324a08c34f74aacfcddb802011f48645a93bb2",
+              "rtl/swage_s4_frame_store.sv": "ad57108e3b846206a2259745c6289c63e86b3c0e7029a4d379170bdd4d54235e",
+              "rtl/swage_s4_normalizer.sv": "11a3c28edc047686b7f966d874bec83e1f814ca4454998fc6678489f6084372d",
+              "rtl/swage_s4_patch_tokenizer.sv": "9c9d8efa550ce24bc262c7ccc0d4659cf19553a9dc6cef5f5957eaa74e1ca60d",
+              "rtl/swage_s4_temporal.sv": "594e35d7f70f54157f0344b1ef5a147df999dff67c4ce9bb6a9d8cd347c9c325",
+              "rtl/swage_s4_top.sv": "138f084ae0273560e9fa991f269f3e92c09c004c4968ed3ddaf1722db69a6715",
+              "tests/cases.py": "5a51d879628cf33ac26c8276ba5ed7dac59d91daaca9e6fccb9043e8b752a6c6",
+              "tests/harness.py": "47fa8c050656dabd311b8c479188e60941fa4eb6a64e66fe67d18eebd75fdf79",
+              "tests/leaves.py": "8f77ba70799c0b0c740f6de62855d7611bb78e8e8c687940cca1e2a053932b84",
+              "tests/mutations.py": "c36285ff15fa7eb2b26ecc8b5697f590c45f42de2fb653360bac6b93d8142d9d",
+              "tests/reference.py": "1883184eee482dd9af168d2b575ef0177957fa1e49cd2619292a92eb3d29263a",
+              "tests/verify.py": "fd384155bfb81d211da7ef8df19a15735bf25524f8fb21068d92e03b6301f564",
+              "design/SPEC.md": "77e57c409f08a4d776684912b244cc35d93572c4a2e8ecd6ddfd2961f96aacb1",
+              "design/ARCHITECTURE.md": "582ed554d4117c9030b2094bbd7acef0d6dee0579d2e799c42060afed96f7079",
+              "swage_s3_reference/rtl/swage_s1_interp.sv": "07e803d5aaf6280737c2c9dd98343b7f7e4145e4f14b77d7b74b9ab1a6afabea",
+              "swage_s3_reference/rtl/swage_s1_line_buffer.sv": "d81d88e84679743ac1ac8101d0627fc78879231e6334a8cc544bb6d64e8c19ea",
+              "swage_s3_reference/rtl/swage_s1_phase.sv": "17416a128ae65bef3523364eb155f5a3c5f616ad64ee66ca4760b6ad902bebb6",
+              "swage_s3_reference/rtl/swage_s1_scheduler.sv": "5b4a38e346ae783c0f9dc90c058ff9b7aa2603f12747bc70e4ee6659bfacb096",
+              "swage_s3_reference/rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3",
+              "swage_s3_reference/rtl/swage_s2_convolution.sv": "e434d1ea6defae0bc083e7208faa1a6509ab9f2733a0ffa9d8f826a319bba132",
+              "swage_s3_reference/rtl/swage_s2_demosaic.sv": "bd8615dede541a2372135cf098c349ba0439c6f166163ef9f9d5e27bbe5146f1",
+              "swage_s3_reference/rtl/swage_s2_top.sv": "60b7e32f76c129fa20c3973bfeb5e47895664907b40e5fdc1cad5c87709df4f3",
+              "swage_s3_reference/rtl/swage_s2_window.sv": "ba58ac02513dfa4a024c657c4100677bc43684072bf9eed72b12da8cacaae177",
+              "swage_s3_reference/rtl/swage_s3_chroma_expand.sv": "edcd2e481df346de594c5bcb39e31f7ddd7b56225b7d556c63ffcc09b01d0b0d",
+              "swage_s3_reference/rtl/swage_s3_convolution.sv": "38a35400b1bffcb6361fb64063a7df5694acbfc0046959cecddad5df49eef8b8",
+              "swage_s3_reference/rtl/swage_s3_crop.sv": "6f7afb2283b7204651b91ae5dd0a8684482cfdf73e46d4c27e090a31dbeebc40",
+              "swage_s3_reference/rtl/swage_s3_csc.sv": "311c89098845eba6af50b2e4827038df7fcd3efec174aea86bfccc60eb60624c",
+              "swage_s3_reference/rtl/swage_s3_demosaic.sv": "65b403424db33897d9db977743c51251b6d83a2ed5929bd234b1f56d625015e8",
+              "swage_s3_reference/rtl/swage_s3_divider.sv": "39bb635cb214ccee5e0f4ed478b036a23a2298974fc4867b6db8ce4f617d3332",
+              "swage_s3_reference/rtl/swage_s3_fifo.sv": "67d0bd10aa4cb1b082684f0729de002f2139d399f20963536fb1bbb81bfa381d",
+              "swage_s3_reference/rtl/swage_s3_histogram.sv": "1365142833157ffeeb32e1b2aea8e29b344fe86f6e9f0dc3b96639c5b65a937a",
+              "swage_s3_reference/rtl/swage_s3_plane_scaler.sv": "d23aeb0ea7da84a6d3a8829dff6142458e9832571e29ba67658254a2c3ce6185",
+              "swage_s3_reference/rtl/swage_s3_plane_scheduler.sv": "ece5fe195343fe93aa514bcaeece81c5767e3da512ebf16a264893b1857f39d1",
+              "swage_s3_reference/rtl/swage_s3_scaler.sv": "d053f668dd424aa386e782e65ef7c4985645bfb33d045d9ba808aac754bb28d8",
+              "swage_s3_reference/rtl/swage_s3_top.sv": "37bb01e0ae13d732b8c3cfd8a66c4e2eeab0ab12b86d650501728018992d652a",
+              "swage_s3_reference/rtl/swage_s3_window.sv": "9b07b8476ffb83d53109da2a9cfbe8d364079989574236aecf8e1028318c6c49"
+            }
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-enhanced-20261102T182109Z-d2b3d007/expectations.json",
+          "data": [
+            {
+              "case": "compact-enhanced",
+              "frame": 0,
+              "seed": 17,
+              "params": [
+                1,
+                1,
+                1,
+                1,
+                8,
+                3,
+                8,
+                0,
+                1,
+                8
+              ],
+              "cfg": {
+                "enable": 0,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 1,
+                "rh": 1,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 0,
+                "s4": 7,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 1,
+                "patch": 8,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [
+                "compact_enhanced"
+              ],
+              "expected_pixels": 1,
+              "expected_tokens": 64,
+              "histogram_bins": 0,
+              "cycle_bound": 75296,
+              "comparison_files": {
+                "input": "case-0000-frame-00-input.hex",
+                "pixels": "case-0000-frame-00-pixels.hex",
+                "tokens": "case-0000-frame-00-tokens.hex",
+                "hist": "case-0000-frame-00-hist.hex"
+              }
+            },
+            {
+              "case": "compact-enhanced",
+              "frame": 1,
+              "seed": 17,
+              "params": [
+                1,
+                1,
+                1,
+                1,
+                8,
+                3,
+                8,
+                0,
+                1,
+                8
+              ],
+              "cfg": {
+                "enable": 0,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 1,
+                "rh": 1,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 0,
+                "s4": 7,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 1,
+                "patch": 8,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [
+                "compact_enhanced"
+              ],
+              "expected_pixels": 1,
+              "expected_tokens": 64,
+              "histogram_bins": 0,
+              "cycle_bound": 75296,
+              "comparison_files": {
+                "input": "case-0000-frame-01-input.hex",
+                "pixels": "case-0000-frame-01-pixels.hex",
+                "tokens": "case-0000-frame-01-tokens.hex",
+                "hist": "case-0000-frame-01-hist.hex"
+              }
+            },
+            {
+              "case": "compact-enhanced",
+              "frame": 2,
+              "seed": 17,
+              "params": [
+                1,
+                1,
+                1,
+                1,
+                8,
+                3,
+                8,
+                0,
+                1,
+                8
+              ],
+              "cfg": {
+                "enable": 0,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 1,
+                "rh": 1,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 0,
+                "s4": 7,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 1,
+                "patch": 8,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [
+                "compact_enhanced"
+              ],
+              "expected_pixels": 1,
+              "expected_tokens": 64,
+              "histogram_bins": 0,
+              "cycle_bound": 75296,
+              "comparison_files": {
+                "input": "case-0000-frame-02-input.hex",
+                "pixels": "case-0000-frame-02-pixels.hex",
+                "tokens": "case-0000-frame-02-tokens.hex",
+                "hist": "case-0000-frame-02-hist.hex"
+              }
+            }
+          ]
+        },
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-legacy-20261102T182108Z-4b9f7899/comparison.json",
+          "data": {
+            "frames": [
+              {
+                "case": "compact-legacy",
+                "frame": 0,
+                "seed": 17,
+                "params": [
+                  3,
+                  5,
+                  7,
+                  11,
+                  8,
+                  3,
+                  8,
+                  0,
+                  257,
+                  8
+                ],
+                "cfg": {
+                  "enable": 48,
+                  "border": 0,
+                  "abs": 0,
+                  "shift": 0,
+                  "coeff": [
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "rx": 0,
+                  "ry": 0,
+                  "rw": 3,
+                  "rh": 5,
+                  "format": 0,
+                  "mode": 0,
+                  "out420": 0,
+                  "csc": [
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192,
+                    0,
+                    0,
+                    0,
+                    8192
+                  ],
+                  "ib": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "ob": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "hist": 3,
+                  "s4": 0,
+                  "alpha": 128,
+                  "threshold": 16,
+                  "clip": 4,
+                  "patch": 16,
+                  "bf16": 0,
+                  "means": [
+                    32640,
+                    32640,
+                    32640
+                  ],
+                  "reciprocals": [
+                    512,
+                    512,
+                    512
+                  ]
+                },
+                "labels": [
+                  "compact_legacy"
+                ],
+                "expected_pixels": 77,
+                "expected_tokens": 0,
+                "histogram_bins": 256,
+                "cycle_bound": 67104,
+                "comparison_files": {
+                  "input": "case-0000-frame-00-input.hex",
+                  "pixels": "case-0000-frame-00-pixels.hex",
+                  "tokens": "case-0000-frame-00-tokens.hex",
+                  "hist": "case-0000-frame-00-hist.hex"
+                },
+                "compared_pixels": 77,
+                "compared_tokens": 0,
+                "observed_cycles": 1144,
+                "pixel_stall_cycles": 64,
+                "token_stall_cycles": 0,
+                "input_gap_cycles": 7,
+                "final_pixel_stall": 1,
+                "final_token_stall": 0,
+                "simulation_stdout": "evidence/l1-20261102T182107Z-96e25339/0006-compact-legacy-simulate.stdout.txt"
+              }
+            ],
+            "control": {
+              "accepted_configs": 1,
+              "rejected_configs": 0,
+              "busy_samples": 0,
+              "compared_histogram_bins": 256,
+              "hist_priority_samples": 1,
+              "isolated_input_gaps": 1,
+              "sustained_input_gaps": 2,
+              "isolated_output_stalls": 2,
+              "sustained_output_stalls": 16
+            },
+            "simulator": "iverilog",
+            "source_sha256": {
+              "rtl/swage_s1_interp.sv": "07e803d5aaf6280737c2c9dd98343b7f7e4145e4f14b77d7b74b9ab1a6afabea",
+              "rtl/swage_s1_line_buffer.sv": "d81d88e84679743ac1ac8101d0627fc78879231e6334a8cc544bb6d64e8c19ea",
+              "rtl/swage_s1_phase.sv": "17416a128ae65bef3523364eb155f5a3c5f616ad64ee66ca4760b6ad902bebb6",
+              "rtl/swage_s1_scheduler.sv": "5b4a38e346ae783c0f9dc90c058ff9b7aa2603f12747bc70e4ee6659bfacb096",
+              "rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3",
+              "rtl/swage_s2_convolution.sv": "e434d1ea6defae0bc083e7208faa1a6509ab9f2733a0ffa9d8f826a319bba132",
+              "rtl/swage_s2_demosaic.sv": "bd8615dede541a2372135cf098c349ba0439c6f166163ef9f9d5e27bbe5146f1",
+              "rtl/swage_s2_top.sv": "60b7e32f76c129fa20c3973bfeb5e47895664907b40e5fdc1cad5c87709df4f3",
+              "rtl/swage_s2_window.sv": "ba58ac02513dfa4a024c657c4100677bc43684072bf9eed72b12da8cacaae177",
+              "rtl/swage_s3_chroma_expand.sv": "edcd2e481df346de594c5bcb39e31f7ddd7b56225b7d556c63ffcc09b01d0b0d",
+              "rtl/swage_s3_convolution.sv": "38a35400b1bffcb6361fb64063a7df5694acbfc0046959cecddad5df49eef8b8",
+              "rtl/swage_s3_crop.sv": "6f7afb2283b7204651b91ae5dd0a8684482cfdf73e46d4c27e090a31dbeebc40",
+              "rtl/swage_s3_csc.sv": "311c89098845eba6af50b2e4827038df7fcd3efec174aea86bfccc60eb60624c",
+              "rtl/swage_s3_demosaic.sv": "65b403424db33897d9db977743c51251b6d83a2ed5929bd234b1f56d625015e8",
+              "rtl/swage_s3_divider.sv": "39bb635cb214ccee5e0f4ed478b036a23a2298974fc4867b6db8ce4f617d3332",
+              "rtl/swage_s3_fifo.sv": "67d0bd10aa4cb1b082684f0729de002f2139d399f20963536fb1bbb81bfa381d",
+              "rtl/swage_s3_histogram.sv": "1365142833157ffeeb32e1b2aea8e29b344fe86f6e9f0dc3b96639c5b65a937a",
+              "rtl/swage_s3_plane_scaler.sv": "d23aeb0ea7da84a6d3a8829dff6142458e9832571e29ba67658254a2c3ce6185",
+              "rtl/swage_s3_plane_scheduler.sv": "ece5fe195343fe93aa514bcaeece81c5767e3da512ebf16a264893b1857f39d1",
+              "rtl/swage_s3_scaler.sv": "d053f668dd424aa386e782e65ef7c4985645bfb33d045d9ba808aac754bb28d8",
+              "rtl/swage_s3_top.sv": "37bb01e0ae13d732b8c3cfd8a66c4e2eeab0ab12b86d650501728018992d652a",
+              "rtl/swage_s3_window.sv": "9b07b8476ffb83d53109da2a9cfbe8d364079989574236aecf8e1028318c6c49",
+              "rtl/swage_s4_clahe.sv": "baddae5d94073516d3ce5c93b6324a08c34f74aacfcddb802011f48645a93bb2",
+              "rtl/swage_s4_frame_store.sv": "ad57108e3b846206a2259745c6289c63e86b3c0e7029a4d379170bdd4d54235e",
+              "rtl/swage_s4_normalizer.sv": "11a3c28edc047686b7f966d874bec83e1f814ca4454998fc6678489f6084372d",
+              "rtl/swage_s4_patch_tokenizer.sv": "9c9d8efa550ce24bc262c7ccc0d4659cf19553a9dc6cef5f5957eaa74e1ca60d",
+              "rtl/swage_s4_temporal.sv": "594e35d7f70f54157f0344b1ef5a147df999dff67c4ce9bb6a9d8cd347c9c325",
+              "rtl/swage_s4_top.sv": "138f084ae0273560e9fa991f269f3e92c09c004c4968ed3ddaf1722db69a6715",
+              "tests/cases.py": "5a51d879628cf33ac26c8276ba5ed7dac59d91daaca9e6fccb9043e8b752a6c6",
+              "tests/harness.py": "47fa8c050656dabd311b8c479188e60941fa4eb6a64e66fe67d18eebd75fdf79",
+              "tests/leaves.py": "8f77ba70799c0b0c740f6de62855d7611bb78e8e8c687940cca1e2a053932b84",
+              "tests/mutations.py": "c36285ff15fa7eb2b26ecc8b5697f590c45f42de2fb653360bac6b93d8142d9d",
+              "tests/reference.py": "1883184eee482dd9af168d2b575ef0177957fa1e49cd2619292a92eb3d29263a",
+              "tests/verify.py": "fd384155bfb81d211da7ef8df19a15735bf25524f8fb21068d92e03b6301f564",
+              "design/SPEC.md": "77e57c409f08a4d776684912b244cc35d93572c4a2e8ecd6ddfd2961f96aacb1",
+              "design/ARCHITECTURE.md": "582ed554d4117c9030b2094bbd7acef0d6dee0579d2e799c42060afed96f7079",
+              "swage_s3_reference/rtl/swage_s1_interp.sv": "07e803d5aaf6280737c2c9dd98343b7f7e4145e4f14b77d7b74b9ab1a6afabea",
+              "swage_s3_reference/rtl/swage_s1_line_buffer.sv": "d81d88e84679743ac1ac8101d0627fc78879231e6334a8cc544bb6d64e8c19ea",
+              "swage_s3_reference/rtl/swage_s1_phase.sv": "17416a128ae65bef3523364eb155f5a3c5f616ad64ee66ca4760b6ad902bebb6",
+              "swage_s3_reference/rtl/swage_s1_scheduler.sv": "5b4a38e346ae783c0f9dc90c058ff9b7aa2603f12747bc70e4ee6659bfacb096",
+              "swage_s3_reference/rtl/swage_s1_top.sv": "365f4bef95774755eba1f5b8d2b85b2fd14bc99241b00c1594399b27c2261ad3",
+              "swage_s3_reference/rtl/swage_s2_convolution.sv": "e434d1ea6defae0bc083e7208faa1a6509ab9f2733a0ffa9d8f826a319bba132",
+              "swage_s3_reference/rtl/swage_s2_demosaic.sv": "bd8615dede541a2372135cf098c349ba0439c6f166163ef9f9d5e27bbe5146f1",
+              "swage_s3_reference/rtl/swage_s2_top.sv": "60b7e32f76c129fa20c3973bfeb5e47895664907b40e5fdc1cad5c87709df4f3",
+              "swage_s3_reference/rtl/swage_s2_window.sv": "ba58ac02513dfa4a024c657c4100677bc43684072bf9eed72b12da8cacaae177",
+              "swage_s3_reference/rtl/swage_s3_chroma_expand.sv": "edcd2e481df346de594c5bcb39e31f7ddd7b56225b7d556c63ffcc09b01d0b0d",
+              "swage_s3_reference/rtl/swage_s3_convolution.sv": "38a35400b1bffcb6361fb64063a7df5694acbfc0046959cecddad5df49eef8b8",
+              "swage_s3_reference/rtl/swage_s3_crop.sv": "6f7afb2283b7204651b91ae5dd0a8684482cfdf73e46d4c27e090a31dbeebc40",
+              "swage_s3_reference/rtl/swage_s3_csc.sv": "311c89098845eba6af50b2e4827038df7fcd3efec174aea86bfccc60eb60624c",
+              "swage_s3_reference/rtl/swage_s3_demosaic.sv": "65b403424db33897d9db977743c51251b6d83a2ed5929bd234b1f56d625015e8",
+              "swage_s3_reference/rtl/swage_s3_divider.sv": "39bb635cb214ccee5e0f4ed478b036a23a2298974fc4867b6db8ce4f617d3332",
+              "swage_s3_reference/rtl/swage_s3_fifo.sv": "67d0bd10aa4cb1b082684f0729de002f2139d399f20963536fb1bbb81bfa381d",
+              "swage_s3_reference/rtl/swage_s3_histogram.sv": "1365142833157ffeeb32e1b2aea8e29b344fe86f6e9f0dc3b96639c5b65a937a",
+              "swage_s3_reference/rtl/swage_s3_plane_scaler.sv": "d23aeb0ea7da84a6d3a8829dff6142458e9832571e29ba67658254a2c3ce6185",
+              "swage_s3_reference/rtl/swage_s3_plane_scheduler.sv": "ece5fe195343fe93aa514bcaeece81c5767e3da512ebf16a264893b1857f39d1",
+              "swage_s3_reference/rtl/swage_s3_scaler.sv": "d053f668dd424aa386e782e65ef7c4985645bfb33d045d9ba808aac754bb28d8",
+              "swage_s3_reference/rtl/swage_s3_top.sv": "37bb01e0ae13d732b8c3cfd8a66c4e2eeab0ab12b86d650501728018992d652a",
+              "swage_s3_reference/rtl/swage_s3_window.sv": "9b07b8476ffb83d53109da2a9cfbe8d364079989574236aecf8e1028318c6c49"
+            }
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T180046Z-86849ff9/clean-reproduction-20261102T182107Z-403fee4a/evidence/l1-20261102T182107Z-96e25339/compact-legacy-20261102T182108Z-4b9f7899/expectations.json",
+          "data": [
+            {
+              "case": "compact-legacy",
+              "frame": 0,
+              "seed": 17,
+              "params": [
+                3,
+                5,
+                7,
+                11,
+                8,
+                3,
+                8,
+                0,
+                257,
+                8
+              ],
+              "cfg": {
+                "enable": 48,
+                "border": 0,
+                "abs": 0,
+                "shift": 0,
+                "coeff": [
+                  0,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "rx": 0,
+                "ry": 0,
+                "rw": 3,
+                "rh": 5,
+                "format": 0,
+                "mode": 0,
+                "out420": 0,
+                "csc": [
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192,
+                  0,
+                  0,
+                  0,
+                  8192
+                ],
+                "ib": [
+                  0,
+                  0,
+                  0
+                ],
+                "ob": [
+                  0,
+                  0,
+                  0
+                ],
+                "hist": 3,
+                "s4": 0,
+                "alpha": 128,
+                "threshold": 16,
+                "clip": 4,
+                "patch": 16,
+                "bf16": 0,
+                "means": [
+                  32640,
+                  32640,
+                  32640
+                ],
+                "reciprocals": [
+                  512,
+                  512,
+                  512
+                ]
+              },
+              "labels": [
+                "compact_legacy"
+              ],
+              "expected_pixels": 77,
+              "expected_tokens": 0,
+              "histogram_bins": 256,
+              "cycle_bound": 67104,
+              "comparison_files": {
+                "input": "case-0000-frame-00-input.hex",
+                "pixels": "case-0000-frame-00-pixels.hex",
+                "tokens": "case-0000-frame-00-tokens.hex",
+                "hist": "case-0000-frame-00-hist.hex"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

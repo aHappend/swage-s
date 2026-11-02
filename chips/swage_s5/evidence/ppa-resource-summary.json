@@ -1,0 +1,11 @@
+{
+  "chip": "Swage-S5",
+  "fitter_resources": {
+    "total_registers": 57765,
+    "block_memory_bits": 342312,
+    "dsp_blocks": 300,
+    "virtual_pins": 1469
+  },
+  "timing": {},
+  "verification_tiers": {}
+}

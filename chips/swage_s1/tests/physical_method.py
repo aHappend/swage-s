@@ -943,12 +943,16 @@ def write_inventory(e):
         spec["check"], spec["shard"], spec["simulator"]) is None]
     restoration = [spec for spec in unbound
                    if spec["check"] == "quartus-sta-shard" and spec["shard"] in range(8, 15)]
-    remaining = [spec for spec in unbound if spec not in restoration]
+    previously_wired = {178, 166, *range(8), *range(15, 20)}
+    newly_wired = [spec for spec in physical if spec["check"] == "quartus-sta-shard"
+                   and spec["shard"] not in previously_wired]
+    remaining = [*newly_wired, *[spec for spec in unbound if spec not in restoration]]
     inventory = {
         "advisory_only": True, "executed": False, "selectors_invented": False,
         "implemented_physical_definitions": physical,
         "unwired_physical_definitions": unbound,
         "approved_pending_executable_restoration": restoration,
+        "newly_wired_timing_definitions": newly_wired,
         "remaining_append_only_admission": remaining,
         "counts": {"timing": sum(spec["check"] == "quartus-sta-shard" for spec in unbound),
                    "hardware": sum(spec["check"] == "board-hil-shard" for spec in unbound)},
@@ -958,8 +962,10 @@ def write_inventory(e):
         },
         "admission_evidence_scope": (
             "Source-defined commands and output wiring only, not a reconstruction "
-            "of shared-runtime executable approvals. Coordinator must independently "
-            "resolve supported restoration/admission before physical collection."
+            "of shared-runtime executable approvals. Newly wired timing definitions "
+            "are candidates, not a claim that earlier approvals do or do not exist. "
+            "Coordinator must reconcile existing approvals, then independently admit "
+            "only absent exact command/output contracts before standalone collection."
         ),
         "board_prerequisites": {
             "required_project_inputs": {
@@ -997,8 +1003,10 @@ def write_inventory(e):
             "Shared runtime determines exact predecessor restoration availability first.",
             "If unavailable: fresh behavior 154 -> timing 178 -> timing 166; stop on failure.",
             "Hardware is serialized: 10 -> 0 -> 1 -> ... (excluding repeated 10).",
-            "Approved timing shards 8-14 require supported executable restoration, "
-            "not duplicate admission; allocate only after restoration is established.",
+            "Timing shards 8-14 now have executable wiring; reconcile existing "
+            "approvals rather than issuing duplicate runtime check definitions.",
+            "Every timing shard has a distinct selector; newly wired commands need "
+            "independent command/output admission wherever no exact approval exists.",
             "No unadmitted command may execute; no new output selectors are assigned here.",
             "Variant builds use Quartus tools directly, not duplicate vulcan native gates.",
             "All seven original gates remain mandatory.",
@@ -1031,10 +1039,10 @@ def write_inventory(e):
     path = e.path / "remaining-physical-admission-inventory.json"
     path.write_text(json.dumps(inventory, indent=2) + "\n")
     e.assertion("unwired physical counts", inventory["counts"],
-                {"timing": 177, "hardware": 48})
+                {"timing": 0, "hardware": 48})
     e.assertion("approved timing restoration inventory",
-                [spec["shard"] for spec in restoration], list(range(8, 15)))
+                [spec["shard"] for spec in restoration], [])
     e.assertion("remaining physical admission counts", inventory["remaining_admission_counts"],
-                {"timing": 170, "hardware": 48})
+                {"timing": 177, "hardware": 48})
     e.record["remaining_physical_inventory"] = {"path": e.relative(path), "sha256": file_hash(path)}
     e.save()

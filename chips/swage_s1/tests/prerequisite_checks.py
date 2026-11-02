@@ -86,6 +86,108 @@ def fixture_artifacts(root, discover, directory):
             if name not in unavailable}
 
 
+def budget_method_checks(e):
+    """Synthetic scheduling tests; no vendor command or fitted result is made."""
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    import partitions
+    import physical
+
+    spec = partitions.spec_for("quartus-sta-shard", 178, None)
+    sample = {
+        "check": spec["check"], "configuration": spec["configuration"],
+        "complete_shard_s": 880.536777, "recursive_validation_s": 12.0,
+        "receipt": "synthetic-only-cost", "sha256": "synthetic-only",
+        "source_current": False,
+    }
+
+    def fixture(remaining):
+        return SimpleNamespace(
+            record={"partition": spec}, remaining=lambda: remaining, save=lambda: None,
+            run=Mock(side_effect=AssertionError("Vendor execution forbidden in fixture")),
+        )
+
+    def rejected(item, stage):
+        try:
+            partitions.admit_partition_budget(item, spec, stage)
+        except AssertionError as error:
+            require("Insufficient collection budget" in str(error),
+                    f"Unexpected budget diagnostic: {error}")
+        else:
+            raise AssertionError("Underfunded physical work was admitted")
+        return item.record["budget_admissions"][-1]
+
+    with patch.object(partitions, "measured_partition_costs", return_value=[sample]):
+        for remaining in (21.3, 493.0, 836.027):
+            event = rejected(fixture(remaining), "child-launch")
+            e.assertion(f"complete-shard reservation rejects {remaining}s",
+                        event["admitted"], False)
+            e.assertion(f"complete-shard cost retained for {remaining}s",
+                        event["complete_shard_s"], sample["complete_shard_s"])
+        item = fixture(2640.0)
+        partitions.admit_partition_budget(item, spec, "child-launch")
+        event = item.record["budget_admissions"][-1]
+        required = 1.25 * sample["complete_shard_s"] + 60.0 + 60.0 + 5.0
+        e.assertion("whole measured shard plus all explicit margins",
+                    event["required_s"], required)
+        e.assertion("historical scheduling cost does not claim reusable coverage",
+                    event["measurement_scope"],
+                    "advisory scheduling cost only, never coverage")
+        partitions.admit_partition_budget(fixture(required), spec, "child-launch")
+        rejected(fixture(required - 0.001), "child-launch")
+        e.assertion("exact admission boundary enforced", True, True)
+        item = fixture(2640.0)
+        item.record["recursive_validation_durations_s"] = [300.0]
+        partitions.admit_partition_budget(item, spec, "child-launch")
+        e.assertion("observed recursive validation increases reservation",
+                    item.record["budget_admissions"][-1]["recursive_validation_margin_s"],
+                    375.0)
+
+        # A first admission does not authorize compilation after validation or
+        # project generation has consumed the budget.
+        item = fixture(2000.0)
+        partitions.admit_partition_budget(item, spec, "partition-start")
+        def generate(*args):
+            item.remaining = lambda: 21.3
+            return {"synthetic_only": True}
+        with patch.object(physical, "generate_project", side_effect=generate):
+            try:
+                physical.compile_and_sta(item, partitions.configuration(spec),
+                                         e.path / "never-created-vendor-project")
+            except AssertionError as error:
+                require("at vendor-compile" in str(error),
+                        f"Unexpected precompile rejection: {error}")
+            else:
+                raise AssertionError("Compilation started after budget depletion")
+        item.run.assert_not_called()
+        e.assertion("second admission is immediately before vendor compilation",
+                    [event["stage"] for event in item.record["budget_admissions"]],
+                    ["partition-start", "vendor-compile"])
+        e.assertion("second admission stops all vendor commands",
+                    item.record["budget_admissions"][-1]["admitted"], False)
+
+    # Unknown variants reserve the largest family measurement, not a cheap
+    # unrelated variant; matched configurations use their own maximum.
+    cheap = {**sample, "complete_shard_s": 342.166}
+    expensive = {**sample, "configuration": {"different": 1},
+                 "complete_shard_s": 950.0}
+    with patch.object(partitions, "measured_partition_costs",
+                      return_value=[cheap, sample, expensive]):
+        item = fixture(2640.0)
+        partitions.admit_partition_budget(item, spec, "child-launch")
+        e.assertion("matching complete-shard maximum used",
+                    item.record["budget_admissions"][-1]["complete_shard_s"], 880.536777)
+        unknown = {**spec, "configuration": {"unmeasured": 1}}
+        partitions.admit_partition_budget(item, unknown, "child-launch")
+        e.assertion("unmeasured variant uses family maximum",
+                    item.record["budget_admissions"][-1]["complete_shard_s"], 950.0)
+    with patch.object(partitions, "measured_partition_costs", return_value=[]):
+        item = fixture(2640.0)
+        partitions.admit_partition_budget(item, spec, "child-launch")
+        e.assertion("no measurement has explicit conservative reservation",
+                    item.record["budget_admissions"][-1]["complete_shard_s"], 1200.0)
+
+
 def method_checks(e):
     import evidence
     import partitions
@@ -96,6 +198,7 @@ def method_checks(e):
     e.record["method_scope"] = "SYNTHETIC_ONLY_NOT_PHYSICAL_ACCEPTANCE"
     e.record["regression"] = "self-contained-prerequisite-execution"
     e.save()
+    budget_method_checks(e)
     directory = e.path / f"synthetic-prerequisites-{uuid.uuid4().hex}"
     directory.mkdir()
     definitions = partitions.check_definitions()
@@ -105,6 +208,8 @@ def method_checks(e):
         spec = dict(next(item for item in definitions if item["id"] == ident))
         spec.update(requires=["python3"], depends_on=[] if index == 0 else [identities[index-1]])
         specs.append(spec)
+    # Exercise internal collection without claiming a standalone allocation.
+    specs[-1]["outputs"] = []
     original_outputs = {spec["id"]: list(spec["outputs"]) for spec in specs}
     e.assertion("fixture includes an unmapped physical prerequisite", specs[-1]["outputs"], [])
     candidate = {
@@ -399,9 +504,9 @@ def method_checks(e):
             json.loads(path.read_text())
             for path in (item.path / "prerequisites").glob("*/receipt.json")
         ]
-        e.assertion("child timeout retained without successful partial coverage",
-                    any(record["status"] == "failed"
-                        and record["commands"][-1]["timed_out"] for record in timed_out), True)
+        e.assertion("underfunded child rejected before allocation", timed_out, [])
+        e.assertion("budget rejection retains its admission calculation",
+                    item.record["budget_admissions"][-1]["admitted"], False)
 
     e.record["isolated_fixture_directory"] = e.relative(directory)
     e.record["physical_acceptance_claimed"] = False

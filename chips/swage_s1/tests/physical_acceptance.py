@@ -152,6 +152,7 @@ def method_checks(e):
 
                 fixture = SimpleNamespace(
                     path=current, record=record, relative=e.relative, save=save, finish=finish,
+                    remaining=lambda: 2640.0,
                     assertion=lambda name, actual, expected: e.assertion(
                         f"synthetic parity {gate} {name}", actual, expected),
                     run=no_execution,

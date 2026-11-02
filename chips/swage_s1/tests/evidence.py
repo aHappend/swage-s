@@ -51,7 +51,7 @@ ADMITTED_PARTITION_OUTPUTS.update({
 })
 ADMITTED_PARTITION_OUTPUTS.update({
     ("quartus-sta-shard", index, None): f"recovery-v2-quartus-sta-shard-{index}"
-    for index in (*range(8), *range(15, 20))
+    for index in range(192) if index not in (178, 166)
 })
 
 

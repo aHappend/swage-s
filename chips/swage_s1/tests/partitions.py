@@ -22,15 +22,26 @@ Invalid-parameter cases validate the exact INVALID_TB compiler command or the
 source/configuration/tool-bound retained build, then independently validate the
 current diagnostic execution and its executable. Build reuse never substitutes
 for a fresh diagnostic or a current-source numerical comparison.
-Timing shards 0-7 and 15-19 have exclusive allocation wiring matching the
-current executable contract. Standalone shard selectors remain unchanged. Aggregate commands also execute
-missing prerequisites in fresh parent-owned directories, without allocating
-supplemental runtime checks.
+All timing shards have distinct standalone output selectors; newly wired
+commands still require append-only independent admission. Existing selectors
+and commands are unchanged. Aggregate commands also execute missing prerequisites
+in fresh parent-owned directories, without allocating supplemental runtime checks.
+Physical work is admitted twice: before child launch and immediately before
+vendor compilation. Reservations use relevant complete-shard measurements plus
+recursive-validation, variability and settlement margins, never compile time alone.
+Historical costs are advisory even when their source/artifact bindings are stale;
+they never qualify a historical receipt for acceptance.
+
+Read-only preparation inventory (no collection or vendor execution):
+python3 tests/verify.py --probe collection-inventory
+Optionally --repair-of <prior frontier-audit receipt> records the source delta
+and rechecks retained historical artifacts without promoting stale coverage.
 """
 
 import datetime
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -274,9 +285,9 @@ def scheduling_plan():
     """Export with --scheduling-plan; no evidence or runtime admission is changed.
 
     Check records and dependency edges are separate so a consumer need not
-    reinterpret inventory annotations as executable-contract fields. Only the
-    currently admitted partitions declare output selectors; others remain empty.
-    The CLI rejects undeclared output contracts before allocating evidence
+    reinterpret inventory annotations as executable-contract fields. Wired
+    partitions declare output selectors; wiring is not runtime admission.
+    The CLI rejects unwired output contracts before allocating evidence
     or launching tools; this inventory is not execution authorization.
     The shared runtime must independently admit and schedule this advisory DAG.
     """
@@ -324,7 +335,9 @@ def scheduling_plan():
             "Icarus behavior 0..167 except 154 and Verilator behavior 0..167, "
             "plus parameter 0..6 and pipeline 0..5 on both simulators, "
             "use their exact recovery-v2 selectors. "
-            "All remaining partition outputs remain empty pending append-only admission; "
+            "All 192 timing shards now have distinct selectors; previously unwired "
+            "timing commands require append-only independent admission. "
+            "Board partition outputs remain empty pending append-only admission; "
             "this export does not authorize their execution or modify runtime records."
         ),
     }
@@ -638,6 +651,7 @@ def partition_start(record):
 
 def validate_dependencies(e, found, identities, *, validated=None):
     """Validate the entire retained prerequisite chain before consuming it."""
+    started = time.monotonic()
     specs = {spec["id"]: spec for spec in check_definitions()}
     validated = {} if validated is None else validated
 
@@ -668,6 +682,9 @@ def validate_dependencies(e, found, identities, *, validated=None):
 
     for ident in identities:
         visit(ident)
+    e.record.setdefault("recursive_validation_durations_s", []).append(
+        time.monotonic() - started)
+    e.save()
     return validated
 
 
@@ -711,6 +728,7 @@ def run_partition(e, check, shard, simulator):
     e.record["tool_commands"] = {
         name: e.record["tool_commands"][name] for name in spec["requires"]}
     e.save()
+    admit_partition_budget(e, spec, "partition-start")
     behavior, timing, hardware, pipeline = inventories()
     if check == "behavior-shard":
         from simulation import execute_partition
@@ -1111,6 +1129,7 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                 if (physical and active) or any(
                         by_id[running]["simulator"] is None for running in active.values()):
                     continue
+                admit_partition_budget(e, spec, "child-launch")
                 execution["launched"].append(ident)
                 e.save()
                 argv = internal_command(e, spec)
@@ -1129,12 +1148,99 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                 ident = active.pop(future)
                 # Settle already-running children before propagating a failure.
                 future.result()
+                if hasattr(e, "_partition_costs"):
+                    del e._partition_costs
                 found = successes(e)
                 require(ident in found, f"Successful command lacks completed receipt: {ident}")
                 validate_dependencies(e, found, [ident], validated=validated)
                 execution["completed"].append(ident)
                 e.save()
     return found
+
+
+def measured_partition_costs(e):
+    """Read retained wall costs, not reusable coverage or a passing baseline."""
+    if hasattr(e, "_partition_costs"):
+        return e._partition_costs
+    costs = []
+    for path in partition_receipts(ROOT / "evidence" / "checks"):
+        record = json.loads(path.read_text())
+        spec = record.get("partition") or {}
+        if (spec.get("check") not in ("quartus-sta-shard", "board-hil-shard")
+                or record.get("status") != "passed"
+                or record.get("acceptance_evidence") is not True
+                or record.get("synthetic_only") or record.get("fixture_scope")
+                or record.get("sources_unchanged") is not True):
+            continue
+        commands = record.get("commands", [])
+        if not commands or not all(
+                command.get("end") and command.get("exit_status") == 0
+                and not command.get("timed_out") and not command.get("launch_error")
+                and type(command.get("duration_s")) in (int, float)
+                and math.isfinite(command["duration_s"]) and command["duration_s"] >= 0
+                for command in commands):
+            continue
+        if not any(command.get("requested_argv", [])[:3]
+                   == ["quartus_sh", "--flow", "compile"] for command in commands):
+            continue
+        start = partition_start(record)
+        end = datetime.datetime.fromisoformat(record["end"])
+        duration = (end - start).total_seconds()
+        if not 0 < duration < 2700:
+            continue
+        validation = record.get("recursive_validation_durations_s", [])
+        require(all(type(value) in (int, float) and math.isfinite(value) and value >= 0
+                    for value in validation), f"Invalid measured validation cost: {path}")
+        costs.append({
+            "check": spec["check"], "configuration": spec.get("configuration"),
+            "complete_shard_s": duration,
+            "recursive_validation_s": max(validation, default=0),
+            "receipt": e.relative(path), "sha256": file_hash(path),
+            "source_current": record.get("source_sha256") == e.record["source_sha256"],
+        })
+    e._partition_costs = costs
+    return costs
+
+
+def admit_partition_budget(e, spec, stage):
+    """Refuse an underfunded launch without allocating or starting vendor work."""
+    if spec["simulator"] is not None:
+        return
+    samples = [item for item in measured_partition_costs(e)
+               if item["check"] == spec["check"]]
+    relevant = [item for item in samples
+                if item["configuration"] == spec.get("configuration")]
+    basis = "matching-configuration" if relevant else "family-maximum"
+    sample = max(relevant or samples, key=lambda item: item["complete_shard_s"],
+                 default=None)
+    # No measurements yet: reserve a substantial whole-shard allowance, not
+    # the cheapest measured compilation from a different arithmetic variant.
+    complete = sample["complete_shard_s"] if sample else 1200.0
+    validation = [*e.record.get("recursive_validation_durations_s", []),
+                  *(item["recursive_validation_s"] for item in samples)]
+    validation_margin = max(60.0, 1.25 * max(validation, default=0))
+    settlement_margin = 60.0
+    inheritance_margin = 5.0 if stage == "child-launch" else 0.0
+    required = 1.25 * complete + validation_margin + settlement_margin + inheritance_margin
+    remaining = e.remaining()
+    event = {
+        "id": spec["id"], "stage": stage, "time": stamp(),
+        "basis": basis if sample else "unmeasured-whole-shard-reservation",
+        "measurement_scope": "advisory scheduling cost only, never coverage",
+        "sample": sample, "complete_shard_s": complete, "variability_factor": 1.25,
+        "recursive_validation_margin_s": validation_margin,
+        "settlement_margin_s": settlement_margin,
+        "inheritance_margin_s": inheritance_margin,
+        "required_s": required, "remaining_s": remaining,
+        "admitted": remaining >= required,
+    }
+    e.record.setdefault("budget_admissions", []).append(event)
+    e.save()
+    require(event["admitted"],
+            f"Insufficient collection budget for {spec['id']} at {stage}: "
+            f"requires {required:.3f}s including complete-shard, recursive-validation "
+            f"and settlement margins, remaining {remaining:.3f}s; "
+            "no new work launched at this boundary; completed evidence retained")
 
 
 def internal_command(e, spec):
@@ -1152,6 +1258,119 @@ def internal_command(e, spec):
                     "runtime_allocation": False})
     e.save()
     return argv
+
+
+def collection_inventory(e):
+    """Audit the current frontier and export exact contracts without collection."""
+    require(e.record["acceptance_evidence"] is False,
+            "Read-only inventory belongs to preparation evidence")
+    from physical_method import write_inventory
+
+    e.record["inventory_scope"] = (
+        "read-only recursive validation and advisory scheduling; no collection, "
+        "vendor compilation, programming or retention repair"
+    )
+    found = successes(e)
+    plan = prerequisite_plan("quartus-sta", found)
+    needed = set(plan["mandatory_partitions"]) | set(plan["required_predecessors"])
+    validated = validate_dependencies(e, found, sorted(needed & set(found)))
+    e.record["frontier_audit"] = {
+        "reusable": [
+            {"id": ident, "receipt": e.relative(found[ident][0]),
+             "sha256": file_hash(found[ident][0]), "result": validated[ident]}
+            for ident in sorted(validated)
+        ],
+        "plan": plan,
+        "newly_measured_timing_shards": [],
+    }
+    if e.record.get("repair_of"):
+        previous_path = ROOT / e.record["repair_of"]
+        previous = json.loads(previous_path.read_text())
+        require(previous.get("status") == "passed"
+                and previous.get("acceptance_evidence") is False
+                and isinstance(previous.get("frontier_audit", {}).get("reusable"), list),
+                "Inventory comparison requires a completed preparation frontier audit")
+        changes = sorted(name for name in set(previous["source_sha256"])
+                         | set(e.record["source_sha256"])
+                         if previous["source_sha256"].get(name)
+                         != e.record["source_sha256"].get(name))
+        e.assertion("source repair changes only verifier-owned inputs",
+                    all(name.startswith("tests/") for name in changes), True)
+        survival = []
+        for item in previous["frontier_audit"]["reusable"]:
+            path = ROOT / item["receipt"]
+            require(path.is_file() and file_hash(path) == item["sha256"],
+                    f"Previously audited receipt changed or disappeared: {item['receipt']}")
+            historical = json.loads(path.read_text())
+            expected = historical["artifact_sha256"]
+            actual = artifact_hashes(path.parent)
+            survival.append({
+                "id": item["id"], "receipt": item["receipt"],
+                "receipt_sha256": item["sha256"],
+                "artifact_manifest_intact_now": expected == actual,
+                "missing_artifacts": sorted(set(expected) - set(actual)),
+                "changed_artifacts": sorted(name for name in set(expected) & set(actual)
+                                            if expected[name] != actual[name]),
+                "added_artifacts": sorted(set(actual) - set(expected)),
+                "current_source_binding": historical["source_sha256"]
+                                          == e.record["source_sha256"],
+                "coverage_rebound": False,
+            })
+        e.record["historical_audit_comparison"] = {
+            "receipt": e.relative(previous_path), "sha256": file_hash(previous_path),
+            "changed_verification_sources": changes,
+            "previously_recursively_validated": survival,
+            "retention_beyond_2400_seconds_and_settlement": "not established by this probe",
+        }
+    costs = measured_partition_costs(e)
+    e.record["advisory_cost_inventory"] = {
+        "scope": "historical scheduling observations only; never reusable coverage",
+        "samples": costs,
+        "maximum_complete_shard_s": max(
+            (item["complete_shard_s"] for item in costs), default=None),
+        "variability_factor": 1.25, "minimum_recursive_validation_margin_s": 60.0,
+        "settlement_margin_s": 60.0, "internal_inheritance_margin_s": 5.0,
+    }
+    write_inventory(e)
+    physical_inventory = json.loads(
+        (e.path / "remaining-physical-admission-inventory.json").read_text())
+    fields = ("id", "argv", "inputs", "outputs", "requires",
+              "timeout_s", "max_output_bytes")
+    newly_wired = physical_inventory["newly_wired_timing_definitions"]
+    # Begin the exported review list with the specifically requested missing
+    # selector. This is not a request to execute shard 9 ahead of prerequisites.
+    newly_wired.sort(key=lambda spec: (spec["shard"] != 9, spec["shard"]))
+    for name, value in (
+        ("append-only-timing-checks.json",
+         [{key: spec[key] for key in fields} for spec in newly_wired]),
+        ("scheduling-plan.json", scheduling_plan()),
+        ("timing-frontier.json", e.record["frontier_audit"]),
+    ):
+        path = e.path / name
+        path.write_text(json.dumps(value, indent=2) + "\n")
+        e.record.setdefault("inventory_exports", {})[name] = {
+            "path": e.relative(path), "sha256": file_hash(path),
+        }
+    e.record["external_owner_handoffs"] = {
+        "retention": {
+            "owner": "authorized shared-runtime retention owner, routed by Coordinator",
+            "status": "request only; no owner action or restoration claimed",
+            "scope": [
+                "Protect manifest-bound artifacts and all recursive predecessor receipts.",
+                "Restore missing artifacts only from authorized hash-identical originals; "
+                "do not regenerate evidence or edit historical bindings.",
+                "Attribute deletions and demonstrate hash-preserving survival beyond "
+                "2400 seconds and process settlement.",
+            ],
+            "diagnostics": e.relative(e.path / "receipt.json"),
+        },
+        "board": {
+            "owner": "authorized board/IP/host provisioning owner, routed by Coordinator",
+            "status": "request only; no board access or provisioning claimed",
+            "required": physical_inventory["board_prerequisites"],
+        },
+    }
+    e.save()
 
 
 def aggregate(e, gate):
@@ -1289,12 +1508,14 @@ def method_checks(e):
             ident = f"{check}-{simulator}-{index}"
             if ident != "behavior-shard-icarus-154":
                 expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
-    for index in (*range(8), *range(15, 20)):
+    for index in range(192):
+        if index in (178, 166):
+            continue
         ident = f"quartus-sta-shard-{index}"
         expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
-    e.assertion("export preserves exactly the supplied admitted selectors",
+    e.assertion("export preserves every wired selector",
                 declared_outputs, expected_outputs)
-    e.assertion("admitted selector denominator", len(declared_outputs), 377)
+    e.assertion("wired selector denominator", len(declared_outputs), 554)
     e.assertion("every behavior prerequisite has an admitted output",
                 all(spec["outputs"] for spec in definitions
                     if spec["id"] in deps["behavior"]), True)
@@ -1559,7 +1780,7 @@ def output_method_checks(e):
           for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
           for index in range(count)),
         *(("quartus-sta-shard", index, None, f"recovery-v2-quartus-sta-shard-{index}")
-          for index in (*range(8), *range(15, 20))),
+          for index in range(192) if index not in (178, 166)),
     )
     discovered = []
     for check, shard, simulator, prefix in choices:
@@ -1584,12 +1805,10 @@ def output_method_checks(e):
     e.assertion("undeclared partitions retain no allocation fallback",
                 all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
                     is None for spec in undeclared), True)
-    e.assertion("undeclared partition denominator", len(undeclared), 225)
+    e.assertion("undeclared partition denominator", len(undeclared), 48)
     e.assertion("only unadmitted physical partitions lack output selectors",
                 sorted(spec["id"] for spec in undeclared),
-                sorted({f"quartus-sta-shard-{index}" for index in range(192)
-                        if index not in (178, 166, *range(8), *range(15, 20))}
-                       | {f"board-hil-shard-{index}" for index in range(48)}))
+                sorted(f"board-hil-shard-{index}" for index in range(48)))
     representatives = {}
     for spec in undeclared:
         representatives.setdefault((spec["check"], spec["simulator"]), spec)
@@ -1597,8 +1816,8 @@ def output_method_checks(e):
         spec for spec in undeclared
         if spec["check"] == "quartus-sta-shard" and spec["shard"] in range(8, 15)
     ]
-    e.assertion("approved timing records awaiting executable restoration",
-                [spec["shard"] for spec in pending_restoration], list(range(8, 15)))
+    e.assertion("timing records no longer lack executable wiring",
+                pending_restoration, [])
     rejected_specs = {spec["id"]: spec
                       for spec in [*representatives.values(), *pending_restoration]}
     for spec in rejected_specs.values():
@@ -1799,7 +2018,10 @@ def discovery_method_checks(e):
         "scheduling_contract": contract(), "source_sha256": e.record["source_sha256"],
         "status": "running", "partition": spec, "predecessors": [],
     }
-    first = directory / "first.json"
+    first = directory / "first" / "receipt.json"
+    first.parent.mkdir()
+    (first.parent / "observed.stdout").write_text("synthetic cache fixture\n")
+    record["artifact_sha256"] = artifact_hashes(first.parent)
     first.write_text(json.dumps(record))
     paths = [first]
     module = __name__
@@ -1811,7 +2033,10 @@ def discovery_method_checks(e):
         e.assertion("changed synthetic receipt invalidates header cache", list(found), [spec["id"]])
         with patch(f"{module}.json.loads", side_effect=AssertionError("Unchanged header reparsed")):
             e.assertion("unchanged receipt uses incremental header", list(successes(e)), [spec["id"]])
-        second = directory / "second.json"
+        second = directory / "second" / "receipt.json"
+        second.parent.mkdir()
+        (second.parent / "observed.stdout").write_text("synthetic cache fixture\n")
+        record["artifact_sha256"] = artifact_hashes(second.parent)
         second.write_text(json.dumps(record))
         paths.append(second)
         try:

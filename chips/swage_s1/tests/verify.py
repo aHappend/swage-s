@@ -35,6 +35,7 @@ def main():
         "partition-method", "aggregate-repair", "simulator-reuse", "physical-method",
         "physical-acceptance-path-parity",
         "self-contained-checks",
+        "collection-inventory",
     ))
     parser.add_argument("--repair-of", help="Project-relative original preparation receipt")
     parser.add_argument("--simulator", choices=("icarus", "verilator"))
@@ -100,6 +101,9 @@ def main():
         elif args.probe == "self-contained-checks":
             from prerequisite_checks import method_checks
             method_checks(evidence)
+        elif args.probe == "collection-inventory":
+            from partitions import collection_inventory
+            collection_inventory(evidence)
         elif args.probe == "aggregate-repair":
             from recovery_checks import aggregate_repair
             aggregate_repair(evidence)

@@ -61,6 +61,160 @@ convolution, CSC/chroma, scaling, histogram, temporal, CLAHE and both token
 formats retain parent behavior. No S5 frame-area restriction is introduced.
 S4 enhanced operation retains its original on-chip frame-capacity restriction.
 
+### Inherited legal configurations and numerical behavior
+
+The common top static geometry is SRC/DST width/height1..4096. Legal pixel
+tuples are `(PIXEL_BITS,CHANNELS)=(8,1),(10,1),(8,3)`, with bus widths8/16/24.
+Monochrome10 uses the low10 bits; unused high bits of generated scaler words
+are zero. Phase fraction is8 or16. `INTERPOLATION=0` is bilinear;
+`INTERPOLATION=1` is nearest (these numeric encodings must not be reversed).
+S4 adds `MAX_FRAME_PIXELS=1..65536` and `CLAHE_TILE=8 or16`.
+The standalone S1/S2/S3 tops retain their own defaults, including CHANNELS1;
+the S4/S5 top default is CHANNELS3.
+
+S1 scales every frame to DST dimensions. With F=PHASE_FRAC, each axis uses
+`step=floor(source_dimension*2^F/destination_dimension)`, phase zero at the
+first output, and phase increment on accepted issue. Bilinear uses integer
+phase floor, the low F fractional bits, and next coordinate clamped to the
+last source coordinate. Nearest adds `2^(F-1)` before extracting/clamping the
+coordinate and sets fractions to zero. For unsigned lane samples and
+`S=2^F`, bilinear output is
+`floor((p00*(S-fx)*(S-fy)+p01*fx*(S-fy)+p10*(S-fx)*fy+
+p11*fx*fy+2^(2F-1))/2^(2F))`.
+This inherited half-up rule is deliberately different from S5 RNE.
+S3 computes the same steps with the registered 32-iteration divider rather
+than a runtime combinational division. Scaling is independently applied to
+the half-size chroma plane in format2; all half dimensions round upward.
+No scaling stage averages chroma into an undocumented filtering kernel.
+
+Standalone S2 `cfg_mode[1]` enables demosaic and bit0 convolution. Mode!=0
+is rejected for monochrome10; demosaic is rejected unless CHANNELS3.
+Both S2/S3 spatial windows are centered: row-major coefficient/tap index
+`3*i+j` corresponds to `(x+j-1,y+i-1)`. `border=0` replicates the nearest
+image boundary, `border=1` supplies zero outside it. S5 windows are instead
+causal and always zero-pad top/left; do not apply S5 alignment to parent tests.
+Demosaic consumes low8 Bayer samples. Define q00/q01/q10/q11 at
+center/right/below/below-right. At even/even phase, red=q00, blue=q11,
+green=floor((q01+q10+1)/2). At odd/odd, red=q11, blue=q00 with the same
+green pair. At odd/even, red=q01, blue=q10,
+green=floor((q00+q11+1)/2); at even/odd, red=q10, blue=q01 with that pair.
+S3 phase uses `(local_x+crop_origin_x,local_y+crop_origin_y)` parity;
+S2 uses local parity. Output is `{blue,green,red}`.
+
+Parent convolution multiplies unsigned8 samples by signed16 coefficients,
+in low-to-high row-major coefficient slices. The exact nine-term sum fits
+signed32. For shift s, its magnitude is rounded by adding
+`(s==0 ? 0 : 2^(s-1))`, then shifting right by s. A negative sum emits zero
+unless cfg_abs is set; otherwise magnitude saturates to255. There is no
+signed8 activation or ties-to-even in inherited convolution. Enabled S3
+convolution emits mask111 for RGB or001 for monochrome; enabled demosaic
+emits111. Disabled blocks preserve input data/mask/markers.
+
+S3 enable bits0..5 are crop, demosaic, convolution, CSC, scaling, histogram.
+Crop retains the half-open source rectangle
+`[roi_x,roi_x+roi_width) * [roi_y,roi_y+roi_height)`, consumes all source
+beats, and regenerates SOF/EOL for the retained raster. Input format0 is the
+RGB/monochrome path; format1 is the inherited non420 Y/Cb/Cr path with three
+components per beat; format2 is site-coded420. Format3 is rejected.
+Non-RGB formats require CHANNELS3. A enabled crop requires nonzero width/
+height and right/bottom<=source dimensions. Format2 crop origin must have
+both coordinates even. Demosaic requires RGB8; convolution requires
+PIXEL_BITS8 and format0. CSC requires CHANNELS3 and mode0..4; modes0/1
+require format0, modes2/3 require a nonzero format, and mode4 is programmable.
+When CSC is enabled, nonzero input format becomes RGB0; format0 becomes
+format2 if cfg_output_420, otherwise format1. Otherwise the format is unchanged.
+Output dimensions are DST when scaling, crop size when crop only, else SRC.
+
+For CSC output lane c, compute signed exact
+`sum_j((unsigned8(input_j)+signed16(in_bias_j))*signed16(coeff[c,j]))`,
+round its magnitude half-up by13 fractional bits, restore the sign, add
+signed16 out_bias_c, and clamp to[0,255]. Intermediates are signed36.
+Programmable mode4 takes the supplied lane-major matrix/biases.
+The fixed matrices below are written as increasing input-lane row vectors;
+forward output biases are[16,128,128], inverse input biases[-16,-128,-128],
+and all other fixed biases are zero.
+
+| Mode | Row0 | Row1 | Row2 |
+| --- | --- | --- | --- |
+| 0 | 2104,4130,802 | -1214,-2384,3598 | 3598,-3013,-585 |
+| 1 | 1496,5032,508 | -824,-2774,3598 | 3598,-3268,-330 |
+| 2 | 9539,0,13075 | 9539,-3209,-6660 | 9539,16525,0 |
+| 3 | 9539,0,14686 | 9539,-1747,-4366 | 9539,17305,0 |
+
+Format2 chroma expansion replicates the even-x/even-y site's Cb/Cr over its
+2x2 raster neighborhood, using a synchronous chroma line for odd rows.
+Forward420 emits111 only on even/even sites and001 elsewhere, zeroing the
+other two lane bytes. Non420 CSC emits111 on all beats. The enabled scaler
+produces001 for monochrome or non-chroma420 sites,111 otherwise; disabled
+scaling preserves the incoming mask. These are the inherited site/packing
+semantics, not an extra chroma averaging or suppression operation.
+
+Histogram has256 unsigned32 counters, cleared at enabled frame start,
+updated only once per accepted output and frozen after drain. Channels0/1/2
+select increasing RGB lane slices and require that lane's mask. Monochrome
+uses the low8 value (mono10 shifted right2) and counts each accepted beat.
+Channel3 intensity is `floor((77*R+150*G+29*B+128)/256)` and counts each
+accepted RGB beat. Histogram channel!=0 is rejected for monochrome;
+channel3 requires three-channel format0 output. Request addr0..31 returns
+eight consecutive counters at bins8*addr..8*addr+7 in increasing32-bit slices.
+Requests reserve the inherited frame boundary until the response transfers;
+backpressure cannot change the frozen response. Histogram update/query stalls
+and inherited history/token drain contribute to frame completion.
+
+S4 enable bits0/1/2 are temporal, CLAHE and patch tokens. If any is enabled,
+the output must be RGB8 format0 and output width*height<=MAX_FRAME_PIXELS.
+Temporal requires alpha and motion threshold<=256. CLAHE requires
+clip_limit1..CLAHE_TILE^2. Tokens require patch8/14/16 and each reciprocal
+lane nonzero. Irrelevant disabled-operation numeric settings are not rejected.
+Accepted configuration invalidates temporal history; reset does likewise.
+S4 reset enhancement bits are0, alpha128, motion threshold16, clip4,
+patch16, Q8.8 output, mean code32640 and reciprocal code512 in each lane.
+S3 reset enables scaling only, selects format0, border/abs/shift0, center
+convolution coefficient1, full source ROI and histogram lane0.
+
+Temporal uses the previous stored *filtered* frame, updated only while temporal
+is enabled. With valid history, let motion=max over RGB absolute current-minus-
+history differences. Blend only if motion<threshold (equality bypasses):
+`floor(((256-alpha)*current+alpha*history+128)/256)` per unsigned8 lane.
+No history, disabled temporal or excessive motion passes current unchanged.
+The same blend decision applies to all three lanes. The pipeline is five advances.
+
+CLAHE treats each tile/channel independently, including partial edge tiles.
+Let n be the actual tile pixel count. Build256-bin counts, clip each to limit,
+and accumulate excess E. Add floor(E/256) to every bin and one additional count
+to the first E mod256 bins (low indices first), without reclipping. With inclusive
+CDF after redistribution, LUT[b]=floor(255*CDF[b]/n). There is no CDF-min
+subtraction or interpolation between tiles. Each channel is remapped in place;
+pixel masks are preserved, and inherited histogram construction includes the
+raw lane values irrespective of their masks. The divider is registered.
+
+Inherited patch ordering is patch rows then columns; each patch emits
+patch_size^2 elements in raster order, including padding. Patch grid dimensions
+are ceil(width/patch_size),ceil(height/patch_size). ID is its raster grid ID.
+For each inside-image element, the inherited tokenizer emits keep111; outside
+it emits data0/keep000. First marks frame's first element, last every patch
+end, frame_last final patch end. ROI retention additionally preserves actual
+inside-image input masks, as specified in its own contract.
+
+Both normalizers interpret mean as signed24 integer code at scale2^-8 and
+inv_std as unsigned24 code at scale2^-16. For lane pixel p, exact signed50
+product P=(256*p-mean_code)*inv_std_code represents real P*2^-24.
+Q8.8 output code is nearest-even(P/2^16), saturated to[-32768,32767].
+BF16 rounds the exact real product to eight significant bits, nearest-even;
+mantissa carry increments the exponent, and zero is positive zero.
+Nonzero legal products have magnitude>=2^-24 and are normal BF16 values;
+no subnormal/NaN/infinity handling is implicitly invented. Each16-bit lane
+occupies increasing little-endian slices. Masks travel unchanged through the
+eight-advance normalizer; all-zero keep forces packed data0, while a nonzero
+keep retains the computed packed lanes, including unqualified lane values.
+
+All dynamic rejection above pulses cfg_error after the acknowledged edge and
+leaves every active configuration register and temporal history unchanged.
+Raw raster sources provide one complete declared frame, first-beat SOF and
+EOL on every last column; accepted beats, rather than marker levels held during
+stalls, advance coordinates. Parent standalone modules retain their source
+interfaces; the new top does not reinterpret or repair their invalid stimulus.
+
 ## Configuration and weight transactions
 
 Bit 0 of `cfg_s5_enable` enables detection; bit 1 enables detection-triggered
@@ -197,8 +351,8 @@ The following additional private interfaces are frozen before RTL construction:
 | `swage_s5_topk` | MAX_TOPK; runtime topk[4:0]; candidate data/eligible/level/x/y/frame_last with ready/valid; finish/start-frame controls; snapshot slot read, occupied/data/anchor metadata; ranked descriptor data/count/rank/keep/first/last with ready/valid; idle |
 | `swage_s5_roi_tokens` | MAX_WIDTH, MAX_TOPK; stripe pixel write and ownership controls; snapshot slot metadata and retained-patch commands; ranked descriptor/anchor association; normalizer config; ROI outputs matching top sidebands; idle |
 
-The latter orchestration interfaces will be expanded into a bit-by-bit table
-before their RTL is written, without changing the numerical or external contract.
+The ROI orchestration ports below complete this private contract before
+integration RTL construction, without changing the numerical or external contract.
 Required literal top instances are u_isp, u_fork, u_stem, u_c2f, u_pyramid,
 u_head, u_topk, u_roi_tokens. Each DSConv contains u_window. C2f contains
 u_bottleneck0, u_bottleneck1 and u_fuse; pyramid contains u_level1 and u_level2.
@@ -242,6 +396,44 @@ Ranked outputs are `m_data[87:0],m_valid,m_ready,m_keep,m_first,m_last`,
 and physical ROI slot `m_slot[4:0]`. `delivery_done` pulses after final descriptor
 acceptance; it does not authorize the next frame while ROI/S4 work is pending.
 All new reset-visible outputs are zero.
+
+Top-K additionally outputs `replace_valid,replace_slot[4:0]` on an insertion
+commit. The same edge invalidates the corresponding retained ROI bank; no
+descriptor can be delivered until stripe snapshots restore the new ownership.
+
+### ROI orchestration ports
+
+`swage_s5_roi_tokens` parameters are `MAX_WIDTH,MAX_TOPK`. Inputs are
+`clk,rst_n,start_frame,image_width[12:0],image_height[12:0],patch_size[4:0],
+mean[71:0],inv_std[71:0],bf16,frame_id[31:0]`.
+Stripe writes use `wr_valid,wr_addr[16:0],wr_data[23:0],wr_keep[2:0]`;
+the top writes exactly once on branch acceptance, at linear stripe address
+`local_row*image_width+x`. Replacement inputs are
+`replace_valid,replace_slot[4:0]`.
+
+Snapshot commands use `copy_valid,copy_ready,copy_slot[4:0],copy_anchor_x[12:0],
+copy_grid_y[12:0],copy_base_y[12:0]`; output `copy_done` pulses after all
+patch elements and metadata commit. Only occupied slots anchored in the current
+stripe are copied. The top retains the stripe and freezes candidate insertion
+through the complete snapshot scan. Patch column division is sequential
+subtract/count; row and element addresses use explicit wrap counters.
+
+Token commands use `cmd_valid,cmd_ready,cmd_slot[4:0],cmd_rank[7:0],cmd_last`;
+the command transfers at the same edge as its public descriptor. `cmd_ready`
+requires a valid retained bank and an idle copier/tokenizer. Outputs are
+`m_data[47:0],m_valid,m_ready,m_first,m_last,m_frame_last,m_id[31:0],
+m_x[12:0],m_y[12:0],m_element[7:0],m_keep[2:0],m_rank[7:0],
+m_frame_id[31:0],idle`. Rank/frame ID stay associated with the entire patch;
+no next command is accepted until the final normalized element transfers.
+Outside-image pixels have zero raw data and keep000; inside-image lane masks
+are retained. No output token reads the stripe directly.
+
+At frame start, the ROI owner calculates `ceil(image_width/patch_size)` with
+a bounded sequential subtract/count sequencer, concurrently with input capture.
+Physical RAM is sized for maximum legal patch16. Only the current
+`patch_size*image_width` stripe entries and `MAX_TOPK*patch_size^2` retained
+entries can be owned; stale physical locations are never read as valid pixels.
+Each retained bank is permanently associated with its physical Top-K slot.
 
 Ranking retains unsorted physical slots, each owning the corresponding ROI
 bank. Every eligible insertion scans exactly MAX_TOPK slots, then commits once:

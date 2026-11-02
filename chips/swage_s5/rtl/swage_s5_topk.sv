@@ -24,6 +24,8 @@ module swage_s5_topk #(
     output wire [12:0] m_x, m_y,
     output wire [1:0] m_level,
     output wire [4:0] m_slot,
+    output wire replace_valid,
+    output wire [4:0] replace_slot,
     output reg delivery_done,
     output wire idle
 );
@@ -66,6 +68,8 @@ module swage_s5_topk #(
         anchors_x[best_slot],anchors_y[best_slot]);
     wire [4:0] insertion_slot = free_found ? free_slot : worst_slot;
     wire insert_candidate = free_found || (worst_found && candidate_is_better);
+    assign replace_valid = rst_n && state == INSERT_COMMIT && insert_candidate;
+    assign replace_slot = replace_valid ? insertion_slot : 5'd0;
     assign s_ready = rst_n && state == IDLE && !start_frame && !finish_valid;
     assign finish_ready = rst_n && state == IDLE && !start_frame;
     assign idle = rst_n && state == IDLE;

@@ -3,8 +3,7 @@
 Run: python3 tests/verify.py --probe aggregate-repair
 Run again with --repair-of <previous project-relative receipt> to measure reuse
 from a completed, independently retained compiler receipt. Every selected tuple
-executes compact portability scenarios on Icarus and the complete frozen
-scenario list on compiled Verilator. Geometry substitutions are explicit.
+executes its complete frozen scenario list on both simulators.
 
 The smaller follow-up is: python3 tests/verify.py --probe simulator-reuse
 """
@@ -16,8 +15,7 @@ import time
 from evidence import ROOT, file_hash, require
 from reference import Config
 from simulation import (
-    STREAM_TB, compile_sim, execute_partition, parse_stream_output, partition_scenarios,
-    portability_configuration, scenario_records,
+    STREAM_TB, compile_sim, execute_partition, parse_stream_output, scenario_records,
 )
 
 
@@ -208,9 +206,7 @@ def row_method_checks(e):
 
 def aggregate_repair(e):
     require(e.record["acceptance_evidence"] is False, "Repair diagnostics require preparation")
-    original = e.record.get(
-        "repair_of", "evidence/checks/behavior-ab429a1251e54ec8af29ebf137388b61/receipt.json",
-    )
+    original = "evidence/checks/behavior-04ab3eabc63e4473a5744c878b042d23/receipt.json"
     e.record["repair_request"] = {
         "original_receipt": original, "available_in_project": (ROOT / original).is_file(),
         "scope": "bounded diagnostics only; no aggregate or engineering acceptance",
@@ -230,17 +226,14 @@ def aggregate_repair(e):
     )
     for index, c in enumerate(configurations):
         for simulator in ("icarus", "verilator"):
-            actual = portability_configuration(c) if simulator == "icarus" else c
             started = time.monotonic()
             first = len(e.record["commands"])
             result = execute_partition(e, simulator, c, e.path / f"{simulator}-{index}")
-            require([case["id"] for case in result["cases"]]
-                    == [ident for ident, _ in partition_scenarios(actual, simulator)],
-                    "Bounded tuple omitted a declared tier scenario")
+            require(len(result["cases"]) == len(list(scenario_records(c))),
+                    "Bounded tuple omitted a frozen scenario")
             commands = e.record["commands"][first:]
             run = {
-                "configuration": actual.parameters(), "requested_configuration": c.parameters(),
-                "simulator": simulator,
+                "configuration": c.parameters(), "simulator": simulator,
                 "wall_s": time.monotonic() - started, "first_command": first,
                 "last_command": len(e.record["commands"]) - 1,
                 "scenarios": len(result["cases"]),
@@ -249,7 +242,7 @@ def aggregate_repair(e):
                 "subprocess_s": sum(command["duration_s"] for command in commands),
                 "raw_stdout_bytes": sum((ROOT / command["stdout"]).stat().st_size
                                         for command in commands),
-                "output_rows_checked": sum(3*actual.dh for _ in result["cases"]),
+                "output_rows_checked": sum(3*c.dh for _ in result["cases"]),
                 "row_records": sum(len(case["observed_row_runs"]) for case in result["cases"]),
             }
             if simulator == "icarus":

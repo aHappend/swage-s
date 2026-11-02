@@ -387,32 +387,6 @@ def scenario_records(c, *, small=False, mutation=False):
             yield {"pattern": "random", "stall": 0, "seed": 89, "abort": 4}
 
 
-ICARUS_BEHAVIOR_SHARDS = (*range(12), 154)
-
-
-def portability_configuration(c):
-    """Keep packed arithmetic parameters; bound interpreted frame geometry."""
-    if max(c.sw, c.sh, c.dw, c.dh) <= 32:
-        return c
-    return Config(bits=c.bits, channels=c.channels, frac=c.frac, mode=c.mode)
-
-
-def partition_scenarios(c, simulator):
-    """Retain original scenario IDs, including every compiled-matrix scenario."""
-    records = list(enumerate(scenario_records(c)))
-    if simulator == "verilator":
-        return records
-    require(simulator == "icarus", "Unknown behavior simulator")
-    return [
-        (ident, record) for ident, record in records
-        if record["abort"]
-        or (record["pattern"] in ("zero", "full") and record["stall"] == 0)
-        or (record["pattern"] == "random" and record["stall"] == 1
-            and record["seed"] == 89)
-        or (record["pattern"] == "checker" and record["stall"] == 2)
-    ]
-
-
 def write_vectors(c, directory, records, *, case_ids=None):
     case_ids = list(range(len(records))) if case_ids is None else list(case_ids)
     require(len(case_ids) == len(records) and len(set(case_ids)) == len(case_ids),
@@ -537,13 +511,12 @@ def parse_stream_output(c, simulator, records, models, out):
 
 
 def execute_partition(e, simulator, c, directory):
-    """Compiled full matrix plus bounded, independently compared portability."""
+    """Keep global scenario IDs when Icarus scenarios use separate processes."""
     if simulator != "icarus":
         return execute_config(e, simulator, c, directory)
-    c = portability_configuration(c)
     command = compile_sim(e, simulator, c, directory)
     cases, observations = [], []
-    for ident, record in partition_scenarios(c, simulator):
+    for ident, record in enumerate(scenario_records(c)):
         scenario = directory / f"scenario-{ident:02d}"
         scenario.mkdir()
         path, models = write_vectors(c, scenario, [record], case_ids=[ident])
@@ -561,7 +534,7 @@ def execute_partition(e, simulator, c, directory):
         e.save()
         require(child["duration_s"] < 60,
                 f"Icarus tier violation at scenario {ident}: {child['duration_s']:.3f}s; "
-                "retain this receipt and repair portability scheduling")
+                "retain this receipt and request scheduling diagnosis")
         require(result["complete_cycles"] <= 500000,
                 f"Icarus tier violation at scenario {ident}: "
                 f"{result['complete_cycles']} complete clocks; diagnosis required")

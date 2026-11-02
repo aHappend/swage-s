@@ -1,11 +1,9 @@
-"""Self-contained checks with dependency-aware, source-bound collection.
+"""Admitted scheduling recovery with dependency-aware aggregate execution.
 
 check_definitions() supplies the exact append-only command/dependency inventory
 for Coordinator admission. Original gates validate current receipts and
-execute missing prerequisites in fresh parent-owned exclusive outputs;
+execute missing admitted prerequisites;
 they never select the newest receipt or accept partial coverage.
-Unavailable or changed artifact manifests exclude that receipt and its bound
-dependents from reuse; collection creates a fresh chain without editing history.
 Shard entrypoints collect only their transitive predecessors, serially, before
 recording partition_execution.start and its command boundary. Invocation start
 is retained unchanged; predecessor completion must precede actual shard work.
@@ -13,53 +11,33 @@ First behavior: Icarus 154. First timing: 178, then 166. First hardware: 10.
 Call-0128 admits a fresh recovery chain if the shared runtime cannot restore
 the original predecessor exactly. It must attempt restoration before scheduling
 this chain. Historical receipts are retained, never relinked or selected.
-Icarus executes compact portability scenarios, with original scenario IDs,
-reset preludes and three-frame transactions. Compiled Verilator retains the
-entire frozen matrix. Historical supplemental commands remain addressable;
-only the declared portability subset is needed by the behavior aggregate.
-Functional watchdogs and integer/float comparisons are unchanged.
+Icarus retains each original scenario in a separate process, including its
+original ID, reset prelude and three-frame transaction. Functional watchdogs
+and integer/float comparisons are unchanged. Duration/cycle tier violations
+fail after retaining the observation, not by shortening a child timeout.
 Invalid-parameter cases validate the exact INVALID_TB compiler command or the
 source/configuration/tool-bound retained build, then independently validate the
 current diagnostic execution and its executable. Build reuse never substitutes
 for a fresh diagnostic or a current-source numerical comparison.
-All timing shards have distinct standalone output selectors; newly wired
-commands still require append-only independent admission. Existing selectors
-and commands are unchanged. Aggregate commands also execute missing prerequisites
-in fresh parent-owned directories, without allocating supplemental runtime checks.
-Physical work is admitted twice: before child launch and immediately before
-vendor compilation. Reservations use relevant complete-shard measurements plus
-recursive-validation, variability and settlement margins, never compile time alone.
-Historical costs are advisory even when their source/artifact bindings are stale;
-they never qualify a historical receipt for acceptance.
-
-Read-only preparation inventory (no collection or vendor execution):
-python3 tests/verify.py --probe collection-inventory
-Optionally --repair-of <prior frontier-audit receipt> records the source delta
-and rechecks retained historical artifacts without promoting stale coverage.
+Timing shards 0-7 and 15-19 have exclusive allocation wiring matching the
+current executable contract. Approved shards 8-14 remain unwired until the
+shared runtime restores their missing executable records; approval alone
+does not authorize an output allocation or physical collection.
 """
 
 import datetime
 import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import re
 import struct
-import time
-import uuid
 from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from functools import lru_cache
 
-from evidence import (
-    ROOT, child_contract, file_hash, hashes, partition_output_prefix,
-    partition_receipts, require, stamp,
-)
+from evidence import ROOT, file_hash, hashes, partition_output_prefix, partition_receipts, require, stamp
 from reference import Config, FORMATS, GEOMETRIES, HEIGHT_EDGES, configurations
-from simulation import (
-    ICARUS_BEHAVIOR_SHARDS, parameter_cases, partition_scenarios,
-    portability_configuration, scenario_records,
-)
+from simulation import parameter_cases, scenario_records
 
 
 PREVIOUS_IDENTITY = "swage-s1-scheduling-recovery-call-0017-v1"
@@ -81,9 +59,6 @@ ARTIFACT_SUFFIXES = {
 }
 HEADER_KEYS = (
     "scheduling_contract", "source_sha256", "status", "partition", "start", "end",
-    "acceptance_evidence", "synthetic_only",
-    "predecessors", "parent_execution", "invocation_argv", "execution_budget",
-    "artifact_sha256",
 )
 
 
@@ -128,20 +103,6 @@ def contract():
                 for index, record in enumerate(scenario_records(c))
             ]} for c in behavior
         ],
-        "simulation_tiers": {
-            "icarus_shards": list(ICARUS_BEHAVIOR_SHARDS),
-            "icarus": [
-                {"requested_configuration": c.parameters(),
-                 "configuration": portability_configuration(c).parameters(),
-                 "scenarios": [
-                     {"id": ident, **record, "frames": 3}
-                     for ident, record in partition_scenarios(
-                         portability_configuration(c), "icarus")
-                 ]}
-                for c in behavior
-            ],
-            "verilator": "complete frozen behavior and reset matrix",
-        },
         "parameters": parameter_cases(), "parameter_partition_count_per_simulator": 7,
         "pipeline": pipeline, "timing": [c.parameters() for c in timing],
         "hardware": [c.parameters() for c in hardware],
@@ -185,11 +146,6 @@ def check_definitions():
         }
         if configuration is not None:
             spec["configuration"] = configuration
-            if check == "behavior-shard" and simulator == "icarus":
-                requested = Config(*(configuration[key] for key in Config().parameters()))
-                spec["requested_configuration"] = configuration
-                spec["configuration"] = portability_configuration(requested).parameters()
-                spec["simulation_tier"] = "compact-portability"
         if cases is not None:
             spec["case_ids"] = cases
         definitions.append(spec)
@@ -231,14 +187,7 @@ def spec_for(check, shard, simulator):
 
 def aggregate_dependencies():
     return {
-        gate: [
-            spec["id"] for spec in check_definitions()
-            if spec["check"] in checks
-            and not (spec["check"] == "behavior-shard"
-                     and spec["simulator"] == "icarus"
-                     and "shard" in spec
-                     and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)
-        ]
+        gate: [spec["id"] for spec in check_definitions() if spec["check"] in checks]
         for gate, checks in (
             ("behavior", ("behavior-shard", "parameter-shard", "pipeline-shard")),
             ("quartus-sta", ("quartus-sta-shard",)),
@@ -257,11 +206,7 @@ def execution_order(definitions):
     require(len(by_id) == len(definitions), "Duplicate partition scheduling identity")
     require(set(priority) <= set(by_id), "Missing recovery priority partition")
     ordered = [by_id[ident] for ident in priority]
-    ordered.extend(
-        spec for spec in definitions if spec["id"] not in priority
-        and not (spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"
-                 and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)
-    )
+    ordered.extend(spec for spec in definitions if spec["id"] not in priority)
     steps, emitted = [], set()
     for spec in ordered:
         require(set(spec["depends_on"]) <= emitted,
@@ -285,9 +230,9 @@ def scheduling_plan():
     """Export with --scheduling-plan; no evidence or runtime admission is changed.
 
     Check records and dependency edges are separate so a consumer need not
-    reinterpret inventory annotations as executable-contract fields. Wired
-    partitions declare output selectors; wiring is not runtime admission.
-    The CLI rejects unwired output contracts before allocating evidence
+    reinterpret inventory annotations as executable-contract fields. Only the
+    currently admitted partitions declare output selectors; others remain empty.
+    The CLI rejects undeclared output contracts before allocating evidence
     or launching tools; this inventory is not execution authorization.
     The shared runtime must independently admit and schedule this advisory DAG.
     """
@@ -316,8 +261,6 @@ def scheduling_plan():
         "sequential_execution_order": execution_order(definitions),
         "sequential_execution_note": (
             "Advisory order only, not permission to execute or an assertion of admission. "
-            "Historical Icarus sweep commands remain addressable but are not scheduled; "
-            "the compact portability tier supplements the complete compiled matrix. "
             "A consumer without DAG support must independently admit missing checks and "
             "resolve existing output-selector conflicts before scheduling this sequence. "
             "Stop on any failed prerequisite; never advance to dependent aggregators."
@@ -335,9 +278,7 @@ def scheduling_plan():
             "Icarus behavior 0..167 except 154 and Verilator behavior 0..167, "
             "plus parameter 0..6 and pipeline 0..5 on both simulators, "
             "use their exact recovery-v2 selectors. "
-            "All 192 timing shards now have distinct selectors; previously unwired "
-            "timing commands require append-only independent admission. "
-            "Board partition outputs remain empty pending append-only admission; "
+            "All remaining partition outputs remain empty pending append-only admission; "
             "this export does not authorize their execution or modify runtime records."
         ),
     }
@@ -370,10 +311,7 @@ def prerequisite_plan(gate, completed):
     return {
         "advisory_only": True,
         "execution_owner": "shared runtime",
-        "admission_status": (
-            "Standalone mappings unchanged; internal execution belongs to the existing "
-            "parent check and creates no supplemental runtime allocations"
-        ),
+        "admission_status": "not inspected; each command requires independent admission",
         "gate": gate,
         "mandatory_partitions": mandatory,
         "required_predecessors": [spec["id"] for spec in definitions
@@ -420,13 +358,9 @@ def artifact_hashes(directory):
     return manifest
 
 
-def select_successes(records, current_sources, current_contract, known, *, dependencies=None):
-    candidates, excluded = {}, []
+def select_successes(records, current_sources, current_contract, known):
+    found, excluded = {}, []
     for path, record in records:
-        if record.get("acceptance_evidence") is not True or record.get("synthetic_only"):
-            excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
-                             "reason": "non-acceptance or synthetic evidence"})
-            continue
         if record.get("scheduling_contract") != current_contract:
             excluded.append({"receipt": path.relative_to(ROOT).as_posix(),
                              "reason": "different scheduling contract; historical evidence retained"})
@@ -441,38 +375,15 @@ def select_successes(records, current_sources, current_contract, known, *, depen
             continue
         ident = record.get("partition", {}).get("id")
         require(ident in known, f"Unknown successful partition: {path}")
-        candidates.setdefault(ident, []).append((path, record))
-    found = {}
-    for ident in known if dependencies is None else dependencies:
-        eligible = []
-        for path, record in candidates.get(ident, []):
-            if dependencies is not None:
-                predecessors = dependencies[ident]
-                expected = [
-                    {"id": prior, "receipt": found[prior][0].relative_to(ROOT).as_posix(),
-                     "sha256": file_hash(found[prior][0])}
-                    for prior in predecessors if prior in found
-                ]
-                if (not set(predecessors) <= set(found)
-                        or record.get("predecessors") != expected):
-                    excluded.append({
-                        "receipt": path.relative_to(ROOT).as_posix(),
-                        "reason": "missing or stale predecessor receipt binding",
-                    })
-                    continue
-            eligible.append((path, record))
-        require(len(eligible) <= 1,
-                f"Duplicate successful partition {ident}: "
-                f"{[str(path) for path, _ in eligible]}; no newest-wins selection")
-        if eligible:
-            found[ident] = eligible[0]
+        require(ident not in found,
+                f"Duplicate successful partition {ident}: {path}; no newest-wins selection")
+        found[ident] = (path, record)
     return found, excluded
 
 
 def successes(e):
     """Only complete, source-current successes are eligible; never newest-wins."""
-    definitions = check_definitions()
-    known = {spec["id"] for spec in definitions}
+    known = {spec["id"] for spec in check_definitions()}
     cache = getattr(e, "_partition_headers", {})
     e._partition_headers = cache
 
@@ -485,38 +396,8 @@ def successes(e):
                 cache[path] = (identity, {key: record.get(key) for key in HEADER_KEYS})
             yield path, cache[path][1]
 
-    records, invalid = [], []
-    specs = {spec["id"]: spec for spec in definitions}
-    for path, header in headers():
-        if (header.get("status") == "passed"
-                and header.get("source_sha256") == e.record["source_sha256"]
-                and header.get("scheduling_contract") == contract()):
-            ident = header.get("partition", {}).get("id")
-            require(ident in specs, f"Unknown successful partition: {path}")
-            manifest = header.get("artifact_sha256")
-            observed = artifact_hashes(path.parent)
-            if not isinstance(manifest, dict) or not manifest or manifest != observed:
-                invalid.append({"receipt": e.relative(path),
-                                "reason": "missing or changed retained artifacts",
-                                "missing_artifacts": sorted(set(manifest or {}) - set(observed)),
-                                "changed_artifacts": sorted(
-                                    name for name in set(manifest or {}) & set(observed)
-                                    if manifest[name] != observed[name]),
-                                "added_artifacts": sorted(set(observed) - set(manifest or {}))})
-                continue
-            if header.get("parent_execution") is not None:
-                try:
-                    validate_internal_receipt(e, path, header, specs[ident])
-                except AssertionError as error:
-                    invalid.append({"receipt": e.relative(path),
-                                    "reason": f"ineligible internal execution: {error}"})
-                    continue
-        records.append((path, header))
-    found, excluded = select_successes(
-        records, e.record["source_sha256"], contract(), known,
-        dependencies={spec["id"]: spec["depends_on"] for spec in definitions},
-    )
-    excluded.extend(invalid)
+    records = headers()
+    found, excluded = select_successes(records, e.record["source_sha256"], contract(), known)
     e.record["excluded_partition_receipts"] = excluded
     e.save()
     return found
@@ -534,18 +415,14 @@ def validate_receipt(e, path, record, spec):
     require(record.get("partition") == spec and record.get("check") == spec["check"],
             f"Partition identity/inventory mismatch: {path}")
     prefix = partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
-    if "parent_execution" in record:
-        validate_internal_receipt(e, path, record, spec)
-    else:
-        require(prefix is not None, f"Partition receipt has no admitted output selector: {path}")
-        require(path.parent.parent == ROOT / "evidence" / "checks"
-                and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
-                f"Partition receipt outside admitted exclusive output: {path}")
+    require(prefix is not None, f"Partition receipt has no admitted output selector: {path}")
+    require(path.parent.parent == ROOT / "evidence" / "checks"
+            and re.fullmatch(re.escape(prefix) + r"-[0-9a-f]{32}", path.parent.name),
+            f"Partition receipt outside admitted exclusive output: {path}")
     require(record.get("scheduling_contract") == contract()
             and record.get("source_sha256") == hashes()
             and record.get("sources_unchanged") is True
             and record.get("acceptance_evidence") is True
-            and not record.get("synthetic_only")
             and record.get("status") == "passed" and record.get("end"),
             f"Receipt is not a completed current admitted partition: {path}")
     require(record.get("argv") == ["python3", *spec["argv"][1:]],
@@ -587,44 +464,6 @@ def validate_receipt(e, path, record, spec):
     require(0 <= duration < 2700, f"Completed partition exceeded check tier: {path}")
 
 
-def validate_internal_receipt(e, path, record, spec):
-    binding = record["parent_execution"]
-    parent_path, output, parent, entry = child_contract(
-        binding["receipt"], binding["output"], record.get("invocation_argv"),
-    )
-    expected_argv = [*spec["argv"], "--parent-receipt", binding["receipt"],
-                     "--child-output", binding["output"]]
-    require(path == output / "receipt.json"
-            and output.name.startswith(spec["id"] + "-")
-            and binding == {
-                "receipt": e.relative(parent_path), "id": spec["id"],
-                "output": e.relative(output), "argv": expected_argv,
-                "runtime_allocation": False,
-            }
-            and entry["id"] == spec["id"]
-            and entry["argv"] == expected_argv,
-            "Internal partition argv/output identity differs")
-    require(parent.get("acceptance_evidence") is True
-            and not parent.get("synthetic_only")
-            and parent.get("source_sha256") == record["source_sha256"]
-            and parent.get("source_sha256") == e.record["source_sha256"]
-            and parent.get("status") in ("running", "passed", "failed"),
-            "Internal partition parent is stale or synthetic")
-    commands = [command for command in parent.get("commands", [])
-                if command.get("requested_argv") == expected_argv]
-    require(len(commands) == 1 and commands[0].get("exit_status") == 0
-            and commands[0].get("end") and not commands[0].get("timed_out")
-            and not commands[0].get("launch_error") and commands[0].get("cwd") == ".",
-            "Internal partition lacks successful parent execution")
-    budget = record.get("execution_budget")
-    parent_budget = parent.get("execution_budget")
-    require(isinstance(budget, dict) and isinstance(parent_budget, dict)
-            and budget.get("limit_s") == parent_budget.get("limit_s") == 2700
-            and budget.get("reserve_s") == parent_budget.get("reserve_s") == 60
-            and budget.get("deadline_epoch") == parent_budget.get("deadline_epoch", 0) - 5,
-            "Internal partition did not inherit outer budget and cleanup margin")
-
-
 def partition_start(record):
     """Keep invocation time intact when dependencies execute inside an entrypoint."""
     boundary = record.get("partition_execution")
@@ -651,13 +490,10 @@ def partition_start(record):
 
 def validate_dependencies(e, found, identities, *, validated=None):
     """Validate the entire retained prerequisite chain before consuming it."""
-    started = time.monotonic()
     specs = {spec["id"]: spec for spec in check_definitions()}
     validated = {} if validated is None else validated
 
     def visit(ident):
-        if hasattr(e, "remaining"):
-            e.remaining()
         require(ident in found, f"Missing predecessor success {ident}")
         if ident in validated:
             load_success(found, ident)
@@ -682,9 +518,6 @@ def validate_dependencies(e, found, identities, *, validated=None):
 
     for ident in identities:
         visit(ident)
-    e.record.setdefault("recursive_validation_durations_s", []).append(
-        time.monotonic() - started)
-    e.save()
     return validated
 
 
@@ -708,10 +541,7 @@ def run_partition(e, check, shard, simulator):
     if check == "behavior-shard" and (simulator, shard) == ("icarus", 154):
         e.assertion("first behavior index", spec["shard"], 154)
         e.assertion("first behavior full parameter tuple",
-                    list(spec["requested_configuration"].values()),
-                    [2, 7, 3, 4096, 8, 3, 16, 0])
-        e.assertion("first behavior compact execution tuple",
-                    list(spec["configuration"].values()), [8, 8, 16, 16, 8, 3, 16, 0])
+                    list(spec["configuration"].values()), [2, 7, 3, 4096, 8, 3, 16, 0])
         e.assertion("scheduling contract identity", e.record["scheduling_contract"]["identity"],
                     IDENTITY)
     found = successes(e)
@@ -728,11 +558,10 @@ def run_partition(e, check, shard, simulator):
     e.record["tool_commands"] = {
         name: e.record["tool_commands"][name] for name in spec["requires"]}
     e.save()
-    admit_partition_budget(e, spec, "partition-start")
     behavior, timing, hardware, pipeline = inventories()
     if check == "behavior-shard":
         from simulation import execute_partition
-        c = configuration(spec)
+        c = behavior[shard]
         result = execute_partition(e, simulator, c, e.path / f"{simulator}-{c.label}")
     elif check == "parameter-shard":
         from simulation import parameter_checks
@@ -784,17 +613,13 @@ def validate_behavior(path, record, spec):
     directory = path.parent / f"{spec['simulator']}-{c.label}"
     validate_compile(path, record, spec["simulator"], c.parameters(),
                      directory / "tb.sv", STREAM_TB)
-    inventory = partition_scenarios(c, spec["simulator"])
-    scenarios = [scenario for _, scenario in inventory]
+    scenarios = list(scenario_records(c))
     parsed = []
     if spec["simulator"] == "icarus":
         observations = result["scenario_observations"]
-        require([obs["id"] for obs in observations] == [ident for ident, _ in inventory],
+        require([obs["id"] for obs in observations] == list(range(len(scenarios))),
                 "Icarus scenario process inventory incomplete")
-        require(c == portability_configuration(c)
-                and spec.get("simulation_tier") == "compact-portability",
-                "Icarus partition is not a compact portability configuration")
-        for (ident, scenario), observation in zip(inventory, observations):
+        for ident, (scenario, observation) in enumerate(zip(scenarios, observations)):
             require(observation["duration_s"] < 60
                     and observation["complete_cycles"] <= 500000,
                     "Retained Icarus scenario violates interpreted tier")
@@ -819,7 +644,7 @@ def validate_behavior(path, record, spec):
         require([{key: model[key] for key in ("id", "pattern", "stall", "seed", "abort", "frames")}
                  for model in models] == [
                      {"id": ident, **scenario, "frames": 3}
-                     for ident, scenario in inventory],
+                     for ident, scenario in enumerate(scenarios)],
                 "Verilator scenario inventory incomplete")
         parsed = parse_stream_output(c, "verilator", scenarios, models,
                                      read_raw(path, result["raw_output"]))["cases"]
@@ -1095,7 +920,7 @@ def validate_partition_result(e, path, record, spec):
 
 
 def execute_prerequisites(e, gate, found, *, workers=4):
-    """Run missing dependency-ready work within the existing parent contract."""
+    """Run only admitted dependency-ready commands, retaining every parent exit."""
     definitions = check_definitions()
     by_id = {spec["id"]: spec for spec in definitions}
     recovery = prerequisite_plan(gate, found)
@@ -1106,6 +931,12 @@ def execute_prerequisites(e, gate, found, *, workers=4):
     }
     needed = set(recovery["mandatory_partitions"]) | set(recovery["required_predecessors"])
     missing = needed - set(found)
+    unadmitted = sorted(ident for ident in missing if not by_id[ident]["outputs"])
+    e.record["unadmitted_prerequisites"] = unadmitted
+    e.save()
+    require(not unadmitted,
+            f"{gate}: {len(unadmitted)} missing prerequisites require append-only admission "
+            f"and exclusive output selectors before automatic execution: {unadmitted}")
     validated = validate_dependencies(e, found, needed & set(found))
     require(isinstance(workers, int) and 1 <= workers <= 4, "Invalid bounded worker count")
     pending = {spec["id"]: spec for spec in definitions if spec["id"] in missing}
@@ -1114,11 +945,8 @@ def execute_prerequisites(e, gate, found, *, workers=4):
         "workers": workers, "hardware_serialized": True, "launched": [], "completed": [],
     }
     execution = e.record["prerequisite_execution"]
-    heartbeat = time.monotonic()
     with ThreadPoolExecutor(max_workers=workers) as pool:
         while pending or active:
-            if hasattr(e, "remaining"):
-                e.remaining()
             for ident, spec in list(pending.items()):
                 if len(active) >= workers:
                     break
@@ -1129,27 +957,19 @@ def execute_prerequisites(e, gate, found, *, workers=4):
                 if (physical and active) or any(
                         by_id[running]["simulator"] is None for running in active.values()):
                     continue
-                admit_partition_budget(e, spec, "child-launch")
                 execution["launched"].append(ident)
                 e.save()
-                argv = internal_command(e, spec)
-                future = pool.submit(e.run, argv, name=f"prerequisite-{ident}")
+                future = pool.submit(e.run, spec["argv"], name=f"prerequisite-{ident}")
                 active[future] = ident
                 del pending[ident]
                 if physical:
                     break
             require(active, f"Dependency graph made no progress: {sorted(pending)}")
-            done, _ = wait(active, timeout=30, return_when=FIRST_COMPLETED)
-            if time.monotonic() - heartbeat >= 30:
-                print(f"{gate}: completed {len(execution['completed'])}/{len(missing)} "
-                      f"prerequisites, active {len(active)}, pending {len(pending)}", flush=True)
-                heartbeat = time.monotonic()
+            done, _ = wait(active, return_when=FIRST_COMPLETED)
             for future in done:
                 ident = active.pop(future)
                 # Settle already-running children before propagating a failure.
                 future.result()
-                if hasattr(e, "_partition_costs"):
-                    del e._partition_costs
                 found = successes(e)
                 require(ident in found, f"Successful command lacks completed receipt: {ident}")
                 validate_dependencies(e, found, [ident], validated=validated)
@@ -1158,227 +978,14 @@ def execute_prerequisites(e, gate, found, *, workers=4):
     return found
 
 
-def measured_partition_costs(e):
-    """Read retained wall costs, not reusable coverage or a passing baseline."""
-    if hasattr(e, "_partition_costs"):
-        return e._partition_costs
-    costs = []
-    for path in partition_receipts(ROOT / "evidence" / "checks"):
-        record = json.loads(path.read_text())
-        spec = record.get("partition") or {}
-        if (spec.get("check") not in ("quartus-sta-shard", "board-hil-shard")
-                or record.get("status") != "passed"
-                or record.get("acceptance_evidence") is not True
-                or record.get("synthetic_only") or record.get("fixture_scope")
-                or record.get("sources_unchanged") is not True):
-            continue
-        commands = record.get("commands", [])
-        if not commands or not all(
-                command.get("end") and command.get("exit_status") == 0
-                and not command.get("timed_out") and not command.get("launch_error")
-                and type(command.get("duration_s")) in (int, float)
-                and math.isfinite(command["duration_s"]) and command["duration_s"] >= 0
-                for command in commands):
-            continue
-        if not any(command.get("requested_argv", [])[:3]
-                   == ["quartus_sh", "--flow", "compile"] for command in commands):
-            continue
-        start = partition_start(record)
-        end = datetime.datetime.fromisoformat(record["end"])
-        duration = (end - start).total_seconds()
-        if not 0 < duration < 2700:
-            continue
-        validation = record.get("recursive_validation_durations_s", [])
-        require(all(type(value) in (int, float) and math.isfinite(value) and value >= 0
-                    for value in validation), f"Invalid measured validation cost: {path}")
-        costs.append({
-            "check": spec["check"], "configuration": spec.get("configuration"),
-            "complete_shard_s": duration,
-            "recursive_validation_s": max(validation, default=0),
-            "receipt": e.relative(path), "sha256": file_hash(path),
-            "source_current": record.get("source_sha256") == e.record["source_sha256"],
-        })
-    e._partition_costs = costs
-    return costs
-
-
-def admit_partition_budget(e, spec, stage):
-    """Refuse an underfunded launch without allocating or starting vendor work."""
-    if spec["simulator"] is not None:
-        return
-    samples = [item for item in measured_partition_costs(e)
-               if item["check"] == spec["check"]]
-    relevant = [item for item in samples
-                if item["configuration"] == spec.get("configuration")]
-    basis = "matching-configuration" if relevant else "family-maximum"
-    sample = max(relevant or samples, key=lambda item: item["complete_shard_s"],
-                 default=None)
-    # No measurements yet: reserve a substantial whole-shard allowance, not
-    # the cheapest measured compilation from a different arithmetic variant.
-    complete = sample["complete_shard_s"] if sample else 1200.0
-    validation = [*e.record.get("recursive_validation_durations_s", []),
-                  *(item["recursive_validation_s"] for item in samples)]
-    validation_margin = max(60.0, 1.25 * max(validation, default=0))
-    settlement_margin = 60.0
-    inheritance_margin = 5.0 if stage == "child-launch" else 0.0
-    required = 1.25 * complete + validation_margin + settlement_margin + inheritance_margin
-    remaining = e.remaining()
-    event = {
-        "id": spec["id"], "stage": stage, "time": stamp(),
-        "basis": basis if sample else "unmeasured-whole-shard-reservation",
-        "measurement_scope": "advisory scheduling cost only, never coverage",
-        "sample": sample, "complete_shard_s": complete, "variability_factor": 1.25,
-        "recursive_validation_margin_s": validation_margin,
-        "settlement_margin_s": settlement_margin,
-        "inheritance_margin_s": inheritance_margin,
-        "required_s": required, "remaining_s": remaining,
-        "admitted": remaining >= required,
-    }
-    e.record.setdefault("budget_admissions", []).append(event)
-    e.save()
-    require(event["admitted"],
-            f"Insufficient collection budget for {spec['id']} at {stage}: "
-            f"requires {required:.3f}s including complete-shard, recursive-validation "
-            f"and settlement margins, remaining {remaining:.3f}s; "
-            "no new work launched at this boundary; completed evidence retained")
-
-
-def internal_command(e, spec):
-    """Reserve a unique parent-local destination; never alter runtime mappings."""
-    output = e.path / "prerequisites" / f"{spec['id']}-{uuid.uuid4().hex}"
-    require(not output.exists() and not output.is_symlink(),
-            f"Internal prerequisite output collision: {e.relative(output)}")
-    relative = e.relative(output)
-    entries = e.record.setdefault("internal_prerequisites", [])
-    require(all(entry["output"] != relative for entry in entries),
-            "Internal prerequisite output already reserved")
-    argv = [*spec["argv"], "--parent-receipt", e.relative(e.path / "receipt.json"),
-            "--child-output", relative]
-    entries.append({"id": spec["id"], "output": relative, "argv": argv,
-                    "runtime_allocation": False})
-    e.save()
-    return argv
-
-
-def collection_inventory(e):
-    """Audit the current frontier and export exact contracts without collection."""
-    require(e.record["acceptance_evidence"] is False,
-            "Read-only inventory belongs to preparation evidence")
-    from physical_method import write_inventory
-
-    e.record["inventory_scope"] = (
-        "read-only recursive validation and advisory scheduling; no collection, "
-        "vendor compilation, programming or retention repair"
-    )
-    found = successes(e)
-    plan = prerequisite_plan("quartus-sta", found)
-    needed = set(plan["mandatory_partitions"]) | set(plan["required_predecessors"])
-    validated = validate_dependencies(e, found, sorted(needed & set(found)))
-    e.record["frontier_audit"] = {
-        "reusable": [
-            {"id": ident, "receipt": e.relative(found[ident][0]),
-             "sha256": file_hash(found[ident][0]), "result": validated[ident]}
-            for ident in sorted(validated)
-        ],
-        "plan": plan,
-        "newly_measured_timing_shards": [],
-    }
-    if e.record.get("repair_of"):
-        previous_path = ROOT / e.record["repair_of"]
-        previous = json.loads(previous_path.read_text())
-        require(previous.get("status") == "passed"
-                and previous.get("acceptance_evidence") is False
-                and isinstance(previous.get("frontier_audit", {}).get("reusable"), list),
-                "Inventory comparison requires a completed preparation frontier audit")
-        changes = sorted(name for name in set(previous["source_sha256"])
-                         | set(e.record["source_sha256"])
-                         if previous["source_sha256"].get(name)
-                         != e.record["source_sha256"].get(name))
-        e.assertion("source repair changes only verifier-owned inputs",
-                    all(name.startswith("tests/") for name in changes), True)
-        survival = []
-        for item in previous["frontier_audit"]["reusable"]:
-            path = ROOT / item["receipt"]
-            require(path.is_file() and file_hash(path) == item["sha256"],
-                    f"Previously audited receipt changed or disappeared: {item['receipt']}")
-            historical = json.loads(path.read_text())
-            expected = historical["artifact_sha256"]
-            actual = artifact_hashes(path.parent)
-            survival.append({
-                "id": item["id"], "receipt": item["receipt"],
-                "receipt_sha256": item["sha256"],
-                "artifact_manifest_intact_now": expected == actual,
-                "missing_artifacts": sorted(set(expected) - set(actual)),
-                "changed_artifacts": sorted(name for name in set(expected) & set(actual)
-                                            if expected[name] != actual[name]),
-                "added_artifacts": sorted(set(actual) - set(expected)),
-                "current_source_binding": historical["source_sha256"]
-                                          == e.record["source_sha256"],
-                "coverage_rebound": False,
-            })
-        e.record["historical_audit_comparison"] = {
-            "receipt": e.relative(previous_path), "sha256": file_hash(previous_path),
-            "changed_verification_sources": changes,
-            "previously_recursively_validated": survival,
-            "retention_beyond_2400_seconds_and_settlement": "not established by this probe",
-        }
-    costs = measured_partition_costs(e)
-    e.record["advisory_cost_inventory"] = {
-        "scope": "historical scheduling observations only; never reusable coverage",
-        "samples": costs,
-        "maximum_complete_shard_s": max(
-            (item["complete_shard_s"] for item in costs), default=None),
-        "variability_factor": 1.25, "minimum_recursive_validation_margin_s": 60.0,
-        "settlement_margin_s": 60.0, "internal_inheritance_margin_s": 5.0,
-    }
-    write_inventory(e)
-    physical_inventory = json.loads(
-        (e.path / "remaining-physical-admission-inventory.json").read_text())
-    fields = ("id", "argv", "inputs", "outputs", "requires",
-              "timeout_s", "max_output_bytes")
-    newly_wired = physical_inventory["newly_wired_timing_definitions"]
-    # Begin the exported review list with the specifically requested missing
-    # selector. This is not a request to execute shard 9 ahead of prerequisites.
-    newly_wired.sort(key=lambda spec: (spec["shard"] != 9, spec["shard"]))
-    for name, value in (
-        ("append-only-timing-checks.json",
-         [{key: spec[key] for key in fields} for spec in newly_wired]),
-        ("scheduling-plan.json", scheduling_plan()),
-        ("timing-frontier.json", e.record["frontier_audit"]),
-    ):
-        path = e.path / name
-        path.write_text(json.dumps(value, indent=2) + "\n")
-        e.record.setdefault("inventory_exports", {})[name] = {
-            "path": e.relative(path), "sha256": file_hash(path),
-        }
-    e.record["external_owner_handoffs"] = {
-        "retention": {
-            "owner": "authorized shared-runtime retention owner, routed by Coordinator",
-            "status": "request only; no owner action or restoration claimed",
-            "scope": [
-                "Protect manifest-bound artifacts and all recursive predecessor receipts.",
-                "Restore missing artifacts only from authorized hash-identical originals; "
-                "do not regenerate evidence or edit historical bindings.",
-                "Attribute deletions and demonstrate hash-preserving survival beyond "
-                "2400 seconds and process settlement.",
-            ],
-            "diagnostics": e.relative(e.path / "receipt.json"),
-        },
-        "board": {
-            "owner": "authorized board/IP/host provisioning owner, routed by Coordinator",
-            "status": "request only; no board access or provisioning claimed",
-            "required": physical_inventory["board_prerequisites"],
-        },
-    }
-    e.save()
-
-
 def aggregate(e, gate):
     """All expected partitions are mandatory; failed/interrupted ones never count."""
-    started = time.monotonic()
+    wanted = {
+        "behavior": ("behavior-shard", "parameter-shard", "pipeline-shard"),
+        "quartus-sta": ("quartus-sta-shard",), "board-hil": ("board-hil-shard",),
+    }[gate]
     definitions = check_definitions()
-    required = set(aggregate_dependencies()[gate])
-    specs = [spec for spec in definitions if spec["id"] in required]
+    specs = [spec for spec in definitions if spec["check"] in wanted]
     found = successes(e)
     found = execute_prerequisites(e, gate, found)
     missing = [spec["id"] for spec in specs if spec["id"] not in found]
@@ -1411,17 +1018,7 @@ def aggregate(e, gate):
         links.append({"id": spec["id"], "receipt": e.relative(path), "sha256": file_hash(path)})
     if gate == "behavior":
         from simulation import coverage_totals
-        e.assertion("configuration/simulator partitions", len(ledger),
-                    168 + len(ICARUS_BEHAVIOR_SHARDS))
-        e.assertion("complete compiled configuration inventory",
-                    [run["configuration"] for run in ledger
-                     if run["simulator"] == "verilator"],
-                    [c.parameters() for c in inventories()[0]])
-        e.assertion("compact portability configuration inventory",
-                    [run["configuration"] for run in ledger
-                     if run["simulator"] == "icarus"],
-                    [spec["configuration"] for spec in specs
-                     if spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"])
+        e.assertion("configuration/simulator partitions", len(ledger), 336)
         e.assertion("parameter partitions", len(parameters), 14)
         e.assertion("pipeline partitions", len(pipelines), 12)
         for simulator in SIM_TOOLS:
@@ -1430,23 +1027,7 @@ def aggregate(e, gate):
             e.assertion(f"{simulator} exact legal/illegal parameter inventory",
                         sorted(case["id"] for case in cases),
                         list(range(len(parameter_cases()))))
-        coverage_totals(e, [run for run in ledger if run["simulator"] == "verilator"])
-        e.record["simulation_tiering"] = {
-            "icarus": {
-                "scope": "compact portability, startup, stalls and reset",
-                "shards": list(ICARUS_BEHAVIOR_SHARDS),
-                "configurations": len(ICARUS_BEHAVIOR_SHARDS),
-            },
-            "verilator": {
-                "scope": "complete frozen numerical/protocol/reset matrix",
-                "configurations": 168,
-            },
-            "elapsed_s": time.monotonic() - started,
-            "check_budget_s": 2700,
-        }
-        e.save()
-        e.assertion("measured behavior completion within patrol budget",
-                    e.record["simulation_tiering"]["elapsed_s"] < 2700, True)
+        coverage_totals(e, ledger)
     else:
         e.assertion("full physical configuration inventory", len(ledger),
                     192 if gate == "quartus-sta" else 48)
@@ -1508,21 +1089,19 @@ def method_checks(e):
             ident = f"{check}-{simulator}-{index}"
             if ident != "behavior-shard-icarus-154":
                 expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
-    for index in range(192):
-        if index in (178, 166):
-            continue
+    for index in (*range(8), *range(15, 20)):
         ident = f"quartus-sta-shard-{index}"
         expected_outputs[ident] = [f"evidence/checks/recovery-v2-{ident}-*/"]
-    e.assertion("export preserves every wired selector",
+    e.assertion("export preserves exactly the supplied admitted selectors",
                 declared_outputs, expected_outputs)
-    e.assertion("wired selector denominator", len(declared_outputs), 554)
+    e.assertion("admitted selector denominator", len(declared_outputs), 377)
     e.assertion("every behavior prerequisite has an admitted output",
                 all(spec["outputs"] for spec in definitions
                     if spec["id"] in deps["behavior"]), True)
     output_method_checks(e)
     steps = plan["sequential_execution_order"]
-    e.assertion("linear schedule includes tiered partitions and seven original gates",
-                len(steps), 454)
+    e.assertion("linear schedule includes all partitions and seven original gates",
+                len(steps), 609)
     e.assertion("linear schedule has no duplicate steps",
                 len({step["id"] for step in steps}), len(steps))
     e.assertion("linear schedule prioritizes admitted recovery observations",
@@ -1532,9 +1111,7 @@ def method_checks(e):
                 ])
     e.assertion("linear schedule preserves exact partition commands",
                 {step["id"]: step["argv"] for step in steps[:-7]},
-                {spec["id"]: spec["argv"] for spec in definitions
-                 if not (spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"
-                         and spec["shard"] not in ICARUS_BEHAVIOR_SHARDS)})
+                {spec["id"]: spec["argv"] for spec in definitions})
     e.assertion("linear schedule retains every unchanged original command",
                 [step["argv"] for step in steps[-7:]],
                 plan["original_commands_remain_mandatory"])
@@ -1566,29 +1143,7 @@ def method_checks(e):
         )
         require("--scheduling-plan does not accept execution/probe options" in err,
                 "Scheduling export did not reject execution options explicitly")
-    e.assertion("behavior aggregate dependencies", len(deps["behavior"]), 207)
-    e.assertion("portability partitions do not duplicate the compiled sweep",
-                [spec["shard"] for spec in definitions
-                 if spec["id"] in deps["behavior"]
-                 and spec["check"] == "behavior-shard" and spec["simulator"] == "icarus"],
-                [154, *range(12)])
-    behavior_configs = inventories()[0]
-    for index, c in enumerate(behavior_configs):
-        complete = list(enumerate(scenario_records(c)))
-        e.assertion(f"Verilator {index} retains every original scenario",
-                    partition_scenarios(c, "verilator"), complete)
-        compact = portability_configuration(c)
-        e.assertion(f"Icarus {index} has bounded actual geometry",
-                    max(compact.sw, compact.sh, compact.dw, compact.dh) <= 32, True)
-        e.assertion(f"Icarus {index} preserves packed arithmetic parameters",
-                    (compact.bits, compact.channels, compact.frac, compact.mode),
-                    (c.bits, c.channels, c.frac, c.mode))
-        selected = partition_scenarios(compact, "icarus")
-        require(selected and len(selected) < len(list(scenario_records(compact)))
-                and {record["stall"] for _, record in selected} == {0, 1, 2}
-                and all((ident, record) in enumerate(scenario_records(compact))
-                        for ident, record in selected),
-                "Compact portability inventory lost stalls or original scenario identities")
+    e.assertion("behavior aggregate dependencies", len(deps["behavior"]), 362)
     e.assertion("timing aggregate dependencies", len(deps["quartus-sta"]), 192)
     e.assertion("hardware aggregate dependencies", len(deps["board-hil"]), 48)
     emitted = set()
@@ -1602,10 +1157,7 @@ def method_checks(e):
         "--simulator", "icarus", "--shard", "154",
     ])
     e.assertion("first exact parameter tuple",
-                list(definitions[0]["requested_configuration"].values()),
-                [2, 7, 3, 4096, 8, 3, 16, 0])
-    e.assertion("first actual portability parameter tuple",
-                list(definitions[0]["configuration"].values()), [8, 8, 16, 16, 8, 3, 16, 0])
+                list(definitions[0]["configuration"].values()), [2, 7, 3, 4096, 8, 3, 16, 0])
     e.assertion("first timing indices",
                 [s["shard"] for s in definitions if s["check"] == "quartus-sta-shard"][:2],
                 [178, 166])
@@ -1664,7 +1216,6 @@ def method_checks(e):
     ident = definitions[0]["id"]
     fixture_path = e.path / "synthetic-only-receipt.json"
     success = {
-        "acceptance_evidence": True,
         "scheduling_contract": contract(), "source_sha256": {"fixture": "current"},
         "status": "passed", "partition": {"id": ident},
     }
@@ -1780,7 +1331,7 @@ def output_method_checks(e):
           for check, count in (("parameter-shard", 7), ("pipeline-shard", 6))
           for index in range(count)),
         *(("quartus-sta-shard", index, None, f"recovery-v2-quartus-sta-shard-{index}")
-          for index in range(192) if index not in (178, 166)),
+          for index in (*range(8), *range(15, 20))),
     )
     discovered = []
     for check, shard, simulator, prefix in choices:
@@ -1805,10 +1356,12 @@ def output_method_checks(e):
     e.assertion("undeclared partitions retain no allocation fallback",
                 all(partition_output_prefix(spec["check"], spec["shard"], spec["simulator"])
                     is None for spec in undeclared), True)
-    e.assertion("undeclared partition denominator", len(undeclared), 48)
+    e.assertion("undeclared partition denominator", len(undeclared), 225)
     e.assertion("only unadmitted physical partitions lack output selectors",
                 sorted(spec["id"] for spec in undeclared),
-                sorted(f"board-hil-shard-{index}" for index in range(48)))
+                sorted({f"quartus-sta-shard-{index}" for index in range(192)
+                        if index not in (178, 166, *range(8), *range(15, 20))}
+                       | {f"board-hil-shard-{index}" for index in range(48)}))
     representatives = {}
     for spec in undeclared:
         representatives.setdefault((spec["check"], spec["simulator"]), spec)
@@ -1816,8 +1369,8 @@ def output_method_checks(e):
         spec for spec in undeclared
         if spec["check"] == "quartus-sta-shard" and spec["shard"] in range(8, 15)
     ]
-    e.assertion("timing records no longer lack executable wiring",
-                pending_restoration, [])
+    e.assertion("approved timing records awaiting executable restoration",
+                [spec["shard"] for spec in pending_restoration], list(range(8, 15)))
     rejected_specs = {spec["id"]: spec
                       for spec in [*representatives.values(), *pending_restoration]}
     for spec in rejected_specs.values():
@@ -2000,9 +1553,97 @@ def dependency_method_checks(e):
 
 
 def orchestration_method_checks(e):
-    """Use isolated subprocess fixtures, including parent-owned outputs."""
-    from prerequisite_checks import method_checks
-    method_checks(e)
+    """Run real tiny Python children on synthetic DAGs; never scaler acceptance."""
+    import threading
+    from unittest.mock import patch
+
+    original_run = e.run
+    synthetic = []
+    for ident, predecessors, simulator in (
+        ("anchor", [], "icarus"), ("parallel-a", ["anchor"], "icarus"),
+        ("parallel-b", ["anchor"], "verilator"), ("hardware-10", ["parallel-a", "parallel-b"], None),
+        ("hardware-0", ["hardware-10"], None),
+    ):
+        synthetic.append({
+            "id": ident, "depends_on": predecessors, "simulator": simulator,
+            "check": "behavior-shard", "outputs": ["synthetic-only"],
+            "argv": ["python3", "-c",
+                     f"import time; time.sleep(0.05); print('SYNTHETIC_DAG {ident}')"],
+        })
+    by_id = {spec["id"]: spec for spec in synthetic}
+    complete, active, peak = {}, set(), 0
+    lock = threading.Lock()
+
+    def run(argv, **kwargs):
+        nonlocal peak
+        spec = next(spec for spec in synthetic if spec["argv"] == argv)
+        ident = spec["id"]
+        with lock:
+            require(set(spec["depends_on"]) <= set(complete), "Fixture launched before predecessor")
+            require(spec["simulator"] is not None or not active, "Hardware fixture overlapped")
+            require(not any(by_id[item]["simulator"] is None for item in active),
+                    "Child overlapped physical fixture")
+            active.add(ident)
+            peak = max(peak, len(active))
+        try:
+            result = original_run(argv, **kwargs)
+            with lock:
+                complete[ident] = (e.path / "synthetic-only.json", {"synthetic_only": True})
+            return result
+        finally:
+            with lock:
+                active.remove(ident)
+
+    def validate(evidence, found, identities, *, validated=None):
+        validated = {} if validated is None else validated
+        for ident in identities:
+            require(ident in complete, "Synthetic completion absent")
+            validated[ident] = {"synthetic_only": True}
+        return validated
+
+    module = __name__
+    with patch(f"{module}.check_definitions", return_value=synthetic), \
+            patch(f"{module}.successes", side_effect=lambda evidence: dict(complete)), \
+            patch(f"{module}.validate_dependencies", side_effect=validate), \
+            patch.object(e, "run", side_effect=run):
+        result = execute_prerequisites(e, "behavior", {}, workers=2)
+        e.assertion("synthetic automatic prerequisite closure", sorted(result), sorted(by_id))
+        e.assertion("synthetic bounded independent children overlap", peak, 2)
+        command_count = len(e.record["commands"])
+        execute_prerequisites(e, "behavior", result, workers=2)
+        e.assertion("current synthetic completions execute no duplicate commands",
+                    len(e.record["commands"]), command_count)
+        complete.clear()
+        unadmitted = [{**spec, "outputs": []} if spec["id"] == "parallel-b" else spec
+                      for spec in synthetic]
+        with patch(f"{module}.check_definitions", return_value=unadmitted):
+            try:
+                execute_prerequisites(e, "behavior", {}, workers=2)
+            except AssertionError as error:
+                require("append-only admission" in str(error), "Unexpected admission diagnostic")
+            else:
+                raise AssertionError("Synthetic unmapped command executed")
+        e.assertion("unadmitted synthetic DAG rejected before subprocess execution",
+                    len(e.record["commands"]), command_count)
+        failing = [{**spec, "argv": ["python3", "-c",
+                    "print('SYNTHETIC_EXPECTED_FAILURE'); raise SystemExit(7)"]}
+                   if spec["id"] == "anchor" else spec for spec in synthetic]
+        with patch(f"{module}.check_definitions", return_value=failing), \
+                patch.object(e, "run", side_effect=original_run):
+            try:
+                execute_prerequisites(e, "behavior", {}, workers=2)
+            except AssertionError as error:
+                require("Command exit 7" in str(error), "Failure propagation diagnostic differs")
+            else:
+                raise AssertionError("Failed prerequisite did not stop dependents")
+        e.assertion("failed synthetic predecessor stops every dependent",
+                    len(e.record["commands"]), command_count + 1)
+        e.assertion("failed synthetic child retains exact unexpected exit",
+                    e.record["commands"][-1]["exit_status"], 7)
+        # This is an intentionally failing method fixture, not a passed child.
+        e.record["commands"][-1]["negative_method_fixture"] = True
+    e.record["synthetic_orchestration_only"] = True
+    e.save()
 
 
 def discovery_method_checks(e):
@@ -2013,15 +1654,11 @@ def discovery_method_checks(e):
     directory.mkdir()
     spec = check_definitions()[0]
     record = {
-        "fixture_scope": "SYNTHETIC_ONLY_NOT_PHYSICAL_ACCEPTANCE",
-        "acceptance_evidence": True,
+        "synthetic_only": True, "acceptance_evidence": False,
         "scheduling_contract": contract(), "source_sha256": e.record["source_sha256"],
-        "status": "running", "partition": spec, "predecessors": [],
+        "status": "running", "partition": spec,
     }
-    first = directory / "first" / "receipt.json"
-    first.parent.mkdir()
-    (first.parent / "observed.stdout").write_text("synthetic cache fixture\n")
-    record["artifact_sha256"] = artifact_hashes(first.parent)
+    first = directory / "first.json"
     first.write_text(json.dumps(record))
     paths = [first]
     module = __name__
@@ -2033,10 +1670,7 @@ def discovery_method_checks(e):
         e.assertion("changed synthetic receipt invalidates header cache", list(found), [spec["id"]])
         with patch(f"{module}.json.loads", side_effect=AssertionError("Unchanged header reparsed")):
             e.assertion("unchanged receipt uses incremental header", list(successes(e)), [spec["id"]])
-        second = directory / "second" / "receipt.json"
-        second.parent.mkdir()
-        (second.parent / "observed.stdout").write_text("synthetic cache fixture\n")
-        record["artifact_sha256"] = artifact_hashes(second.parent)
+        second = directory / "second.json"
         second.write_text(json.dumps(record))
         paths.append(second)
         try:

@@ -1,11 +1,4 @@
-"""Exclusive, source-bound evidence for admitted checks and bounded probes.
-
-Internal prerequisites inherit the parent's source identity and outer budget;
-their outputs are exclusive children, not new shared-runtime allocations.
-The 2700-second ceiling reserves 60 seconds for settlement and receipt writing.
-Each delegated level leaves a further five seconds for its parent to settle it.
-Requested tool timeouts remain recorded separately from this outer deadline.
-"""
+"""Exclusive, source-bound evidence for admitted checks and bounded probes."""
 
 import datetime
 import hashlib
@@ -14,7 +7,6 @@ import os
 from pathlib import Path
 import re
 import resource
-import signal
 import shutil
 import subprocess
 import sys
@@ -51,7 +43,7 @@ ADMITTED_PARTITION_OUTPUTS.update({
 })
 ADMITTED_PARTITION_OUTPUTS.update({
     ("quartus-sta-shard", index, None): f"recovery-v2-quartus-sta-shard-{index}"
-    for index in range(192) if index not in (178, 166)
+    for index in (*range(8), *range(15, 20))
 })
 
 
@@ -63,19 +55,15 @@ def partition_receipts(directory):
     # Keep historical receipts visible for explicit exclusion, not reuse.
     patterns = {"*-shard-*/receipt.json"}
     patterns.update(f"{prefix}-*/receipt.json"
-                    for prefix in ADMITTED_PARTITION_OUTPUTS.values()
-                    if "-shard-" not in f"{prefix}-")
-    patterns.add("*/prerequisites/**/receipt.json")
+                    for prefix in ADMITTED_PARTITION_OUTPUTS.values())
     return sorted({path for pattern in patterns for path in directory.glob(pattern)})
 
 
-def sources(root=None):
-    root = ROOT if root is None else root
+def sources(root=ROOT):
     return sorted({p for selector in SELECTORS for p in root.glob(selector) if p.is_file()})
 
 
-def hashes(root=None):
-    root = ROOT if root is None else root
+def hashes(root=ROOT):
     return {
         p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
         for p in sources(root)
@@ -117,62 +105,27 @@ def execution_environment():
 
 
 class Evidence:
-    def __init__(self, check, preparation=False, *, output_prefix=None,
-                 parent_receipt=None, child_output=None, argv=None):
+    def __init__(self, check, preparation=False, *, output_prefix=None):
         self._lock = threading.RLock()
         resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
         prefix = check if output_prefix is None else output_prefix
         require(re.fullmatch(r"[a-z0-9][a-z0-9-]*", prefix) is not None,
                 "Evidence output prefix must be a plain check name")
         parent = ROOT / "evidence" / ("preparation" if preparation else "checks")
-        invocation = ["python3", *sys.argv]
-        binding = None
-        deadline = time.time() + 2640
-        if parent_receipt is not None or child_output is not None:
-            require(parent_receipt is not None and child_output is not None,
-                    "Internal execution requires both parent receipt and child output")
-            parent_path, output, parent_record, entry = child_contract(
-                parent_receipt, child_output, invocation,
-            )
-            require(parent_record["status"] == "running",
-                    "Internal execution parent is not running")
-            require(parent_record["source_sha256"] == hashes(),
-                    "Internal execution parent has stale sources")
-            self.path = output
-            preparation = not parent_record["acceptance_evidence"]
-            deadline = parent_record["execution_budget"]["deadline_epoch"] - 5
-            binding = {
-                "receipt": parent_path.relative_to(ROOT).as_posix(),
-                "id": entry["id"], "output": entry["output"],
-                "argv": entry["argv"], "runtime_allocation": False,
-            }
-        else:
-            self.path = parent / f"{prefix}-{uuid.uuid4().hex}"
+        self.path = parent / f"{prefix}-{uuid.uuid4().hex}"
         self.path.mkdir(parents=True, exist_ok=False)
-        self.deadline = deadline
         self.record = {
             "schema": 1, "check": check, "acceptance_evidence": not preparation,
-            "argv": invocation if argv is None else argv,
-            "invocation_argv": invocation, "cwd": ".", "start": stamp(),
+            "argv": ["python3", *sys.argv], "cwd": ".", "start": stamp(),
             "source_sha256": hashes(), "commands": [], "assertions": [],
             "status": "running",
-            "execution_budget": {"limit_s": 2700, "reserve_s": 60,
-                                 "deadline_epoch": deadline},
         }
-        if binding:
-            self.record["parent_execution"] = binding
         for source in sources():
             target = self.path / "sources" / source.relative_to(ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(source, target)
         self.save()
         print(self.relative(self.path / "receipt.json"), flush=True)
-
-    def remaining(self):
-        remaining = self.deadline - time.time()
-        require(remaining > 0, "Outer check collection budget exhausted; "
-                "completed source-bound prerequisites retained, coverage incomplete")
-        return remaining
 
     def relative(self, path):
         return Path(path).relative_to(ROOT).as_posix()
@@ -193,8 +146,7 @@ class Evidence:
         self.save()
         require(actual == expected, f"{name}: actual={actual!r}, expected={expected!r}")
 
-    def run(self, argv, *, cwd=None, timeout=3600, expected=(0,), name=None):
-        cwd = ROOT if cwd is None else cwd
+    def run(self, argv, *, cwd=ROOT, timeout=3600, expected=(0,), name=None):
         argv = [str(arg) for arg in argv]
         requested_argv = list(argv)
         env = execution_environment()
@@ -203,7 +155,6 @@ class Evidence:
             if located:
                 argv[0] = str(Path(located).resolve())
         require(timeout >= 3600, "Child timeout must be at least 3600 seconds")
-        effective_timeout = min(timeout, self.remaining())
         with self._lock:
             index = len(self.record["commands"])
             stem = f"{index:05d}-{name or Path(argv[0]).name}"
@@ -213,8 +164,6 @@ class Evidence:
                 "argv": argv, "cwd": self.relative(cwd), "start": stamp(),
                 "requested_argv": requested_argv,
                 "timeout_s": timeout, "stdout": self.relative(stdout),
-                "effective_timeout_s": effective_timeout,
-                "deadline_epoch": self.deadline,
                 "stderr": self.relative(stderr), "exit_status": None,
                 "expected_exit_status": list(expected),
                 "timed_out": False, "core_dump_limit_bytes": 0,
@@ -224,25 +173,16 @@ class Evidence:
         started = time.monotonic()
         try:
             with stdout.open("xb") as out, stderr.open("xb") as err:
-                process = subprocess.Popen(
+                result = subprocess.run(
                     argv, cwd=cwd, stdout=out, stderr=err,
-                    env=env, start_new_session=True,
+                    timeout=timeout, check=False,
+                    env=env,
                 )
-                try:
-                    process.wait(timeout=effective_timeout)
-                except subprocess.TimeoutExpired:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
-                    process.wait()
-                    raise
             with self._lock:
-                command["exit_status"] = process.returncode
+                command["exit_status"] = result.returncode
         except subprocess.TimeoutExpired:
             with self._lock:
                 command["timed_out"] = True
-                command["exit_status"] = process.returncode
             raise
         except OSError as error:
             with self._lock:
@@ -253,10 +193,10 @@ class Evidence:
                 command["end"] = stamp()
                 command["duration_s"] = time.monotonic() - started
                 self.save()
-        require(process.returncode in expected,
-                f"Command exit {process.returncode}: {argv}; "
+        require(result.returncode in expected,
+                f"Command exit {result.returncode}: {argv}; "
                 f"see {command['stdout']} and {command['stderr']}")
-        return stdout.read_text(errors="replace"), stderr.read_text(errors="replace"), process.returncode
+        return stdout.read_text(errors="replace"), stderr.read_text(errors="replace"), result.returncode
 
     def tool(self, executable, version_args=("--version",)):
         located = shutil.which(executable, path=execution_environment().get("PATH"))
@@ -294,8 +234,6 @@ class Evidence:
         self.save()
 
     def finish(self, error=None):
-        if error is None and time.time() >= self.deadline:
-            error = AssertionError("Outer check budget exhausted; coverage incomplete")
         self.record["end"] = stamp()
         self.record["status"] = "failed" if error else "passed"
         if error:
@@ -306,34 +244,3 @@ class Evidence:
             self.record["source_change_error"] = "Product sources changed during execution"
         self.save()
         require(self.record["sources_unchanged"], "Sources changed during check")
-        if error and self.record.get("error", "").startswith(
-                "AssertionError: Outer check budget exhausted"):
-            raise error
-
-
-def child_contract(parent_receipt, child_output, invocation):
-    """Validate a project-owned child destination, not a runtime allocation."""
-    for name in (parent_receipt, child_output):
-        path = Path(name)
-        require(not path.is_absolute() and ".." not in path.parts,
-                "Internal execution paths must be project-relative")
-    parent_path = ROOT / parent_receipt
-    require(parent_path.name == "receipt.json" and parent_path.is_file()
-            and parent_path.resolve() == parent_path
-            and any(parent_path.is_relative_to(ROOT / "evidence" / kind)
-                    for kind in ("checks", "preparation")),
-            "Internal execution parent must be an existing exclusive evidence receipt")
-    output = ROOT / child_output
-    require(output.parent == parent_path.parent / "prerequisites"
-            and output.parent.resolve() == output.parent
-            and re.fullmatch(r"[a-z0-9][a-z0-9-]*-[0-9a-f]{32}", output.name),
-            "Internal execution destination is outside parent-owned prerequisites")
-    record = json.loads(parent_path.read_text())
-    entries = record.get("internal_prerequisites", [])
-    matches = [entry for entry in entries if entry["output"] == child_output]
-    require(len(matches) == 1 and len({entry["output"] for entry in entries}) == len(entries),
-            "Internal execution destination is missing or duplicated in parent contract")
-    entry = matches[0]
-    require(entry["argv"] == invocation and entry["runtime_allocation"] is False,
-            "Internal execution argv differs from parent contract")
-    return parent_path, output, record, entry

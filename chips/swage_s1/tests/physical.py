@@ -199,10 +199,6 @@ def parse_postfit_output(text):
 def compile_and_sta(e, c, directory, board=None):
     """Execute only independently admitted variant builds, not native gates."""
     manifest = generate_project(e, c, directory, board)
-    if e.record.get("partition", {}).get("check") in (
-            "quartus-sta-shard", "board-hil-shard"):
-        from partitions import admit_partition_budget
-        admit_partition_budget(e, e.record["partition"], "vendor-compile")
     e.run(["quartus_sh", "--flow", "compile", directory / "swage_s1"], timeout=21600)
     analysis = directory / "extra_sta.tcl"
     analysis.write_text(POSTFIT_TCL, encoding="ascii")

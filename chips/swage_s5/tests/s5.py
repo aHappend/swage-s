@@ -132,6 +132,7 @@ def reconfiguration(root, output, run, executable, seed):
             expected = (first, second)[index]
             assert row["frame"] == index and row["pixels"] == 13*17
             assert row["descriptors"] == expected["descriptor_count"] and row["roi"] == expected["roi_count"]
+            assert row["base_tokens"] == expected["base_token_count"] and row["stalled"] == stalled
             ledgers.append(row)
     result = {"geometry": geometry, "seed": seed, "expected_frames": [first, second],
               "compared_replays": ledgers,

@@ -34,7 +34,7 @@ REQUIREMENTS = {
     "s5_graph": "causal windows, exact signed40 reductions/RNE, C2f branch order, pyramid raster/strides",
     "detection": "class selection, threshold, clipped regression, global tuple ranking, empty completion",
     "roi": "retained source patch/mask, rank ownership, repeated patches, Q8.8/BF16, edge padding",
-    "protocol": "pre-edge transfers, reset cancellation, configuration/weight priority and errors, stalls",
+    "protocol": "pre-edge transfers, reset cancellation, configuration/weight/input priority and errors, stalls, numerical reconfiguration after drain",
     "matrix": "six geometries times three seeds; ready reference and independently stalled replay",
     "parent": "independent image mathematics for S1-S4 plus unchanged-source supplementary replay",
     "sensitivity": "nine fresh disposable RTL corruptions; only intended numerical mismatches count",

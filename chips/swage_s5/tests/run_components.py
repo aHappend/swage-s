@@ -48,16 +48,14 @@ def main():
                 case = fresh(output, f"reconfiguration-seed{seed}")
                 result.append(reconfiguration(root, case, execution.run, executable, seed))
         elif args.component == "parent-updates":
-            execution.versions((("iverilog", "-V"), ("vvp", "-V")))
             names = {"s4-scale-10bit-1ch-f16-i1", "s4-scale-8bit-3ch-f8-i1",
                      "s5-clahe8-unclipped-hist", "s4-temporal128", "s5-enhanced"}
             result = []
             for case in parent_scenarios():
                 if case["name"] in names:
                     directory = fresh(output, case["name"])
-                    executable = compile_parent(root, directory, execution.run, case, simulator="icarus")
-                    result.append(compare_parent(root, directory, execution.run, executable,
-                                                 case, 11, "icarus"))
+                    executable = compile_parent(root, directory, execution.run, case)
+                    result.append(compare_parent(root, directory, execution.run, executable, case, 11))
             assert len(result) == len(names)
         elif args.component == "reproduction":
             result = reproduction(root, output, execution)

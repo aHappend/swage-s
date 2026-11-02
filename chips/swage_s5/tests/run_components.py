@@ -7,7 +7,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from oracle import selftest
 from receipts import Execution, fresh
-from s5 import compile_top, compare, directed, matrix, mutations
+from s5 import compile_top, compare, directed, matrix, mutations, reconfiguration
 from pipeline import pipeline_check
 from primitives import primitive_check
 from control import queue_check, topk_check
@@ -24,7 +24,8 @@ def main():
                                             "pipelines", "primitives", "queues", "topk",
                                             "boundaries", "synthesis", "parent-smoke", "parent-matrix",
                                             "parent-compact", "reproduction", "parent-control",
-                                            "head-boundaries", "synthesis-leaves"))
+                                            "head-boundaries", "synthesis-leaves",
+                                            "reconfiguration", "parent-updates"))
     parser.add_argument("--repair-of")
     parser.add_argument("--mutation", action="append")
     args = parser.parse_args()
@@ -39,6 +40,25 @@ def main():
             executable = compile_top(root, output, execution.run, geometry)
             result = compare(root, output, execution.run, executable, geometry, 11,
                              reset_mid=True, controls=True, frames=2)
+        elif args.component == "reconfiguration":
+            geometry = (13, 17, 3, 16, 8)
+            executable = compile_top(root, output, execution.run, geometry)
+            result = []
+            for seed in (11, 29, 47):
+                case = fresh(output, f"reconfiguration-seed{seed}")
+                result.append(reconfiguration(root, case, execution.run, executable, seed))
+        elif args.component == "parent-updates":
+            execution.versions((("iverilog", "-V"), ("vvp", "-V")))
+            names = {"s4-scale-10bit-1ch-f16-i1", "s4-scale-8bit-3ch-f8-i1",
+                     "s5-clahe8-unclipped-hist", "s4-temporal128", "s5-enhanced"}
+            result = []
+            for case in parent_scenarios():
+                if case["name"] in names:
+                    directory = fresh(output, case["name"])
+                    executable = compile_parent(root, directory, execution.run, case, simulator="icarus")
+                    result.append(compare_parent(root, directory, execution.run, executable,
+                                                 case, 11, "icarus"))
+            assert len(result) == len(names)
         elif args.component == "reproduction":
             result = reproduction(root, output, execution)
         elif args.component == "parent-control":

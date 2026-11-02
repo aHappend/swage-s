@@ -21,6 +21,8 @@ def pipeline_check(root, output, run, kind, width=13, height=17, seed=11, classe
         layers[6].pw = [0] * (6 * classes)
         layers[6].bias = [65536 if c == classes - 1 and endpoints != "zero" else -1
                           for c in range(classes)]
+        if endpoints is True and classes >= 3:
+            layers[6].bias[1] = 65535
         layers[7].bias = [-1, 4097, 4096, -2147483648]
     weights = []
     for layer in layers[4:6]:

@@ -106,6 +106,40 @@ def matrix(root, output, run):
     return results
 
 
+def reconfiguration(root, output, run, executable, seed):
+    geometry = (13, 17, 3, 16, 8)
+    before, after = fresh(output, "before"), fresh(output, "after")
+    first = vectors(before, 13, 17, seed, 500, 16)
+    layers = fixture(3)
+    layers[6].bias[0] += 1117
+    layers[7].bias[0] = -2147483648
+    second = vectors(after, 13, 17, seed, 2000, 3, bf16=True, layers=layers,
+                     means=[32641]*3, reciprocals=[513]*3)
+    assert first["descriptor_count"] == 16 and second["descriptor_count"] == 3
+    assert first["retained"] != second["retained"]
+    ledgers = []
+    for stalled in (0, 1):
+        text = run([*executable, f"+ROOT={before.relative_to(root)}", f"+WC={first['weight_count']}",
+                    f"+DC={first['descriptor_count']}", f"+RC={first['roi_count']}",
+                    f"+ROOT_NEXT={after.relative_to(root)}", f"+WC_NEXT={second['weight_count']}",
+                    f"+DC_NEXT={second['descriptor_count']}", f"+RC_NEXT={second['roi_count']}",
+                    "+THRESHOLD_NEXT=2000", "+TOPK_NEXT=3", "+BF16_NEXT=1",
+                    "+FRAMES=2", f"+STALL={stalled}", f"+SEED={seed}"], f"reconfiguration-{stalled}")
+        rows = [line for line in text.splitlines() if line.startswith("COMPARED ")]
+        assert len(rows) == 2
+        for index, line in enumerate(rows):
+            row = {key: int(value) for key, value in re.findall(r"(\w+)=(\d+)", line)}
+            expected = (first, second)[index]
+            assert row["frame"] == index and row["pixels"] == 13*17
+            assert row["descriptors"] == expected["descriptor_count"] and row["roi"] == expected["roi_count"]
+            ledgers.append(row)
+    result = {"geometry": geometry, "seed": seed, "expected_frames": [first, second],
+              "compared_replays": ledgers,
+              "changes": "threshold, Top-K, classifier/regression bias writes and BF16 normalization after drain"}
+    (output / "reconfiguration.json").write_text(json.dumps(result, indent=2) + "\n")
+    return result
+
+
 def directed(root, output, run):
     geometry = (13, 17, 3, 16, 8)
     build = fresh(output, "directed-build")
@@ -143,6 +177,8 @@ def directed(root, output, run):
         case = fresh(output, f"detection-only-seed{seed}")
         results.append(compare(root, case, run, executable, geometry, seed, 350,
                                layers=objects, roi_enable=False, frames=2))
+        case = fresh(output, f"reconfiguration-seed{seed}")
+        results.append(reconfiguration(root, case, run, executable, seed))
     singleton = (1, 1, 8, 16, 16)
     build = fresh(output, "singleton-build")
     executable = compile_top(root, build, run, singleton, depth=16)

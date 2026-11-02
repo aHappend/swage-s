@@ -15,7 +15,7 @@ module swage_s5_queue #(
     localparam integer D = DEPTH >= 1 && DEPTH <= 32 ? DEPTH : 1;
     localparam integer PB = D > 1 ? $clog2(D) : 1;
     localparam integer CB = $clog2(D+1);
-    reg [W-1:0] words [0:D-1];
+    (* nomem2reg *) reg [W-1:0] words [0:D-1];
     reg [PB-1:0] rd_ptr, wr_ptr;
     reg [CB-1:0] count;
     wire push = s_valid && s_ready;

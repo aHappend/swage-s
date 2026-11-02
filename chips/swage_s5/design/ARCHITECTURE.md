@@ -236,3 +236,12 @@ netlists establish state/connections/no-latches; native lint/STA/HIL establish
 their own distinct target-level claims. Preparation syntax evidence, if listed
 below, establishes elaboration only. The independent product PDF is authored
 after engineering acceptance, never used as a prerequisite for these checks.
+
+Designer static elaboration completed with exit0 using
+`iverilog -g2012 -t null -s swage_s5_top rtl/*.sv`.
+The exact expanded argv, RTL hashes, tool version, timestamps and raw logs are
+retained at
+`evidence/preparation/elaboration-20261102T191451Z-1d6a072efdb3/receipt.json`.
+No compilation failure or repair probe occurred. This is syntax/elaboration
+evidence only; the Designer ran no functional simulation, oracle, mutation,
+synthesis, timing or hardware experiment. Independent verification is pending.

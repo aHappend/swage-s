@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Fri Oct 30 03:29:03 2026
+Quartus Prime Version : 17.1.0 Build 590 10/25/2017 SJ Standard Edition
+Revision Name : top
+Top-level Entity Name : swage_s1_top
+Family : Arria 10
+Logic utilization (in ALMs) : N/A
+Total registers : 316
+Total pins : 0
+Total virtual pins : 26
+Total block memory bits : 256
+Total DSP Blocks : 6
+Total HSSI RX channels : 0
+Total HSSI TX channels : 0
+Total PLLs : 0

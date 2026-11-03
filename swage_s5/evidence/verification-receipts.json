@@ -1,0 +1,3709 @@
+{
+  "chip": "Swage-S5",
+  "passed_checks": {
+    "check:portable-l1-complete": {
+      "attempt_id": 7,
+      "duration_s": 2136.644639634993,
+      "stdout_preview": "esis-20261102T221555Z-c0d6f3f40d40\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T221755Z-28e0b67e636e\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T221755Z-28e0b67e636e\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T221755Z-28e0b67e636e\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T221755Z-28e0b67e636e\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T222001Z-edd5d560b0e6\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T222001Z-edd5d560b0e6\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T222001Z-edd5d560b0e6\nPROGRESS synthesis; logs=evidence/l1-20261102T214908Z-cba30253b754/synthesis-20261102T222001Z-edd5d560b0e6\nPROGRESS recipient-execution; logs=evidence/l1-20261102T214908Z-cba30253b754/recipient-execution-20261102T222224Z-da3d446884aa\nPROGRESS recipient-execution; logs=evidence/l1-20261102T214908Z-cba30253b754/recipient-execution-20261102T222224Z-da3d446884aa\nPROGRESS recipient-execution; logs=evidence/l1-20261102T214908Z-cba30253b754/recipient-execution-20261102T222224Z-da3d446884aa\nPROGRESS recipient-execution; logs=evidence/l1-20261102T214908Z-cba30253b754/recipient-execution-20261102T222224Z-da3d446884aa\n{\"receipt\": \"evidence/l1-20261102T214908Z-cba30253b754/receipt.json\", \"exit_code\": 0, \"error\": null}\n",
+      "receipt_count": 12,
+      "receipts": [
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/class-tie-seed11-20261102T215541Z-fc669ebc50c2/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 11,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00010000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9980,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12557,
+                "stalled": 1,
+                "pixel_stalls": 1106,
+                "descriptor_stalls": 881,
+                "roi_stalls": 1541,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/class-tie-seed29-20261102T215544Z-d3c814e91548/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 29,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9980,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12833,
+                "stalled": 1,
+                "pixel_stalls": 1097,
+                "descriptor_stalls": 1139,
+                "roi_stalls": 1559,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/class-tie-seed47-20261102T215548Z-36aab364930e/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 47,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9980,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12569,
+                "stalled": 1,
+                "pixel_stalls": 1041,
+                "descriptor_stalls": 973,
+                "roi_stalls": 1461,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/detection-only-seed11-20261102T215542Z-7d1a0b74da94/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 11,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 90,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -956,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03bc020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -956,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03bc020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -811,
+                    1,
+                    2,
+                    16,
+                    12
+                  ],
+                  "descriptor": "032b010011000d00070008",
+                  "x": 12,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00070006",
+                  "x": 10,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    12,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00050004",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    13,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00060004",
+                  "x": 8,
+                  "y": 13
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2255,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2255,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5515,
+                "stalled": 1,
+                "pixel_stalls": 927,
+                "descriptor_stalls": 3062,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6029,
+                "stalled": 1,
+                "pixel_stalls": 1500,
+                "descriptor_stalls": 6808,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/detection-only-seed29-20261102T215545Z-236999394a75/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 29,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 88,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00020003",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00020003",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    2,
+                    2
+                  ],
+                  "descriptor": "02ff020010000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    16,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00090006",
+                  "x": 10,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    16,
+                    12
+                  ],
+                  "descriptor": "02ff020011000d00090008",
+                  "x": 12,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "02f6020011000c00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2221,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2221,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5515,
+                "stalled": 1,
+                "pixel_stalls": 875,
+                "descriptor_stalls": 3073,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6296,
+                "stalled": 1,
+                "pixel_stalls": 1531,
+                "descriptor_stalls": 7122,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T214908Z-cba30253b754/directed-20261102T215519Z-aa5df4b82c79/detection-only-seed47-20261102T215549Z-775190c67efc/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 47,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 87,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -947,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03b3020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -947,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03b3020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    4,
+                    2
+                  ],
+                  "descriptor": "02ff020011000d00000000",
+                  "x": 2,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00070006",
+                  "x": 10,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    12
+                  ],
+                  "descriptor": "02ff020011000d00070008",
+                  "x": 12,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    12,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00050004",
+                  "x": 8,
+                  "y": 12
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2204,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2204,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5517,
+                "stalled": 1,
+                "pixel_stalls": 845,
+                "descriptor_stalls": 3101,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6294,
+                "stalled": 1,
+                "pixel_stalls": 1463,
+                "descriptor_stalls": 7161,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/class-tie-seed11-20261102T204925Z-e567977a634d/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 11,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00010000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9978,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12556,
+                "stalled": 1,
+                "pixel_stalls": 1070,
+                "descriptor_stalls": 881,
+                "roi_stalls": 1542,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/class-tie-seed29-20261102T204928Z-3ba86664b914/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 29,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9978,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12832,
+                "stalled": 1,
+                "pixel_stalls": 1049,
+                "descriptor_stalls": 1139,
+                "roi_stalls": 1560,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/class-tie-seed47-20261102T204932Z-ab6f3f2f1b46/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 47,
+            "threshold": 320,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 1024,
+              "base_token_count": 0,
+              "eligible_count": 304,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    0,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 0
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    1,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    2,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    2
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 2,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    3,
+                    3
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 3,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1209,
+                    0,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "04b9000011000d00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 9978,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 1024,
+                "delivery_cycles": 12568,
+                "stalled": 1,
+                "pixel_stalls": 1059,
+                "descriptor_stalls": 975,
+                "roi_stalls": 1460,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 1,
+                "r2": 1,
+                "r17": 1,
+                "r257": 1
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/detection-only-seed11-20261102T204926Z-1d547bac92cf/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 11,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 90,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -956,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03bc020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -956,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03bc020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -811,
+                    1,
+                    2,
+                    16,
+                    12
+                  ],
+                  "descriptor": "032b010011000d00070008",
+                  "x": 12,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00070006",
+                  "x": 10,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    12,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00050004",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    13,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00060004",
+                  "x": 8,
+                  "y": 13
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2253,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2253,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5514,
+                "stalled": 1,
+                "pixel_stalls": 899,
+                "descriptor_stalls": 3062,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6028,
+                "stalled": 1,
+                "pixel_stalls": 1548,
+                "descriptor_stalls": 6799,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/detection-only-seed29-20261102T204930Z-2c94dc51a77f/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 29,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 88,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00020003",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00020003",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    2,
+                    2
+                  ],
+                  "descriptor": "02ff020010000d00000000",
+                  "x": 2,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    16,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00090006",
+                  "x": 10,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    16,
+                    12
+                  ],
+                  "descriptor": "02ff020011000d00090008",
+                  "x": 12,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    1
+                  ],
+                  "descriptor": "02f6020011000c00000000",
+                  "x": 1,
+                  "y": 4
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2219,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2219,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5514,
+                "stalled": 1,
+                "pixel_stalls": 914,
+                "descriptor_stalls": 3102,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6295,
+                "stalled": 1,
+                "pixel_stalls": 1524,
+                "descriptor_stalls": 7151,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        },
+        {
+          "path": "evidence/l1-20261102T204249Z-7a1627b93c5f/directed-20261102T204903Z-cc7b01141053/detection-only-seed47-20261102T204933Z-c004e73fefd2/comparison.json",
+          "data": {
+            "geometry": [
+              13,
+              17,
+              3,
+              16,
+              8
+            ],
+            "seed": 47,
+            "threshold": 350,
+            "bf16": false,
+            "expected": {
+              "weight_count": 527,
+              "descriptor_count": 16,
+              "roi_count": 0,
+              "base_token_count": 0,
+              "eligible_count": 87,
+              "retained": [
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    4,
+                    0
+                  ],
+                  "descriptor": "0512020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -1298,
+                    2,
+                    2,
+                    16,
+                    8
+                  ],
+                  "descriptor": "0512020011000d00010000",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    2,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    4,
+                    0
+                  ],
+                  "descriptor": "03ce020011000d00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    14,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00040002",
+                  "x": 8,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -974,
+                    2,
+                    1,
+                    16,
+                    8
+                  ],
+                  "descriptor": "03ce020011000d00060002",
+                  "x": 8,
+                  "y": 16
+                },
+                {
+                  "sort_key": [
+                    -947,
+                    2,
+                    1,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03b3020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -947,
+                    2,
+                    2,
+                    12,
+                    8
+                  ],
+                  "descriptor": "03b3020011000d00020002",
+                  "x": 8,
+                  "y": 12
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    4,
+                    2
+                  ],
+                  "descriptor": "02ff020011000d00000000",
+                  "x": 2,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    10
+                  ],
+                  "descriptor": "02ff020011000d00070006",
+                  "x": 10,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -767,
+                    2,
+                    1,
+                    14,
+                    12
+                  ],
+                  "descriptor": "02ff020011000d00070008",
+                  "x": 12,
+                  "y": 14
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    1,
+                    0
+                  ],
+                  "descriptor": "02f6020010000b00000000",
+                  "x": 0,
+                  "y": 1
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    2,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 2
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    3,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 3
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    4,
+                    0
+                  ],
+                  "descriptor": "02f6020011000b00000000",
+                  "x": 0,
+                  "y": 4
+                },
+                {
+                  "sort_key": [
+                    -758,
+                    2,
+                    0,
+                    12,
+                    8
+                  ],
+                  "descriptor": "02f6020011000d00050004",
+                  "x": 8,
+                  "y": 12
+                }
+              ]
+            },
+            "compared_replays": [
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2202,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 2202,
+                "stalled": 0,
+                "pixel_stalls": 0,
+                "descriptor_stalls": 0,
+                "roi_stalls": 0,
+                "bubbles": 0,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 0,
+                "p2": 0,
+                "p17": 0,
+                "p257": 0,
+                "d1": 0,
+                "d2": 0,
+                "d17": 0,
+                "d257": 0,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 0,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 5516,
+                "stalled": 1,
+                "pixel_stalls": 844,
+                "descriptor_stalls": 3101,
+                "roi_stalls": 0,
+                "bubbles": 20,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              },
+              {
+                "frame": 1,
+                "pixels": 221,
+                "descriptors": 16,
+                "roi": 0,
+                "delivery_cycles": 6293,
+                "stalled": 1,
+                "pixel_stalls": 1402,
+                "descriptor_stalls": 7150,
+                "roi_stalls": 0,
+                "bubbles": 40,
+                "errors": 0,
+                "blocked_cfg": 0,
+                "blocked_weight": 0,
+                "abort_beats": 0,
+                "base_tokens": 0,
+                "base_stalls": 0,
+                "p1": 1,
+                "p2": 1,
+                "p17": 1,
+                "p257": 1,
+                "d1": 1,
+                "d2": 1,
+                "d17": 1,
+                "d257": 1,
+                "r1": 0,
+                "r2": 0,
+                "r17": 0,
+                "r257": 0
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

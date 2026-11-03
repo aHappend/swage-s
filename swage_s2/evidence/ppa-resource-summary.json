@@ -1,0 +1,27 @@
+{
+  "chip": "Swage-S2",
+  "fitter_resources": {
+    "alms_used": 794,
+    "alms_total": 427200,
+    "alms_pct": "< 1 %",
+    "total_registers": 1051,
+    "block_memory_bits": 448,
+    "m20k_ram_blocks": 7,
+    "m20k_ram_blocks_total": 2713,
+    "dsp_blocks": 11,
+    "virtual_pins": 182
+  },
+  "timing": {
+    "device": "10AX115N2F45E1SG",
+    "netlist_mode": "post_fit",
+    "target_frequency_mhz": 100.0,
+    "fmax_mhz": 208.59,
+    "critical_path_delay_ns": 4.794,
+    "wns_setup_ns": 5.206,
+    "wns_hold_ns": 0.058
+  },
+  "verification_tiers": {
+    "L3_board_hil": "L3_BRIDGE_CONNECTIVITY_PROBE_ONLY",
+    "L3_note": "Catapult PCIe BAR0 hardware bridge connectivity probe (reg 57) only; per-chip bitstream flash and on-board workload vector execution require fpga/board_hil.json role wrapper."
+  }
+}

@@ -1,0 +1,350 @@
+{
+  "gate": "quartus-sta",
+  "timestamp_utc": "2026-11-02T22:45:49.404414+00:00",
+  "project_dir": "/data/sufeng/swage-s5-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work",
+  "revision": "top",
+  "clock_filter": "clk_main",
+  "min_setup_slack_ns": 0.0,
+  "min_hold_slack_ns": 0.0,
+  "status": "passed",
+  "map_summary": {
+    "exists": true,
+    "path": "/data/sufeng/swage-s5-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work/top.map.rpt",
+    "error_count": 0,
+    "errors": [],
+    "lpm_divide_error_count": 0,
+    "lpm_divide_errors": [],
+    "warning_10268_count": 0,
+    "warning_10268": [],
+    "uninferred_ram_count": 0,
+    "uninferred_rams": []
+  },
+  "sta_summary": {
+    "exit_code": 0,
+    "netlist_mode": "post_fit",
+    "clocks": [
+      {
+        "name": "clk_main",
+        "period_ns": 10.0
+      }
+    ],
+    "wns_setup_ns": 0.867,
+    "wns_hold_ns": 0.044,
+    "unconstrained_setup_paths": 0,
+    "unconstrained_functional_endpoints": 0,
+    "unapproved_timing_exceptions": 0,
+    "failing_setup_count": 0,
+    "failing_hold_count": 0,
+    "setup_paths": [
+      {
+        "slack_ns": 0.867,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
+      },
+      {
+        "slack_ns": 0.876,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 0.913,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
+      },
+      {
+        "slack_ns": 0.942,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
+      },
+      {
+        "slack_ns": 0.948,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[26]"
+      },
+      {
+        "slack_ns": 0.951,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 0.965,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
+      },
+      {
+        "slack_ns": 0.974,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 0.974,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 0.976,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
+      },
+      {
+        "slack_ns": 0.992,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[0]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[27]"
+      },
+      {
+        "slack_ns": 0.992,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
+      },
+      {
+        "slack_ns": 1.001,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[0]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 1.003,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 1.005,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[9]"
+      },
+      {
+        "slack_ns": 1.005,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[14]"
+      },
+      {
+        "slack_ns": 1.011,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[3]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
+      },
+      {
+        "slack_ns": 1.019,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].sum9[3]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].result10[6]"
+      },
+      {
+        "slack_ns": 1.021,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].sum9[3]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|pointwise[1].result10[4]"
+      },
+      {
+        "slack_ns": 1.028,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|data_reg[1]|swage_s4_top:u_isp|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[13]"
+      }
+    ],
+    "hold_paths": [
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[4].pairs1[2][21]|swage_s5_head:u_head|projections[4].pairs2[1][21]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][2]|swage_s5_head:u_head|projections[2].pairs2[1][2]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[0].pairs1[2][37]|swage_s5_head:u_head|projections[0].pairs2[1][37]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[1].pairs2[2][9]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[1].pairs3[1][9]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[1].pairs1[4][6]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[1].pairs2[2][6]"
+      },
+      {
+        "slack_ns": 0.044,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level1|depthwise[5].pairs2[2][6]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level1|depthwise[5].pairs3[1][6]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][38]|swage_s5_head:u_head|projections[2].pairs2[1][38]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[0].pairs1[2][3]|swage_s5_head:u_head|projections[0].pairs2[1][3]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][17]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][17]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_dsconv:u_stem",
+        "to_node": "depthwise[0].pairs2[2][28]|swage_s5_dsconv:u_stem|depthwise[0].pairs3[1][28]"
+      },
+      {
+        "slack_ns": 0.045,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[4].pairs2[2][14]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[4].pairs3[1][14]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_dsconv:u_stem",
+        "to_node": "pointwise[2].groups8[0][39]|swage_s5_dsconv:u_stem|pointwise[2].sum9[39]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[2].pairs1[2][30]|swage_s5_head:u_head|projections[2].pairs2[1][30]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_head:u_head",
+        "to_node": "projections[6].pairs1[2][12]|swage_s5_head:u_head|projections[6].pairs2[1][12]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_top:u_isp",
+        "to_node": "swage_s4_temporal:u_temporal|x1[13]~_Duplicate_1|swage_s4_top:u_isp|swage_s4_temporal:u_temporal|x2[13]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][12]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck0|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][12]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_c2f:u_c2f",
+        "to_node": "swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs2[2][39]|swage_s5_c2f:u_c2f|swage_s5_bottleneck:u_bottleneck1|swage_s5_dsconv:u_transform|depthwise[2].pairs3[1][39]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[2].products0[8][2]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[2].pairs1[4][2]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level2|depthwise[2].products0[8][8]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level2|depthwise[2].pairs1[4][8]"
+      },
+      {
+        "slack_ns": 0.046,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s5_pyramid:u_pyramid",
+        "to_node": "swage_s5_dsconv:u_level1|depthwise[0].pairs2[2][7]|swage_s5_pyramid:u_pyramid|swage_s5_dsconv:u_level1|depthwise[0].pairs3[1][7]"
+      }
+    ],
+    "stderr_tail": []
+  },
+  "detail": "Timing closed: Setup WNS = 0.867 ns",
+  "quartus_slot_telemetry": {
+    "slot_index": 2,
+    "max_slots": 6,
+    "slot_wait_s": 0.005
+  },
+  "top_module": "swage_s5_top",
+  "clock_port": "clk",
+  "clock_period_ns": 10.0,
+  "target_frequency_mhz": 100.0,
+  "fmax_mhz": 109.49,
+  "critical_path_delay_ns": 9.133,
+  "fitter_resource_summary": {
+    "alms_used": 38152,
+    "alms_total": 427200,
+    "alms_pct": "9 %",
+    "total_registers": 48798,
+    "block_memory_bits": 342312,
+    "m20k_ram_blocks": 62,
+    "m20k_ram_blocks_total": 2713,
+    "dsp_blocks": 300,
+    "virtual_pins": 1469
+  },
+  "parameters": {},
+  "source_sha256": "d7e3d8dde337649cc6abbf6f79a501eb4a1e54cbe9e7667cb8391fe101d20b83",
+  "applicable": true
+}

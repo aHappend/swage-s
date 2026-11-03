@@ -1,0 +1,345 @@
+{
+  "gate": "quartus-sta",
+  "timestamp_utc": "2026-11-02T18:30:58.441663+00:00",
+  "project_dir": "/data/sufeng/swage-s4-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work",
+  "revision": "top",
+  "clock_filter": "clk_main",
+  "min_setup_slack_ns": 0.0,
+  "min_hold_slack_ns": 0.0,
+  "status": "passed",
+  "map_summary": {
+    "exists": true,
+    "path": "/data/sufeng/swage-s4-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work/top.map.rpt",
+    "error_count": 0,
+    "errors": [],
+    "lpm_divide_error_count": 0,
+    "lpm_divide_errors": [],
+    "warning_10268_count": 0,
+    "warning_10268": [],
+    "uninferred_ram_count": 0,
+    "uninferred_rams": []
+  },
+  "sta_summary": {
+    "exit_code": 0,
+    "netlist_mode": "post_fit",
+    "clocks": [
+      {
+        "name": "clk_main",
+        "period_ns": 10.0
+      }
+    ],
+    "wns_setup_ns": 0.971,
+    "wns_hold_ns": 0.053,
+    "unconstrained_setup_paths": 0,
+    "unconstrained_functional_endpoints": 0,
+    "unapproved_timing_exceptions": 0,
+    "failing_setup_count": 0,
+    "failing_hold_count": 0,
+    "setup_paths": [
+      {
+        "slack_ns": 0.971,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[1]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 0.985,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[3]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.014,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[2]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.02,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[4]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.022,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[1]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.036,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[0]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.036,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[3]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.065,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[2]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.067,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[5]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.071,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[4]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.087,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[0]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.118,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[5]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.131,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|Add0~12~reg0|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.148,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[1]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[20]"
+      },
+      {
+        "slack_ns": 1.162,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[3]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[20]"
+      },
+      {
+        "slack_ns": 1.165,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[7]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.167,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[1]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[23]"
+      },
+      {
+        "slack_ns": 1.181,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[3]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[23]"
+      },
+      {
+        "slack_ns": 1.182,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|Add0~12~reg0|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[24]"
+      },
+      {
+        "slack_ns": 1.191,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|data_reg[2]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|counter_q[20]"
+      }
+    ],
+    "hold_paths": [
+      {
+        "slack_ns": 0.053,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_crop:u_crop|valid_reg|swage_s3_top:u_legacy|swage_s3_crop:u_crop|valid_reg"
+      },
+      {
+        "slack_ns": 0.054,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "phase.CAPTURE",
+        "to_node": "phase.CAPTURE"
+      },
+      {
+        "slack_ns": 0.054,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|response_reg[0]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|response_reg[0]"
+      },
+      {
+        "slack_ns": 0.054,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|state.WAIT_Y|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|state.WAIT_Y"
+      },
+      {
+        "slack_ns": 0.056,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "history_valid",
+        "to_node": "history_valid"
+      },
+      {
+        "slack_ns": 0.056,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_histogram:u_histogram|response_reg[95]|swage_s3_top:u_legacy|swage_s3_histogram:u_histogram|response_reg[95]"
+      },
+      {
+        "slack_ns": 0.056,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_normalizer:u_normalizer",
+        "to_node": "altshift_taps:valid_pipe_rtl_0|shift_taps_1nv:auto_generated|altera_counter:altera_counter5|count[1]~reg0|swage_s4_normalizer:u_normalizer|altshift_taps:valid_pipe_rtl_0|shift_taps_1nv:auto_generated|altera_counter:altera_counter5|count[1]~reg0"
+      },
+      {
+        "slack_ns": 0.057,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_luma|swage_s3_divider:u_divider|shift_quotient[5]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_luma|swage_s3_divider:u_divider|shift_quotient[6]"
+      },
+      {
+        "slack_ns": 0.057,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|busy|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|busy"
+      },
+      {
+        "slack_ns": 0.057,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|bit_count[1]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|bit_count[1]"
+      },
+      {
+        "slack_ns": 0.057,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_luma|swage_s3_divider:u_divider|bit_count[0]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_luma|swage_s3_divider:u_divider|bit_count[0]"
+      },
+      {
+        "slack_ns": 0.057,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_fifo:u_luma_queue|wp[5]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_fifo:u_luma_queue|wp[5]"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "pixel_state.PIX_RESPONSE",
+        "to_node": "pixel_state.PIX_RESPONSE"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "pixel_state.PIX_REQUEST",
+        "to_node": "pixel_state.PIX_REQUEST"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|bit_count[4]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|bit_count[4]"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s4_clahe:u_clahe",
+        "to_node": "state.DIV_WAIT|swage_s4_clahe:u_clahe|state.DIV_WAIT"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_convolution:u_convolution|swage_s3_window:u_window|top_bank.00|swage_s3_top:u_legacy|swage_s3_convolution:u_convolution|swage_s3_window:u_window|top_bank.00"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_fifo:u_luma_input_queue|wp[3]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_fifo:u_luma_input_queue|wp[3]"
+      },
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s1_interp:u_interp|wy0_s1[0]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s1_interp:u_interp|wy0_s2[0]"
+      },
+      {
+        "slack_ns": 0.059,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s3_top:u_legacy",
+        "to_node": "swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|shift_quotient[3]|swage_s3_top:u_legacy|swage_s3_scaler:u_scaler|swage_s3_plane_scaler:u_chroma|swage_s3_divider:u_divider|shift_quotient[4]"
+      }
+    ],
+    "stderr_tail": []
+  },
+  "detail": "Timing closed: Setup WNS = 0.971 ns",
+  "top_module": "swage_s4_top",
+  "clock_port": "clk",
+  "clock_period_ns": 10.0,
+  "target_frequency_mhz": 100.0,
+  "fmax_mhz": 110.75,
+  "critical_path_delay_ns": 9.029,
+  "fitter_resource_summary": {
+    "alms_used": 9642,
+    "alms_total": 427200,
+    "alms_pct": "2 %",
+    "total_registers": 14940,
+    "block_memory_bits": 218952,
+    "m20k_ram_blocks": 36,
+    "m20k_ram_blocks_total": 2713,
+    "dsp_blocks": 70,
+    "virtual_pins": 1092
+  },
+  "parameters": {},
+  "source_sha256": "1e9d53fa13149f6a29d4170554c27f2ef9d6b4ee431b9cf081f9127ec307539e",
+  "applicable": true
+}

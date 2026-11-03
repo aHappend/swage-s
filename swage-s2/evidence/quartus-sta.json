@@ -1,0 +1,345 @@
+{
+  "gate": "quartus-sta",
+  "timestamp_utc": "2026-11-02T11:50:53.434630+00:00",
+  "project_dir": "/data/sufeng/swage-s2-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work",
+  "revision": "top",
+  "clock_filter": "clk_main",
+  "min_setup_slack_ns": 0.0,
+  "min_hold_slack_ns": 0.0,
+  "status": "passed",
+  "map_summary": {
+    "exists": true,
+    "path": "/data/sufeng/swage-s2-line/workspace/project/.vulcan/engineering/run-0001/quartus_sta_work/top.map.rpt",
+    "error_count": 0,
+    "errors": [],
+    "lpm_divide_error_count": 0,
+    "lpm_divide_errors": [],
+    "warning_10268_count": 0,
+    "warning_10268": [],
+    "uninferred_ram_count": 0,
+    "uninferred_rams": []
+  },
+  "sta_summary": {
+    "exit_code": 0,
+    "netlist_mode": "post_fit",
+    "clocks": [
+      {
+        "name": "clk_main",
+        "period_ns": 10.0
+      }
+    ],
+    "wns_setup_ns": 5.206,
+    "wns_hold_ns": 0.058,
+    "unconstrained_setup_paths": 0,
+    "unconstrained_functional_endpoints": 0,
+    "unapproved_timing_exceptions": 0,
+    "failing_setup_count": 0,
+    "failing_hold_count": 0,
+    "setup_paths": [
+      {
+        "slack_ns": 5.206,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.206,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.206,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.228,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.228,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.228,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.257,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.257,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.257,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.267,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[5]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.267,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[5]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.267,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[5]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.273,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.273,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.273,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.279,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.DRAIN"
+      },
+      {
+        "slack_ns": 5.279,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      },
+      {
+        "slack_ns": 5.279,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.288,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.FILL"
+      },
+      {
+        "slack_ns": 5.288,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|center_y[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.SCAN"
+      }
+    ],
+    "hold_paths": [
+      {
+        "slack_ns": 0.058,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_top:u_scaler",
+        "to_node": "swage_s1_scheduler:u_scheduler|state.FINISH|swage_s1_top:u_scaler|swage_s1_scheduler:u_scheduler|state.FINISH"
+      },
+      {
+        "slack_ns": 0.073,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "abs_pipe[4]|swage_s2_convolution:u_convolution|abs_pipe[5]"
+      },
+      {
+        "slack_ns": 0.073,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "shift1[2]|swage_s2_convolution:u_convolution|shift2[2]"
+      },
+      {
+        "slack_ns": 0.074,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_top:u_scaler",
+        "to_node": "swage_s1_interp:u_interp|sof_pipe[2]|swage_s1_top:u_scaler|swage_s1_interp:u_interp|sof_pipe[3]"
+      },
+      {
+        "slack_ns": 0.074,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "shift1[0]|swage_s2_convolution:u_convolution|shift2[0]"
+      },
+      {
+        "slack_ns": 0.074,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "abs_pipe[0]|swage_s2_convolution:u_convolution|abs_pipe[1]"
+      },
+      {
+        "slack_ns": 0.075,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "abs_pipe[2]|swage_s2_convolution:u_convolution|abs_pipe[3]"
+      },
+      {
+        "slack_ns": 0.076,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "frame_active",
+        "to_node": "frame_active"
+      },
+      {
+        "slack_ns": 0.078,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s1_top:u_scaler",
+        "to_node": "swage_s1_scheduler:u_scheduler|fill_bank|swage_s1_top:u_scaler|swage_s1_scheduler:u_scheduler|fill_bank"
+      },
+      {
+        "slack_ns": 0.082,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|bank_valid[2]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|bank_valid[2]"
+      },
+      {
+        "slack_ns": 0.082,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|bank_valid[0]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|bank_valid[0]"
+      },
+      {
+        "slack_ns": 0.082,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|bank_valid[1]|swage_s2_convolution:u_convolution|swage_s2_window:u_window|bank_valid[1]"
+      },
+      {
+        "slack_ns": 0.084,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|state.PREPARE|swage_s2_convolution:u_convolution|swage_s2_window:u_window|state.PREPARE"
+      },
+      {
+        "slack_ns": 0.087,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "channels[0].negative_s5|swage_s2_convolution:u_convolution|channels[0].negative_s5"
+      },
+      {
+        "slack_ns": 0.094,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|middle_bank.01|swage_s2_convolution:u_convolution|swage_s2_window:u_window|middle_bank.01"
+      },
+      {
+        "slack_ns": 0.094,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|bottom_bank.01|swage_s2_convolution:u_convolution|swage_s2_window:u_window|bottom_bank.01"
+      },
+      {
+        "slack_ns": 0.098,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|bottom_bank.10|swage_s2_convolution:u_convolution|swage_s2_window:u_window|bottom_bank.10"
+      },
+      {
+        "slack_ns": 0.099,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|top_bank.10|swage_s2_convolution:u_convolution|swage_s2_window:u_window|top_bank.10"
+      },
+      {
+        "slack_ns": 0.104,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|top_bank.01|swage_s2_convolution:u_convolution|swage_s2_window:u_window|top_bank.01"
+      },
+      {
+        "slack_ns": 0.104,
+        "from_clock": "clk_main",
+        "to_clock": "clk_main",
+        "from_node": "swage_s2_convolution:u_convolution",
+        "to_node": "swage_s2_window:u_window|middle_bank.10|swage_s2_convolution:u_convolution|swage_s2_window:u_window|middle_bank.10"
+      }
+    ],
+    "stderr_tail": []
+  },
+  "detail": "Timing closed: Setup WNS = 5.206 ns",
+  "top_module": "swage_s2_top",
+  "clock_port": "clk",
+  "clock_period_ns": 10.0,
+  "target_frequency_mhz": 100.0,
+  "fmax_mhz": 208.59,
+  "critical_path_delay_ns": 4.794,
+  "fitter_resource_summary": {
+    "alms_used": 794,
+    "alms_total": 427200,
+    "alms_pct": "< 1 %",
+    "total_registers": 1051,
+    "block_memory_bits": 448,
+    "m20k_ram_blocks": 7,
+    "m20k_ram_blocks_total": 2713,
+    "dsp_blocks": 11,
+    "virtual_pins": 182
+  },
+  "parameters": {},
+  "source_sha256": "b5ef67db0c75e23859565715ea907673a591fba439285c925769659848becbf7",
+  "applicable": true
+}
